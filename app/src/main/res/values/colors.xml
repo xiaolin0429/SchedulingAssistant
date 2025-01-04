@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 基础颜色 -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="green">#FF4CAF50</color>
+    <color name="light_green">#FF8BC34A</color>
+    <color name="gray">#FF757575</color>
+    <color name="light_gray">#FFF5F5F5</color>
+    
+    <!-- 主题颜色 -->
+    <color name="primary">@color/green</color>
+    <color name="primary_dark">@color/green</color>
+    <color name="accent">@color/light_green</color>
+    
+    <!-- Material Design 3 颜色 -->
+    <color name="colorPrimary">@color/green</color>
+    <color name="colorPrimaryDark">@color/green</color>
+    <color name="colorAccent">@color/light_green</color>
+
+    <!-- 班次颜色 -->
+    <color name="day_shift">@color/green</color>
+    <color name="night_shift">@color/gray</color>
+    <color name="rest_day">@color/light_green</color>
+    <color name="no_shift">@color/gray</color>
+</resources>

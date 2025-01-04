@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 通用间距 -->
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+
+    <!-- 文字大小 -->
+
+    <!-- 组件尺寸 -->
+    <dimen name="fab_margin">16dp</dimen>
+</resources>

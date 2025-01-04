@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">排班助手</string>
+    
+    <!-- 导航栏标题 -->
+    <string name="title_home">主页</string>
+    <string name="title_shift">班次</string>
+    <string name="title_alarm">闹钟</string>
+    <string name="title_stats">统计</string>
+    <string name="title_profile">我的</string>
+    
+    <!-- 主页相关 -->
+    <string name="today_shift">今日排班</string>
+    <string name="selected_day_shift">当日排班</string>
+    <string name="add_note">添加备注</string>
+    <string name="start_schedule">开启排班</string>
+    <string name="next_shift">第二班次</string>
+    <string name="refresh_widget">刷新小组件</string>
+    <string name="no_shift_today">今日暂无排班</string>
+    
+    <!-- 班次类型 -->
+    <string name="day_shift">白班</string>
+    <string name="night_shift">夜班</string>
+    <string name="rest_day">休息</string>
+    <string name="no_shift">未排班</string>
+    
+    <!-- 操作相关 -->
+    <string name="please_select_date">请选择日期</string>
+    <string name="select_shift_type">选择班次类型</string>
+    <string name="add_schedule">添加排班</string>
+    <string name="delete">删除</string>
+    <string name="hint_note">添加备注…</string>
+    
+    <!-- 闹钟相关 -->
+    <string name="no_alarms">暂无闹钟</string>
+    <string name="select_alarm_time">选择闹钟时间</string>
+    
+    <!-- 错误提示 -->
+    <string name="invalid_date">无效的日期</string>
+    <string name="empty_note">备注不能为空</string>
+    <string name="note_too_long">备注内容过长</string>
+    
+    <!-- 班次统计格式 -->
+    <string name="shift_count_format">%1$s %2$d</string>
+</resources>
