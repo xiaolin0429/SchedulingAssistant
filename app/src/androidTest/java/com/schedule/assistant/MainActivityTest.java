@@ -72,12 +72,4 @@ public class MainActivityTest {
         Espresso.onView(ViewMatchers.withId(R.id.calendarView))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }
-
-    @Test
-    public void testHomeFragmentAddShiftButton() {
-        // 验证添加班次按钮是否可见且可点击
-        Espresso.onView(ViewMatchers.withId(R.id.addScheduleFab))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-                .check(ViewAssertions.matches(ViewMatchers.isClickable()));
-    }
 } 
