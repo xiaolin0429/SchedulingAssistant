@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Material Design 主题颜色 -->
+    <color name="primary">#FF2196F3</color>
+    <color name="primary_dark">#FF1976D2</color>
+    <color name="accent">#FF4081</color>
+    <color name="error">#FFB00020</color>
+    <color name="colorPrimary">@color/primary</color>
+
     <!-- 基础颜色 -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
@@ -8,24 +15,44 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="green">#FF4CAF50</color>
-    <color name="light_green">#FF8BC34A</color>
     <color name="gray">#FF757575</color>
-    <color name="light_gray">#FFF5F5F5</color>
+    <color name="light_gray">#FFE0E0E0</color>
+    <color name="lightGray">@color/light_gray</color>
+    <color name="green">#FF4CAF50</color>
+    <color name="light_green">#FF81C784</color>
     
-    <!-- 主题颜色 -->
-    <color name="primary">@color/green</color>
-    <color name="primary_dark">@color/green</color>
-    <color name="accent">@color/light_green</color>
+    <!-- 班次类型颜色 -->
+    <color name="day_shift_color">#FF4CAF50</color>    <!-- 绿色，代表白班 -->
+    <color name="night_shift_color">#FF2196F3</color>  <!-- 蓝色，代表夜班 -->
+    <color name="rest_day_color">#FFFF9800</color>     <!-- 橙色，代表休息日 -->
+    <color name="no_shift">#FFBDBDBD</color>           <!-- 灰色，代表无班次 -->
+    <color name="day_shift">@color/day_shift_color</color>
+    <color name="night_shift">@color/night_shift_color</color>
+    <color name="rest_day">@color/rest_day_color</color>
     
-    <!-- Material Design 3 颜色 -->
-    <color name="colorPrimary">@color/green</color>
-    <color name="colorPrimaryDark">@color/green</color>
-    <color name="colorAccent">@color/light_green</color>
+    <!-- 状态颜色 -->
+    <color name="enabled">#FF4CAF50</color>
+    <color name="disabled">#FFBDBDBD</color>
+    
+    <!-- 文本颜色 -->
+    <color name="text_primary">#DE000000</color>
+    <color name="text_secondary">#99000000</color>
+    <color name="text_hint">#61000000</color>
+    
+    <!-- 背景颜色 -->
+    <color name="background">#FFFFFFFF</color>
+    <color name="surface">#FFFFFFFF</color>
+    <color name="divider">#1F000000</color>
 
-    <!-- 班次颜色 -->
-    <color name="day_shift">@color/green</color>
-    <color name="night_shift">@color/gray</color>
-    <color name="rest_day">@color/light_green</color>
-    <color name="no_shift">@color/gray</color>
+    <!-- Material Design 主题相关颜色 -->
+    <color name="on_primary">#FFFFFFFF</color>
+    <color name="on_surface">#FF000000</color>
+    <color name="on_background">#FF000000</color>
+    <color name="on_error">#FFFFFFFF</color>
+
+    <!-- 输入框颜色 -->
+    <color name="text_input_box_stroke">#FF1976D2</color>
+    <color name="text_input_box_background">#FFFFFFFF</color>
+    <color name="text_input_box_hint">#FF757575</color>
+    <color name="text_input_box_text">#FF000000</color>
 </resources>

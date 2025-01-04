@@ -4,28 +4,24 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:minHeight="64dp">
+    android:padding="2dp">
 
     <TextView
         android:id="@+id/calendarDayText"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/shiftTypeText"
-        android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:minWidth="40dp"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_marginTop="1dp"
         android:gravity="center"
-        android:textSize="12sp"
-        android:textColor="@color/white"
-        android:background="@drawable/shift_type_background"
-        android:visibility="gone"/>
+        android:textSize="10sp"
+        android:textColor="@color/white"/>
 
 </LinearLayout> 

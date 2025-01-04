@@ -13,18 +13,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 public class StatsViewModel extends AndroidViewModel {
     private final ShiftRepository repository;
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Date> selectedMonth = new MutableLiveData<>();
     private LiveData<List<Shift>> monthShifts;
-    private LiveData<Map<ShiftType, Integer>> shiftTypeCounts;
+    private final MutableLiveData<Map<ShiftType, Integer>> shiftTypeCounts = new MutableLiveData<>();
 
     public StatsViewModel(Application application) {
         super(application);
         repository = new ShiftRepository(application);
         
-        // Initialize with current month
+        // 初始化为当前月份
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -51,13 +53,19 @@ public class StatsViewModel extends AndroidViewModel {
 
         monthShifts = repository.getShiftsBetween(start.toString(), end.toString());
         
-        // Transform shifts list to type counts map
-        shiftTypeCounts = Transformations.map(monthShifts, shifts -> 
-            shifts.stream().collect(Collectors.groupingBy(
-                Shift::getShiftType,
-                Collectors.collectingAndThen(Collectors.counting(), Long::intValue)
-            ))
-        );
+        // 更新班次类型统计
+        monthShifts.observeForever(shifts -> {
+            if (shifts != null) {
+                Map<ShiftType, Integer> typeCounts = shifts.stream()
+                    .collect(Collectors.groupingBy(
+                        Shift::getType,
+                        Collectors.collectingAndThen(Collectors.counting(), Long::intValue)
+                    ));
+                shiftTypeCounts.setValue(typeCounts);
+            } else {
+                shiftTypeCounts.setValue(Collections.emptyMap());
+            }
+        });
     }
 
     public LiveData<Date> getSelectedMonth() {
@@ -70,5 +78,9 @@ public class StatsViewModel extends AndroidViewModel {
 
     public LiveData<Map<ShiftType, Integer>> getShiftTypeCounts() {
         return shiftTypeCounts;
+    }
+
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
     }
 } 

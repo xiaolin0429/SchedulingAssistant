@@ -46,7 +46,7 @@ public class ShiftDecorator implements LineBackgroundSpan {
                 canvas.drawCircle(circleX, circleY, radius, paint);
                 paint.setStyle(oldStyle);
                 break;
-            case REST:
+            case REST_DAY:
                 // 休息：小方块
                 float halfSize = radius * 0.8f;
                 canvas.drawRect(circleX - halfSize, circleY - halfSize,

@@ -14,14 +14,20 @@ import java.util.List;
 
 @Dao
 public interface ShiftDao {
+    @Query("SELECT * FROM shifts ORDER BY date DESC")
+    LiveData<List<Shift>> getAllShifts();
+
+    @Query("SELECT * FROM shifts WHERE date >= :startDate AND date <= :endDate ORDER BY date ASC")
+    LiveData<List<Shift>> getShiftsBetween(String startDate, String endDate);
+
     @Query("SELECT * FROM shifts WHERE date = :date")
     LiveData<Shift> getShiftByDate(String date);
 
     @Query("SELECT * FROM shifts WHERE date = :date")
     Shift getShiftByDateDirect(String date);
 
-    @Query("SELECT * FROM shifts WHERE date BETWEEN :startDate AND :endDate ORDER BY date ASC")
-    LiveData<List<Shift>> getShiftsBetween(String startDate, String endDate);
+    @Query("SELECT * FROM shifts WHERE note IS NOT NULL AND note != '' ORDER BY date DESC")
+    LiveData<List<Shift>> getShiftsWithNotes();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Shift shift);
@@ -32,9 +38,6 @@ public interface ShiftDao {
     @Delete
     void delete(Shift shift);
 
-    @Query("UPDATE shifts SET note = :note, update_time = :updateTime WHERE date = :date")
-    void updateNote(String date, String note, long updateTime);
-
-    @Query("SELECT * FROM shifts WHERE note IS NOT NULL ORDER BY update_time DESC LIMIT :limit")
-    List<Shift> getShiftsWithNotes(int limit);
+    @Query("UPDATE shifts SET note = :note WHERE id = :shiftId")
+    void updateNote(long shiftId, String note);
 } 

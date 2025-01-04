@@ -59,9 +59,16 @@ public class AlarmFragment extends Fragment {
             .build();
 
         picker.addOnPositiveButtonClickListener(v -> {
-            int hour = picker.getHour();
-            int minute = picker.getMinute();
-            viewModel.addAlarm(hour, minute);
+            Calendar now = Calendar.getInstance();
+            Calendar selected = Calendar.getInstance();
+            selected.set(Calendar.HOUR_OF_DAY, picker.getHour());
+            selected.set(Calendar.MINUTE, picker.getMinute());
+            
+            long diffMillis = selected.getTimeInMillis() - now.getTimeInMillis();
+            int hoursBefore = (int) (diffMillis / (60 * 60 * 1000));
+            int minutesBefore = (int) ((diffMillis / (60 * 1000)) % 60);
+            
+            viewModel.addAlarm(hoursBefore, minutesBefore);
         });
 
         picker.show(getChildFragmentManager(), "time_picker");

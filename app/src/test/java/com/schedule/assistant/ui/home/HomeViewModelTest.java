@@ -11,8 +11,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,39 +31,49 @@ public class HomeViewModelTest {
     private ShiftRepository repository;
 
     private HomeViewModel viewModel;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private AutoCloseable mockitoCloseable;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        mockitoCloseable = MockitoAnnotations.openMocks(this);
         viewModel = new HomeViewModel(application);
     }
 
     @Test
     public void testSelectDate() {
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         MutableLiveData<Shift> shiftLiveData = new MutableLiveData<>();
-        when(repository.getShiftByDate(any())).thenReturn(shiftLiveData);
+        when(repository.getShiftByDate(date.format(formatter))).thenReturn(shiftLiveData);
 
         viewModel.selectDate(date);
 
-        assertNotNull(viewModel.getSelectedDate().getValue());
-        assertEquals(date, viewModel.getSelectedDate().getValue());
+        assertNotNull(viewModel.getSelectedShift().getValue());
+        verify(repository).getShiftByDate(date.format(formatter));
     }
 
     @Test
     public void testLoadMonthShifts() {
-        Date month = new Date();
+        LocalDate today = LocalDate.now();
         List<Shift> shifts = Arrays.asList(
-            new Shift(new Date(), ShiftType.DAY_SHIFT),
-            new Shift(new Date(), ShiftType.NIGHT_SHIFT)
+            new Shift(today.format(formatter), ShiftType.DAY_SHIFT),
+            new Shift(today.plusDays(1).format(formatter), ShiftType.NIGHT_SHIFT)
         );
         MutableLiveData<List<Shift>> shiftsLiveData = new MutableLiveData<>();
         shiftsLiveData.setValue(shifts);
         when(repository.getShiftsBetween(any(), any())).thenReturn(shiftsLiveData);
 
-        viewModel.loadMonthShifts(month);
+        YearMonth currentMonth = YearMonth.from(today);
+        viewModel.loadMonthShifts(currentMonth);
 
-        assertNotNull(viewModel.getMonthShifts());
+        assertNotNull(viewModel.getMonthShifts().getValue());
         assertEquals(shifts, viewModel.getMonthShifts().getValue());
+    }
+
+    @org.junit.After
+    public void releaseMocks() throws Exception {
+        if (mockitoCloseable != null) {
+            mockitoCloseable.close();
+        }
     }
 } 

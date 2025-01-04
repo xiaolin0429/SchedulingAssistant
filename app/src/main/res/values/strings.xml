@@ -30,6 +30,8 @@
     <string name="add_schedule">添加排班</string>
     <string name="delete">删除</string>
     <string name="hint_note">添加备注…</string>
+    <string name="date">日期</string>
+    <string name="note">备注</string>
     
     <!-- 闹钟相关 -->
     <string name="no_alarms">暂无闹钟</string>
@@ -42,4 +44,30 @@
     
     <!-- 班次统计格式 -->
     <string name="shift_count_format">%1$s %2$d</string>
+    
+    <string name="shift_management">班次信息管理</string>
+    <string name="sort">排序</string>
+    <string name="back">返回</string>
+    <string name="start_time">开始时间</string>
+    <string name="end_time">结束时间</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="edit_shift">编辑班次</string>
+    <string name="confirm_delete">确定要删除这个班次吗？</string>
+    <string name="sort_options">排序方式</string>
+    <string name="sort_by_date_asc">按日期升序</string>
+    <string name="sort_by_date_desc">按日期降序</string>
+    <string name="sort_by_type">按班次类型</string>
+    <string name="sort_by_update_time">按更新时间</string>
+    <string name="error_date_required">请选择日期</string>
+    <string name="error_shift_type_required">请选择班次类型</string>
+    <string name="error_time_required">请选择时间</string>
+    <string name="error_invalid_time_range">结束时间必须晚于开始时间</string>
+    <string name="error_note_too_long">备注不能超过200个字符</string>
+    <string name="error_duplicate_shift">该日期已存在班次安排</string>
+    
+    <!-- 备注相关 -->
+    <string name="add_note">添加备注</string>
+    <string name="note">备注</string>
+    <string name="note_input_description">输入备注内容</string>
 </resources>

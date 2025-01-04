@@ -10,6 +10,8 @@ import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.Collections;
+import androidx.lifecycle.LiveData;
 
 public class NoteManager {
     private static final int MAX_NOTE_LENGTH = 500;
@@ -79,10 +81,14 @@ public class NoteManager {
                 long updateTime = System.currentTimeMillis();
 
                 if (shift == null) {
-                    shift = new Shift(date, ShiftType.REST, note);
+                    shift = new Shift(date, ShiftType.REST_DAY);
+                    shift.setNote(note);
+                    shift.setUpdateTime(updateTime);
                     database.shiftDao().insert(shift);
                 } else {
-                    database.shiftDao().updateNote(date, note, updateTime);
+                    shift.setNote(note);
+                    shift.setUpdateTime(updateTime);
+                    database.shiftDao().update(shift);
                 }
                 callback.onSuccess();
             } catch (Exception e) {
@@ -118,23 +124,17 @@ public class NoteManager {
     }
 
     public void getRecentNotes(@NonNull LoadNotesCallback callback) {
-        getRecentNotes(DEFAULT_RECENT_NOTES_LIMIT, callback);
-    }
-
-    public void getRecentNotes(int limit, @NonNull LoadNotesCallback callback) {
         if (callback == null) {
             throw new IllegalArgumentException("Callback cannot be null");
         }
-
-        if (limit <= 0) {
-            limit = DEFAULT_RECENT_NOTES_LIMIT;
-        }
-        final int finalLimit = limit;
         
         executeWithRetry(() -> {
             try {
-                List<Shift> shifts = database.shiftDao().getShiftsWithNotes(finalLimit);
-                callback.onNotesLoaded(shifts);
+                LiveData<List<Shift>> shiftsLiveData = database.shiftDao().getShiftsWithNotes();
+                while (shiftsLiveData.getValue() == null) {
+                    Thread.sleep(100);
+                }
+                callback.onNotesLoaded(shiftsLiveData.getValue());
             } catch (Exception e) {
                 callback.onError(e);
             }
@@ -162,5 +162,40 @@ public class NoteManager {
                 }
             }
         });
+    }
+
+    private void saveNote(String date, String note) {
+        if (database != null) {
+            long updateTime = System.currentTimeMillis();
+            try {
+                Shift shift = database.shiftDao().getShiftByDateDirect(date);
+                if (shift == null) {
+                    shift = new Shift(date, ShiftType.REST_DAY);
+                    shift.setNote(note);
+                    shift.setUpdateTime(updateTime);
+                    database.shiftDao().insert(shift);
+                } else {
+                    database.shiftDao().updateNote(shift.getId(), note);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public List<Shift> getShiftsWithNotes() {
+        if (database != null) {
+            try {
+                LiveData<List<Shift>> shiftsLiveData = database.shiftDao().getShiftsWithNotes();
+                // 由于这是在后台线程中执行的，我们可以安全地等待结果
+                while (shiftsLiveData.getValue() == null) {
+                    Thread.sleep(100);
+                }
+                return shiftsLiveData.getValue();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return Collections.emptyList();
     }
 } 

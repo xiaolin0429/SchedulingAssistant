@@ -1,61 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.App.CardView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:stateListAnimator="@animator/card_state_list_anim"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_medium">
+        android:padding="16dp">
 
         <View
-            android:id="@+id/shiftTypeIndicator"
+            android:id="@+id/typeIndicator"
             android:layout_width="4dp"
             android:layout_height="0dp"
-            android:background="@color/day_shift"
+            android:background="@drawable/shift_type_indicator_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:background="@color/day_shift"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/dateText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_medium"
-            android:textAppearance="@style/TextAppearance.App.Title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/shiftTypeIndicator"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="2024年1月15日"/>
-
-        <TextView
-            android:id="@+id/shiftTypeText"
+            android:id="@+id/shiftNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_medium"
-            android:layout_marginTop="@dimen/spacing_small"
-            android:textAppearance="@style/TextAppearance.App.Subtitle"
-            app:layout_constraintStart_toEndOf="@id/shiftTypeIndicator"
-            app:layout_constraintTop_toBottomOf="@id/dateText"
-            tools:text="白班"/>
+            android:layout_marginStart="12dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/typeIndicator"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/noteText"
-            android:layout_width="0dp"
+            android:id="@+id/shiftTimeText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_medium"
-            android:layout_marginTop="@dimen/spacing_small"
-            android:textAppearance="@style/TextAppearance.App.Body"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/shiftTypeIndicator"
-            app:layout_constraintTop_toBottomOf="@id/shiftTypeText"
-            tools:text="这是一条备注信息"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.google.android.material.card.MaterialCardView> 
+</androidx.cardview.widget.CardView> 

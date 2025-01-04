@@ -19,9 +19,9 @@ public class ShiftAdapter extends ListAdapter<Shift, ShiftAdapter.ShiftViewHolde
 
         @Override
         public boolean areContentsTheSame(@NonNull Shift oldItem, @NonNull Shift newItem) {
-            return oldItem.getDate().equals(newItem.getDate()) &&
-                   Objects.equals(oldItem.getShiftType(), newItem.getShiftType()) &&
-                   Objects.equals(oldItem.getNote(), newItem.getNote());
+            return Objects.equals(oldItem.getType(), newItem.getType()) &&
+                   Objects.equals(oldItem.getStartTime(), newItem.getStartTime()) &&
+                   Objects.equals(oldItem.getEndTime(), newItem.getEndTime());
         }
     };
 
@@ -51,11 +51,11 @@ public class ShiftAdapter extends ListAdapter<Shift, ShiftAdapter.ShiftViewHolde
         }
 
         void bind(Shift shift) {
-            binding.dateText.setText(shift.getDate());
-            binding.shiftTypeText.setText(binding.getRoot().getContext()
-                .getString(shift.getShiftType().getNameResId()));
-            binding.shiftTypeIndicator.setBackgroundResource(shift.getShiftType().getColorResId());
-            binding.noteText.setText(shift.getNote());
+            binding.shiftNameText.setText(itemView.getContext()
+                .getString(shift.getType().getNameResId()));
+            binding.shiftTimeText.setText(String.format("%s - %s", 
+                shift.getStartTime(), shift.getEndTime()));
+            binding.typeIndicator.setBackgroundResource(shift.getType().getColorResId());
         }
     }
 } 

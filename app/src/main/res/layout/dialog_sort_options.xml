@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <RadioButton
+        android:id="@+id/sortByDateAsc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sort_by_date_asc"
+        android:padding="12dp"/>
+
+    <RadioButton
+        android:id="@+id/sortByDateDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sort_by_date_desc"
+        android:padding="12dp"/>
+
+    <RadioButton
+        android:id="@+id/sortByType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sort_by_type"
+        android:padding="12dp"/>
+
+    <RadioButton
+        android:id="@+id/sortByUpdateTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sort_by_update_time"
+        android:padding="12dp"/>
+
+</RadioGroup> 

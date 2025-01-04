@@ -19,10 +19,16 @@ import java.util.Map;
 public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewContainer> {
     private final OnDayClickListener listener;
     private LocalDate selectedDate = null;
+    private LocalDate previousSelectedDate = null;
     private Map<String, Shift> shifts = new HashMap<>();
+    private CalendarView calendarView;
 
     public CalendarDayBinder(OnDayClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setCalendarView(CalendarView calendarView) {
+        this.calendarView = calendarView;
     }
 
     @NonNull
@@ -41,6 +47,8 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
         
         if (day.getOwner() == DayOwner.THIS_MONTH) {
             dayText.setVisibility(View.VISIBLE);
+            shiftText.setVisibility(View.VISIBLE);
+            
             // 设置选中状态的背景和文字颜色
             if (day.getDate().equals(selectedDate)) {
                 dayText.setBackgroundResource(R.drawable.selected_day_background);
@@ -48,7 +56,7 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
                 dayText.setTypeface(null, Typeface.BOLD);
             } else if (day.getDate().equals(LocalDate.now())) {
                 dayText.setBackgroundResource(0);
-                dayText.setTextColor(container.itemView.getContext().getColor(R.color.green));
+                dayText.setTextColor(container.itemView.getContext().getColor(R.color.day_shift_color));
                 dayText.setTypeface(null, Typeface.BOLD);
             } else {
                 dayText.setBackgroundResource(0);
@@ -60,23 +68,23 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
             Shift shift = shifts.get(day.getDate().toString());
             if (shift != null) {
                 shiftText.setVisibility(View.VISIBLE);
-                shiftText.setText(container.itemView.getContext().getString(shift.getShiftType().getNameResId()));
-                int backgroundColor;
-                switch (shift.getShiftType()) {
+                shiftText.setText(container.itemView.getContext()
+                        .getString(shift.getType().getNameResId()));
+                
+                switch (shift.getType()) {
                     case DAY_SHIFT:
-                        backgroundColor = R.color.day_shift;
+                        shiftText.setBackgroundResource(R.drawable.bg_day_shift);
                         break;
                     case NIGHT_SHIFT:
-                        backgroundColor = R.color.night_shift;
+                        shiftText.setBackgroundResource(R.drawable.bg_night_shift);
                         break;
-                    case REST:
-                        backgroundColor = R.color.rest_day;
+                    case REST_DAY:
+                        shiftText.setBackgroundResource(R.drawable.bg_rest_day);
                         break;
                     default:
-                        backgroundColor = R.color.gray;
+                        shiftText.setBackgroundResource(R.drawable.no_shift_background);
                         break;
                 }
-                shiftText.setBackgroundResource(backgroundColor);
             } else {
                 shiftText.setVisibility(View.GONE);
             }
@@ -87,11 +95,21 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
     }
 
     public void setSelectedDate(LocalDate date) {
-        this.selectedDate = date;
+        if (previousSelectedDate != null) {
+            calendarView.notifyDateChanged(previousSelectedDate);
+        }
+        previousSelectedDate = selectedDate;
+        selectedDate = date;
+        if (previousSelectedDate != null) {
+            calendarView.notifyDateChanged(previousSelectedDate);
+        }
+        if (selectedDate != null) {
+            calendarView.notifyDateChanged(selectedDate);
+        }
     }
 
     public void updateShifts(Map<String, Shift> shifts) {
-        this.shifts = shifts;
+        this.shifts = shifts != null ? shifts : new HashMap<>();
     }
 
     public static class DayViewContainer extends ViewContainer {

@@ -32,5 +32,32 @@
 
     <!-- 按钮样式 -->
 
+    <!-- 底部弹出对话框样式 -->
+    <style name="BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+    </style>
+
+    <style name="BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_background</item>
+        <item name="behavior_peekHeight">512dp</item>
+        <item name="behavior_fitToContents">true</item>
+        <item name="behavior_hideable">true</item>
+    </style>
+
     <!-- 输入框样式 -->
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="errorTextAppearance">@style/ErrorTextAppearance</item>
+    </style>
+
+    <style name="ErrorTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/error</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

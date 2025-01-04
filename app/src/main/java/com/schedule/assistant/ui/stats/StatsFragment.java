@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.mikephil.charting.charts.PieChart;
@@ -28,7 +27,7 @@ import java.util.Map;
 public class StatsFragment extends Fragment {
     private FragmentStatsBinding binding;
     private StatsViewModel viewModel;
-    private static final SimpleDateFormat MONTH_FORMATTER = new SimpleDateFormat("yyyy年M月", Locale.CHINESE);
+    private final SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy年MM月", Locale.getDefault());
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,38 +41,16 @@ public class StatsFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(StatsViewModel.class);
         
         setupChart();
-        setupMonthSelector();
+        setupMonthNavigation();
         observeViewModel();
         
-        // Load current month by default
+        // 初始化为当前月份
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
         viewModel.selectMonth(calendar.getTime());
     }
 
-    private void setupChart() {
-        PieChart chart = binding.pieChart;
-        chart.setDrawHoleEnabled(true);
-        chart.setHoleColor(Color.WHITE);
-        chart.setTransparentCircleColor(Color.WHITE);
-        chart.setTransparentCircleAlpha(110);
-        chart.setHoleRadius(58f);
-        chart.setTransparentCircleRadius(61f);
-        chart.setDrawCenterText(true);
-        chart.setRotationEnabled(false);
-        chart.setHighlightPerTapEnabled(true);
-        chart.setMaxAngle(360f);
-        chart.setRotationAngle(0);
-        chart.setDrawEntryLabels(true);
-        chart.getDescription().setEnabled(false);
-        chart.getLegend().setEnabled(false);
-    }
-
-    private void setupMonthSelector() {
+    private void setupMonthNavigation() {
         binding.previousMonthButton.setOnClickListener(v -> {
             Date currentMonth = viewModel.getSelectedMonth().getValue();
             if (currentMonth != null) {
@@ -98,11 +75,24 @@ public class StatsFragment extends Fragment {
     private void observeViewModel() {
         viewModel.getSelectedMonth().observe(getViewLifecycleOwner(), month -> {
             if (month != null) {
-                binding.monthText.setText(MONTH_FORMATTER.format(month));
+                binding.monthText.setText(monthFormat.format(month));
             }
         });
 
         viewModel.getShiftTypeCounts().observe(getViewLifecycleOwner(), this::updateChart);
+    }
+
+    private void setupChart() {
+        PieChart chart = binding.pieChart;
+        chart.setDrawHoleEnabled(true);
+        chart.setHoleRadius(50f);
+        chart.setTransparentCircleRadius(55f);
+        chart.getDescription().setEnabled(false);
+        chart.setRotationEnabled(false);
+        chart.setHighlightPerTapEnabled(true);
+        chart.setEntryLabelTextSize(12f);
+        chart.setEntryLabelColor(Color.BLACK);
+        chart.getLegend().setEnabled(false);
     }
 
     private void updateChart(Map<ShiftType, Integer> typeCounts) {
@@ -116,23 +106,30 @@ public class StatsFragment extends Fragment {
         binding.emptyView.setVisibility(View.GONE);
 
         List<PieEntry> entries = new ArrayList<>();
-        List<Integer> colors = new ArrayList<>();
-
         for (Map.Entry<ShiftType, Integer> entry : typeCounts.entrySet()) {
-            ShiftType type = entry.getKey();
-            int count = entry.getValue();
-            entries.add(new PieEntry(count, getString(type.getNameResId())));
-            colors.add(ContextCompat.getColor(requireContext(), type.getColorResId()));
+            entries.add(new PieEntry(entry.getValue(), getString(entry.getKey().getNameResId())));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(colors);
+        dataSet.setColors(getChartColors());
         dataSet.setValueTextSize(14f);
-        dataSet.setValueTextColor(Color.WHITE);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setValueLinePart1Length(0.4f);
+        dataSet.setValueLinePart2Length(0.4f);
 
         PieData data = new PieData(dataSet);
         binding.pieChart.setData(data);
         binding.pieChart.invalidate();
+    }
+
+    private int[] getChartColors() {
+        return new int[]{
+            getResources().getColor(R.color.day_shift_color, null),
+            getResources().getColor(R.color.night_shift_color, null),
+            getResources().getColor(R.color.rest_day_color, null)
+        };
     }
 
     @Override

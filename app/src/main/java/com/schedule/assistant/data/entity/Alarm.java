@@ -2,6 +2,7 @@ package com.schedule.assistant.data.entity;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import java.util.Calendar;
 
 @Entity(tableName = "alarms")
 public class Alarm {
@@ -59,6 +60,9 @@ public class Alarm {
     }
 
     public String getTimeString() {
-        return String.format("%02d:%02d", hoursBefore, minutesBefore);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, hoursBefore);
+        calendar.add(Calendar.MINUTE, minutesBefore);
+        return String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
     }
 } 

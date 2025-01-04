@@ -21,8 +21,8 @@ public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolde
 
         @Override
         public boolean areContentsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
-            return oldItem.getHour() == newItem.getHour() &&
-                   oldItem.getMinute() == newItem.getMinute() &&
+            return oldItem.getHoursBefore() == newItem.getHoursBefore() &&
+                   oldItem.getMinutesBefore() == newItem.getMinutesBefore() &&
                    oldItem.isEnabled() == newItem.isEnabled();
         }
     };
