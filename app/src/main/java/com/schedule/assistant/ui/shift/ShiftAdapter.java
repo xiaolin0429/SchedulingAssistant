@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.databinding.ItemShiftBinding;
+import java.util.Objects;
 
 public class ShiftAdapter extends ListAdapter<Shift, ShiftAdapter.ShiftViewHolder> {
     private static final DiffUtil.ItemCallback<Shift> DIFF_CALLBACK = new DiffUtil.ItemCallback<Shift>() {
@@ -19,8 +20,8 @@ public class ShiftAdapter extends ListAdapter<Shift, ShiftAdapter.ShiftViewHolde
         @Override
         public boolean areContentsTheSame(@NonNull Shift oldItem, @NonNull Shift newItem) {
             return oldItem.getDate().equals(newItem.getDate()) &&
-                   oldItem.getShiftType() == newItem.getShiftType() &&
-                   (oldItem.getNote() == null ? newItem.getNote() == null : oldItem.getNote().equals(newItem.getNote()));
+                   Objects.equals(oldItem.getShiftType(), newItem.getShiftType()) &&
+                   Objects.equals(oldItem.getNote(), newItem.getNote());
         }
     };
 

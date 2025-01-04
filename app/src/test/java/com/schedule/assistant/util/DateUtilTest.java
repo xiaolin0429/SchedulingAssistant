@@ -3,23 +3,12 @@ package com.schedule.assistant.util;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.zone.ZoneRulesProvider;
+import java.time.LocalDate;
 import static org.junit.Assert.*;
 
 public class DateUtilTest {
     
     private static final LocalDate NOW = LocalDate.of(2024, 1, 15);
-    
-    @BeforeClass
-    public static void init() {
-        // 初始化时区数据
-        try {
-            Class.forName("org.threeten.bp.zone.TzdbZoneRulesProvider");
-        } catch (Exception e) {
-            // 忽略异常
-        }
-    }
     
     @Before
     public void setup() {

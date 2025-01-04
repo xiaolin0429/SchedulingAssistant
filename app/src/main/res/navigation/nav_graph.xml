@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/navigation_home">
 
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.schedule.assistant.ui.home.HomeFragment"
-        android:label="@string/title_home"/>
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home"/>
 
     <fragment
         android:id="@+id/navigation_shift"
         android:name="com.schedule.assistant.ui.shift.ShiftFragment"
-        android:label="@string/title_shift"/>
+        android:label="@string/title_shift"
+        tools:layout="@layout/fragment_shift"/>
 
     <fragment
         android:id="@+id/navigation_alarm"
         android:name="com.schedule.assistant.ui.alarm.AlarmFragment"
-        android:label="@string/title_alarm"/>
+        android:label="@string/title_alarm"
+        tools:layout="@layout/fragment_alarm"/>
 
     <fragment
         android:id="@+id/navigation_stats"
         android:name="com.schedule.assistant.ui.stats.StatsFragment"
-        android:label="@string/title_stats"/>
+        android:label="@string/title_stats"
+        tools:layout="@layout/fragment_stats"/>
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.schedule.assistant.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"/>
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile"/>
 
 </navigation> 
