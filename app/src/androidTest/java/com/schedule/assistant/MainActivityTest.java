@@ -25,12 +25,12 @@ public class MainActivityTest {
     }
 
     @Test
-    public void testNavigationToShiftFragment() {
-        // 点击班次导航项
-        Espresso.onView(ViewMatchers.withId(R.id.navigation_shift))
+    public void testNavigationToShiftTemplateFragment() {
+        // 点击班次模板导航项
+        Espresso.onView(ViewMatchers.withId(R.id.navigation_shift_template))
                 .perform(ViewActions.click());
 
-        // 验证班次Fragment是否显示
+        // 验证班次模板Fragment是否显示
         Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }

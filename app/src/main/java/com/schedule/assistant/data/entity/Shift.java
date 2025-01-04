@@ -18,6 +18,8 @@ public class Shift {
     @NonNull
     private ShiftType type;
 
+    private long shiftTypeId;
+
     private String startTime;
     private String endTime;
     private String note;
@@ -63,6 +65,14 @@ public class Shift {
 
     public void setType(@NonNull ShiftType type) {
         this.type = type;
+    }
+
+    public long getShiftTypeId() {
+        return shiftTypeId;
+    }
+
+    public void setShiftTypeId(long shiftTypeId) {
+        this.shiftTypeId = shiftTypeId;
     }
 
     public String getStartTime() {
@@ -112,6 +122,7 @@ public class Shift {
         Shift shift = (Shift) o;
         return id == shift.id &&
                 updateTime == shift.updateTime &&
+                shiftTypeId == shift.shiftTypeId &&
                 date.equals(shift.date) &&
                 type == shift.type &&
                 Objects.equals(startTime, shift.startTime) &&
@@ -121,6 +132,6 @@ public class Shift {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, type, startTime, endTime, note, updateTime);
+        return Objects.hash(id, date, type, shiftTypeId, startTime, endTime, note, updateTime);
     }
 } 

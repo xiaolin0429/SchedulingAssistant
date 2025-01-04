@@ -29,6 +29,7 @@
     <color name="day_shift">@color/day_shift_color</color>
     <color name="night_shift">@color/night_shift_color</color>
     <color name="rest_day">@color/rest_day_color</color>
+    <color name="custom_shift">#673AB7</color>         <!-- 紫色，代表自定义班次 -->
     
     <!-- 状态颜色 -->
     <color name="enabled">#FF4CAF50</color>

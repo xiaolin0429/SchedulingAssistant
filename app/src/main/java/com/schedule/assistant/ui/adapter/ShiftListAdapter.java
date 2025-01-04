@@ -60,6 +60,7 @@ public class ShiftListAdapter extends ListAdapter<Shift, ShiftListAdapter.ShiftV
     static class ShiftViewHolder extends RecyclerView.ViewHolder {
         private final ItemShiftBinding binding;
         private final OnShiftClickListener listener;
+        private Shift currentShift;
 
         ShiftViewHolder(ItemShiftBinding binding, OnShiftClickListener listener) {
             super(binding.getRoot());
@@ -68,9 +69,32 @@ public class ShiftListAdapter extends ListAdapter<Shift, ShiftListAdapter.ShiftV
         }
 
         void bind(Shift shift) {
-            binding.shiftNameText.setText(shift.getType().toString());
-            binding.shiftTimeText.setText(String.format("%s - %s", 
-                shift.getStartTime(), shift.getEndTime()));
+            this.currentShift = shift;
+            // 根据班次类型获取对应的显示名称
+            String shiftTypeName;
+            switch (shift.getType()) {
+                case DAY_SHIFT:
+                    shiftTypeName = "早班";
+                    break;
+                case NIGHT_SHIFT:
+                    shiftTypeName = "晚班";
+                    break;
+                case REST_DAY:
+                    shiftTypeName = "休息";
+                    break;
+                default:
+                    shiftTypeName = "未排班";
+                    break;
+            }
+            binding.shiftNameText.setText(shiftTypeName);
+            
+            // 设置时间显示
+            String timeText = "";
+            if (shift.getStartTime() != null && !shift.getStartTime().isEmpty() &&
+                shift.getEndTime() != null && !shift.getEndTime().isEmpty()) {
+                timeText = String.format("%s - %s", shift.getStartTime(), shift.getEndTime());
+            }
+            binding.shiftTimeText.setText(timeText);
             
             // 根据班次类型设置不同的背景色
             int backgroundColor = shift.getType().getColorResId();
@@ -78,20 +102,22 @@ public class ShiftListAdapter extends ListAdapter<Shift, ShiftListAdapter.ShiftV
                 itemView.getContext().getColor(backgroundColor));
 
             // 设置点击事件
-            if (listener != null) {
-                itemView.setOnClickListener(v -> listener.onShiftClick(shift));
-                itemView.setOnLongClickListener(v -> {
-                    listener.onShiftLongClick(shift);
-                    return true;
-                });
-            }
+            itemView.setOnClickListener(v -> {
+                if (getBindingAdapterPosition() != RecyclerView.NO_POSITION) {
+                    listener.onShiftClick(currentShift);
+                }
+            });
+            itemView.setOnLongClickListener(v -> {
+                listener.onShiftLongClick(currentShift);
+                return true;
+            });
         }
     }
 
     private static class ShiftDiffCallback extends DiffUtil.ItemCallback<Shift> {
         @Override
         public boolean areItemsTheSame(@NonNull Shift oldItem, @NonNull Shift newItem) {
-            return Objects.equals(oldItem.getId(), newItem.getId());
+            return oldItem.getId() == newItem.getId();
         }
 
         @Override

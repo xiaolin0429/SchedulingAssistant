@@ -22,6 +22,8 @@ import com.schedule.assistant.R;
 import com.schedule.assistant.databinding.FragmentHomeBinding;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
+import com.schedule.assistant.data.entity.ShiftTemplate;
+import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.ui.calendar.CalendarDayBinder;
 import com.schedule.assistant.ui.calendar.CalendarHeaderBinder;
 import com.schedule.assistant.ui.dialog.ShiftDetailDialogFragment;
@@ -73,7 +75,7 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
             viewModel.selectDate(date);
             calendarDayBinder.setSelectedDate(date);
             binding.calendarView.notifyDateChanged(date);
-        });
+        }, viewModel, getViewLifecycleOwner());
 
         calendarDayBinder.setCalendarView(binding.calendarView);
         binding.calendarView.setDayBinder(calendarDayBinder);
@@ -219,33 +221,65 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
     }
 
     private void showShiftTypeDialog() {
-        String[] shiftTypes = {
-            getString(R.string.day_shift),
-            getString(R.string.night_shift),
-            getString(R.string.rest_day)
-        };
-        
+        if (selectedDate == null) {
+            Toast.makeText(requireContext(), R.string.please_select_date, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 从ViewModel获取所有班次类型
+        viewModel.getAllShiftTypes().observe(getViewLifecycleOwner(), shiftTypes -> {
+            if (shiftTypes == null || shiftTypes.isEmpty()) {
+                Toast.makeText(requireContext(), R.string.no_shift_types_available, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 检查是否已经存在该日期的班次
+            viewModel.getSelectedShift().observe(getViewLifecycleOwner(), existingShift -> {
+                if (existingShift != null) {
+                    // 如果已存在班次，显示确认对话框
+                    new AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.shift_exists_title)
+                        .setMessage(R.string.shift_exists_message)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> {
+                            // 直接使用已获取的班次类型列表，不再重新获取
+                            showShiftTypeSelectionDialog(shiftTypes);
+                            // 移除观察者，避免重复触发
+                            viewModel.getSelectedShift().removeObservers(getViewLifecycleOwner());
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
+                } else {
+                    // 如果不存在班次，直接显示选择对话框
+                    showShiftTypeSelectionDialog(shiftTypes);
+                }
+                // 移除观察者，避免重复触发
+                viewModel.getSelectedShift().removeObservers(getViewLifecycleOwner());
+            });
+        });
+    }
+
+    private void showShiftTypeSelectionDialog(List<ShiftTypeEntity> shiftTypes) {
+        String[] shiftTypeNames = new String[shiftTypes.size()];
+        for (int i = 0; i < shiftTypes.size(); i++) {
+            shiftTypeNames[i] = shiftTypes.get(i).getName();
+        }
+
         new AlertDialog.Builder(requireContext())
             .setTitle(R.string.select_shift_type)
-            .setItems(shiftTypes, (dialog, which) -> {
-                ShiftType selectedType;
-                switch (which) {
-                    case 0:
-                        selectedType = ShiftType.DAY_SHIFT;
-                        break;
-                    case 1:
-                        selectedType = ShiftType.NIGHT_SHIFT;
-                        break;
-                    default:
-                        selectedType = ShiftType.REST_DAY;
-                        break;
-                }
-                String formattedDate = selectedDate.format(formatter);
-                Shift shift = new Shift(formattedDate, selectedType);
+            .setItems(shiftTypeNames, (dialog, which) -> {
+                ShiftTypeEntity selectedType = shiftTypes.get(which);
+                Shift shift = new Shift(selectedDate.format(formatter), ShiftType.CUSTOM);
+                shift.setShiftTypeId(selectedType.getId());
+                shift.setStartTime(selectedType.getStartTime());
+                shift.setEndTime(selectedType.getEndTime());
                 viewModel.insertShift(shift);
+                
                 // 刷新日历显示
                 binding.calendarView.notifyCalendarChanged();
+                // 刷新月度数据
+                viewModel.loadMonthShifts(YearMonth.from(selectedDate));
             })
+            .setNegativeButton(R.string.cancel, null)
             .show();
     }
 
@@ -265,24 +299,27 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
     }
 
     private void updateTodayShiftInfo(Shift shift) {
-        TextView todayShiftInfo = binding.todayShiftInfo;
-        TextView shiftTitleText = binding.shiftTitleText;  // 需要在布局文件中给标题TextView添加id
-        
-        // 更新标题
-        if (selectedDate != null && selectedDate.equals(LocalDate.now())) {
-            shiftTitleText.setText(R.string.today_shift);
-        } else {
-            shiftTitleText.setText(R.string.selected_day_shift);
-        }
-        
-        // 更新排班信息
         if (shift != null) {
-            todayShiftInfo.setText(getString(shift.getType().getNameResId()));
-            todayShiftInfo.setBackgroundResource(R.drawable.shift_info_background);
+            // 如果是自定义班次类型，从数据库获取名称
+            if (shift.getType() == ShiftType.CUSTOM) {
+                viewModel.getShiftTypeById(shift.getShiftTypeId()).observe(getViewLifecycleOwner(), shiftType -> {
+                    if (shiftType != null) {
+                        binding.shiftTypeText.setText(shiftType.getName());
+                    } else {
+                        binding.shiftTypeText.setText(getString(shift.getType().getNameResId()));
+                    }
+                });
+            } else {
+                binding.shiftTypeText.setText(getString(shift.getType().getNameResId()));
+            }
+            binding.shiftTimeText.setText(String.format("%s - %s", 
+                shift.getStartTime(), shift.getEndTime()));
+            binding.shiftNoteText.setText(shift.getNote());
+            binding.shiftInfoLayout.setVisibility(View.VISIBLE);
+            binding.noShiftText.setVisibility(View.GONE);
         } else {
-            todayShiftInfo.setText(R.string.no_shift_today);
-            todayShiftInfo.setBackgroundResource(R.drawable.no_shift_background);
+            binding.shiftInfoLayout.setVisibility(View.GONE);
+            binding.noShiftText.setVisibility(View.VISIBLE);
         }
-        todayShiftInfo.setVisibility(View.VISIBLE);
     }
 } 

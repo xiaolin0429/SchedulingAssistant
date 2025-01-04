@@ -2,70 +2,147 @@
 <resources>
     <string name="app_name">排班助手</string>
     
-    <!-- 导航栏标题 -->
+    <!-- 底部导航栏 -->
     <string name="title_home">主页</string>
-    <string name="title_shift">班次</string>
+    <string name="title_shift_template">班次</string>
+    <string name="title_shift_type">班次类型</string>
     <string name="title_alarm">闹钟</string>
     <string name="title_stats">统计</string>
     <string name="title_profile">我的</string>
-    
-    <!-- 主页相关 -->
-    <string name="today_shift">今日排班</string>
-    <string name="selected_day_shift">当日排班</string>
-    <string name="add_note">添加备注</string>
-    <string name="start_schedule">开启排班</string>
-    <string name="next_shift">第二班次</string>
-    <string name="refresh_widget">刷新小组件</string>
-    <string name="no_shift_today">今日暂无排班</string>
-    
+
     <!-- 班次类型 -->
-    <string name="day_shift">白班</string>
+    <string name="day_shift">早班</string>
     <string name="night_shift">夜班</string>
     <string name="rest_day">休息</string>
-    <string name="no_shift">未排班</string>
-    
-    <!-- 操作相关 -->
-    <string name="please_select_date">请选择日期</string>
+    <string name="no_shift">无班次</string>
+    <string name="custom_shift">自定义班次</string>
+
+    <!-- 主页 -->
+    <string name="today_shift">今日排班</string>
+    <string name="selected_day_shift">选中日期排班</string>
+    <string name="no_shift_today">暂无排班</string>
+    <string name="shift_count_format">%1$s: %2$d</string>
+    <string name="please_select_date">请先选择日期</string>
+    <string name="add_note">添加备注</string>
+    <string name="start_schedule">开始排班</string>
+    <string name="next_shift">第二班次</string>
     <string name="select_shift_type">选择班次类型</string>
-    <string name="add_schedule">添加排班</string>
-    <string name="delete">删除</string>
-    <string name="hint_note">添加备注…</string>
-    <string name="date">日期</string>
-    <string name="note">备注</string>
-    
-    <!-- 闹钟相关 -->
-    <string name="no_alarms">暂无闹钟</string>
-    <string name="select_alarm_time">选择闹钟时间</string>
-    
+
     <!-- 错误提示 -->
+    <string name="error">错误</string>
+    <string name="error_title">错误提示</string>
+    <string name="error_name_required">请输入名称</string>
+    <string name="error_time_required">请选择时间</string>
+    <string name="error_color_required">请选择颜色</string>
+    <string name="error_type_required">请选择类型</string>
+    <string name="error_save_template">保存模板失败</string>
+    <string name="error_delete_template">删除模板失败</string>
+    <string name="error_load_templates">加载模板失败</string>
+    <string name="error_invalid_time_range">结束时间必须晚于开始时间</string>
+    <string name="error_note_too_long">备注不能超过200个字符</string>
+    <string name="error_duplicate_shift">该日期已存在班次安排</string>
+    <string name="error_empty_name">请输入班次名称</string>
+    <string name="error_database_operation">数据库操作失败，请重试</string>
+    <string name="error_required_fields">必填字段不能为空</string>
+    <string name="error_date_required">请选择日期</string>
+    <string name="error_shift_type_required">请选择班次类型</string>
+    <string name="error_invalid_date_format">日期格式无效</string>
+    <string name="error_save_failed">保存失败，请重试</string>
     <string name="invalid_date">无效的日期</string>
     <string name="empty_note">备注不能为空</string>
     <string name="note_too_long">备注内容过长</string>
-    
-    <!-- 班次统计格式 -->
-    <string name="shift_count_format">%1$s %2$d</string>
-    
-    <string name="shift_management">班次信息管理</string>
-    <string name="sort">排序</string>
-    <string name="back">返回</string>
-    <string name="start_time">开始时间</string>
-    <string name="end_time">结束时间</string>
+
+    <!-- 通用操作 -->
+    <string name="save">保存</string>
     <string name="cancel">取消</string>
+    <string name="ok">确定</string>
+    <string name="delete">删除</string>
+    <string name="back">返回</string>
     <string name="confirm">确定</string>
-    <string name="edit_shift">编辑班次</string>
-    <string name="confirm_delete">确定要删除这个班次吗？</string>
+
+    <!-- 排序相关 -->
+    <string name="sort">排序</string>
     <string name="sort_options">排序方式</string>
     <string name="sort_by_date_asc">按日期升序</string>
     <string name="sort_by_date_desc">按日期降序</string>
     <string name="sort_by_type">按班次类型</string>
     <string name="sort_by_update_time">按更新时间</string>
-    <string name="error_date_required">请选择日期</string>
-    <string name="error_shift_type_required">请选择班次类型</string>
-    <string name="error_time_required">请选择时间</string>
-    <string name="error_invalid_time_range">结束时间必须晚于开始时间</string>
-    <string name="error_note_too_long">备注不能超过200个字符</string>
-    <string name="error_duplicate_shift">该日期已存在班次安排</string>
-    
+
     <!-- 备注相关 -->
     <string name="note_input_description">输入备注内容</string>
+    <string name="note_hint">在此输入备注内容</string>
+    <string name="note_date_format">%1$s 备注</string>
+    <string name="save_note">保存备注</string>
+    <string name="delete_note">删除备注</string>
+    <string name="note_saved">备注已保存</string>
+    <string name="note_deleted">备注已删除</string>
+
+    <!-- 班次模板管理 -->
+    <string name="manage_shift_types">管理班次类型</string>
+    <string name="edit_shift_template">编辑班次</string>
+    <string name="shift_name">班次名称</string>
+    <string name="shift_color">班次颜色</string>
+    <string name="delete_template_title">删除班次</string>
+    <string name="delete_template_message">确定要删除这个班次吗？</string>
+    <string name="add_shift_template">添加班次</string>
+    <string name="edit_shift_template_title">编辑班次</string>
+    <string name="delete_shift_template">删除班次</string>
+    <string name="no_shift_templates">暂无班次，点击右下角添加</string>
+
+    <!-- 通用颜色选择 -->
+    <string name="select_color">选择颜色</string>
+
+    <!-- 班次类型相关 -->
+    <string name="no_shift_types_available">暂无可用的班次类型，点击右下角添加</string>
+    <string name="add_shift_type">添加班次类型</string>
+    <string name="edit_shift_type">编辑班次类型</string>
+    <string name="delete_shift_type">删除班次类型</string>
+    <string name="shift_type_name">班次名称</string>
+    <string name="shift_type_time">班次时间</string>
+    <string name="shift_type_color">班次颜色</string>
+    <string name="shift_type_default">默认班次</string>
+    <string name="shift_type_saved">班次类型已保存</string>
+    <string name="shift_type_deleted">班次类型已删除</string>
+    <string name="shift_type_exists">班次类型已存在</string>
+    <string name="shift_type_required">请选择班次类型</string>
+    <string name="cannot_delete_default_shift_type">默认班次类型不能删除</string>
+    <string name="confirm_delete_shift_type">确定要删除这个班次类型吗？</string>
+    <string name="shift_type_list">班次类型列表</string>
+    <string name="shift_type_management">班次类型管理</string>
+    <string name="shift_type">班次类型</string>
+
+    <!-- 班次已存在提示 -->
+    <string name="shift_exists_title">班次已存在</string>
+    <string name="shift_exists_message">该日期已存在班次，是否要覆盖？</string>
+
+    <!-- 班次模板 -->
+    <string name="add_template">添加模板</string>
+    <string name="edit_template">编辑模板</string>
+    <string name="delete_template">删除模板</string>
+    <string name="template_name">模板名称</string>
+    <string name="start_time">开始时间</string>
+    <string name="end_time">结束时间</string>
+    <string name="template_color">模板颜色</string>
+
+    <!-- 闹钟相关 -->
+    <string name="select_alarm_time">选择闹钟时间</string>
+    <string name="no_alarms">暂无闹钟</string>
+    <string name="delete_alarm">删除闹钟</string>
+
+    <!-- 班次编辑 -->
+    <string name="add_schedule">添加排班</string>
+    <string name="edit_shift">编辑班次</string>
+    <string name="confirm_delete">确定要删除吗？</string>
+
+    <!-- 导航栏标题 -->
+    <string name="title_shift">班次</string>
+
+    <!-- 表单字段 -->
+    <string name="date">日期</string>
+    <string name="note">备注</string>
+    <string name="hint_note">添加备注…</string>
+
+    <!-- 班次管理 -->
+    <string name="shift_management">班次信息管理</string>
+    <string name="refresh_widget">刷新小组件</string>
 </resources>

@@ -12,10 +12,23 @@
         tools:layout="@layout/fragment_home"/>
 
     <fragment
-        android:id="@+id/navigation_shift"
-        android:name="com.schedule.assistant.ui.shift.ShiftFragment"
-        android:label="@string/title_shift"
-        tools:layout="@layout/fragment_shift"/>
+        android:id="@+id/navigation_shift_template"
+        android:name="com.schedule.assistant.ui.shift.ShiftTemplateFragment"
+        android:label="@string/title_shift_template"
+        tools:layout="@layout/fragment_shift_template">
+        <action
+            android:id="@+id/action_shift_template_to_shift_type"
+            app:destination="@id/navigation_shift_type"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_shift_type"
+        android:name="com.schedule.assistant.ui.shift.ShiftTypeFragment"
+        android:label="@string/title_shift_type" />
 
     <fragment
         android:id="@+id/navigation_alarm"

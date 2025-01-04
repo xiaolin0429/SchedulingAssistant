@@ -141,28 +141,78 @@
             android:padding="16dp"
             android:elevation="2dp">
 
-            <!-- 今日排班信息 -->
-            <TextView
-                android:id="@+id/shiftTitleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/today_shift"
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:layout_gravity="center_horizontal"/>
+            <!-- 今日排班信息区域 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/today_shift_info_height"
+                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/spacing_medium">
 
-            <TextView
-                android:id="@+id/todayShiftInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:background="@drawable/shift_info_background"
-                android:layout_gravity="center_horizontal"/>
+                <!-- 今日排班标题 -->
+                <TextView
+                    android:id="@+id/shiftTitleText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/today_shift"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"/>
+
+                <!-- 班次信息容器 -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="@dimen/spacing_small">
+
+                    <!-- 班次信息布局 -->
+                    <LinearLayout
+                        android:id="@+id/shiftInfoLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:background="@drawable/shift_info_background"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/shiftTypeText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/shiftTimeText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"/>
+
+                        <TextView
+                            android:id="@+id/shiftNoteText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"/>
+                    </LinearLayout>
+
+                    <!-- 无排班提示 -->
+                    <TextView
+                        android:id="@+id/noShiftText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_shift_today"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+            </LinearLayout>
 
             <!-- 底部按钮 -->
             <LinearLayout

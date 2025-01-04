@@ -6,24 +6,29 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-import com.schedule.assistant.data.entity.Alarm;
+import com.schedule.assistant.data.entity.AlarmEntity;
 import com.schedule.assistant.databinding.ItemAlarmBinding;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 
-public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolder> {
+public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder> {
     private final OnAlarmToggleListener toggleListener;
     private final OnAlarmDeleteListener deleteListener;
+    private final SimpleDateFormat timeFormat;
 
-    private static final DiffUtil.ItemCallback<Alarm> DIFF_CALLBACK = new DiffUtil.ItemCallback<Alarm>() {
+    private static final DiffUtil.ItemCallback<AlarmEntity> DIFF_CALLBACK = new DiffUtil.ItemCallback<AlarmEntity>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
+        public boolean areItemsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
             return oldItem.getId() == newItem.getId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Alarm oldItem, @NonNull Alarm newItem) {
-            return oldItem.getHoursBefore() == newItem.getHoursBefore() &&
-                   oldItem.getMinutesBefore() == newItem.getMinutesBefore() &&
-                   oldItem.isEnabled() == newItem.isEnabled();
+        public boolean areContentsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
+            return oldItem.getTime() == newItem.getTime() &&
+                   oldItem.isEnabled() == newItem.isEnabled() &&
+                   Objects.equals(oldItem.getName(), newItem.getName());
         }
     };
 
@@ -31,6 +36,7 @@ public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolde
         super(DIFF_CALLBACK);
         this.toggleListener = toggleListener;
         this.deleteListener = deleteListener;
+        this.timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     }
 
     @NonNull
@@ -54,8 +60,8 @@ public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolde
             this.binding = binding;
         }
 
-        void bind(Alarm alarm) {
-            binding.timeText.setText(alarm.getTimeString());
+        void bind(AlarmEntity alarm) {
+            binding.timeText.setText(timeFormat.format(new Date(alarm.getTime())));
             binding.enableSwitch.setChecked(alarm.isEnabled());
             
             binding.enableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -64,15 +70,20 @@ public class AlarmAdapter extends ListAdapter<Alarm, AlarmAdapter.AlarmViewHolde
                 }
             });
             
-            binding.deleteButton.setOnClickListener(v -> deleteListener.onAlarmDelete(alarm));
+            binding.deleteButton.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    deleteListener.onAlarmDelete(getItem(position));
+                }
+            });
         }
     }
 
     public interface OnAlarmToggleListener {
-        void onAlarmToggle(Alarm alarm);
+        void onAlarmToggle(AlarmEntity alarm);
     }
 
     public interface OnAlarmDeleteListener {
-        void onAlarmDelete(Alarm alarm);
+        void onAlarmDelete(AlarmEntity alarm);
     }
 } 

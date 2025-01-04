@@ -46,7 +46,7 @@ public class NoteManager {
             throw new IllegalArgumentException("Executor cannot be null");
         }
         this.context = context.getApplicationContext();
-        this.database = AppDatabase.getInstance(context);
+        this.database = AppDatabase.getDatabase(context);
         this.executor = executor;
     }
 

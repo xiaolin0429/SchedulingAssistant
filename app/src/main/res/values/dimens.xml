@@ -8,4 +8,10 @@
 
     <!-- 组件尺寸 -->
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="today_shift_info_height">160dp</dimen>
+
+    <!-- 班次类型显示相关尺寸 -->
+    <dimen name="shift_type_corner_radius">4dp</dimen>
+    <dimen name="shift_type_padding_horizontal">4dp</dimen>
+    <dimen name="shift_type_padding_vertical">2dp</dimen>
 </resources>

@@ -6,7 +6,7 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_shift"
+        android:id="@+id/navigation_shift_template"
         android:icon="@android:drawable/ic_menu_agenda"
         android:title="@string/title_shift" />
 

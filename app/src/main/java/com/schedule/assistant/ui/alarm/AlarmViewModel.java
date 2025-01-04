@@ -1,53 +1,47 @@
 package com.schedule.assistant.ui.alarm;
 
 import android.app.Application;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import com.schedule.assistant.data.AppDatabase;
-import com.schedule.assistant.data.dao.AlarmDao;
-import com.schedule.assistant.data.entity.Alarm;
+import com.schedule.assistant.data.entity.AlarmEntity;
+import com.schedule.assistant.data.repository.AlarmRepository;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Calendar;
 
 public class AlarmViewModel extends AndroidViewModel {
-    private final AlarmDao alarmDao;
-    private final ExecutorService executorService;
-    private final LiveData<List<Alarm>> allAlarms;
+    private final AlarmRepository repository;
+    private final LiveData<List<AlarmEntity>> allAlarms;
 
-    public AlarmViewModel(Application application) {
+    public AlarmViewModel(@NonNull Application application) {
         super(application);
-        AppDatabase db = AppDatabase.getInstance(application);
-        alarmDao = db.alarmDao();
-        executorService = Executors.newSingleThreadExecutor();
-        allAlarms = alarmDao.getAllAlarms();
+        repository = new AlarmRepository(application);
+        allAlarms = repository.getAllAlarms();
     }
 
-    public LiveData<List<Alarm>> getAlarms() {
+    public LiveData<List<AlarmEntity>> getAlarms() {
         return allAlarms;
     }
 
     public void addAlarm(int hoursBefore, int minutesBefore) {
-        executorService.execute(() -> {
-            Alarm alarm = new Alarm(hoursBefore, minutesBefore);
-            alarmDao.insert(alarm);
-        });
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, hoursBefore);
+        calendar.add(Calendar.MINUTE, minutesBefore);
+
+        AlarmEntity alarm = new AlarmEntity();
+        alarm.setTime(calendar.getTimeInMillis());
+        alarm.setEnabled(true);
+        alarm.setName("闹钟 " + hoursBefore + ":" + String.format("%02d", minutesBefore));
+        
+        repository.insert(alarm);
     }
 
-    public void toggleAlarm(Alarm alarm) {
-        executorService.execute(() -> {
-            alarm.setEnabled(!alarm.isEnabled());
-            alarmDao.update(alarm);
-        });
+    public void toggleAlarm(AlarmEntity alarm) {
+        alarm.setEnabled(!alarm.isEnabled());
+        repository.update(alarm);
     }
 
-    public void deleteAlarm(Alarm alarm) {
-        executorService.execute(() -> alarmDao.delete(alarm));
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        executorService.shutdown();
+    public void deleteAlarm(AlarmEntity alarm) {
+        repository.delete(alarm);
     }
 } 

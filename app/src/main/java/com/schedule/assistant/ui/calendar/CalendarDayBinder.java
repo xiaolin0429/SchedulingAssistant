@@ -1,6 +1,7 @@
 package com.schedule.assistant.ui.calendar;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -15,6 +16,8 @@ import com.schedule.assistant.data.entity.ShiftType;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import androidx.lifecycle.LifecycleOwner;
+import com.schedule.assistant.ui.home.HomeViewModel;
 
 public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewContainer> {
     private final OnDayClickListener listener;
@@ -22,9 +25,13 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
     private LocalDate previousSelectedDate = null;
     private Map<String, Shift> shifts = new HashMap<>();
     private CalendarView calendarView;
+    private final HomeViewModel viewModel;
+    private final LifecycleOwner lifecycleOwner;
 
-    public CalendarDayBinder(OnDayClickListener listener) {
+    public CalendarDayBinder(OnDayClickListener listener, HomeViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.listener = listener;
+        this.viewModel = viewModel;
+        this.lifecycleOwner = lifecycleOwner;
     }
 
     public void setCalendarView(CalendarView calendarView) {
@@ -68,23 +75,27 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
             Shift shift = shifts.get(day.getDate().toString());
             if (shift != null) {
                 shiftText.setVisibility(View.VISIBLE);
-                shiftText.setText(container.itemView.getContext()
-                        .getString(shift.getType().getNameResId()));
                 
-                switch (shift.getType()) {
-                    case DAY_SHIFT:
-                        shiftText.setBackgroundResource(R.drawable.bg_day_shift);
-                        break;
-                    case NIGHT_SHIFT:
-                        shiftText.setBackgroundResource(R.drawable.bg_night_shift);
-                        break;
-                    case REST_DAY:
-                        shiftText.setBackgroundResource(R.drawable.bg_rest_day);
-                        break;
-                    default:
-                        shiftText.setBackgroundResource(R.drawable.no_shift_background);
-                        break;
-                }
+                // 根据shiftTypeId获取对应的ShiftTypeEntity
+                viewModel.getShiftTypeById(shift.getShiftTypeId()).observe(lifecycleOwner, shiftType -> {
+                    if (shiftType != null) {
+                        shiftText.setText(shiftType.getName());
+                        // 创建动态背景
+                        GradientDrawable background = new GradientDrawable();
+                        background.setColor(shiftType.getColor());
+                        background.setCornerRadius(container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_corner_radius));
+                        // 设置内边距
+                        shiftText.setPadding(
+                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_horizontal),
+                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_vertical),
+                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_horizontal),
+                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_vertical)
+                        );
+                        // 设置背景
+                        shiftText.setBackground(background);
+                        shiftText.setTextColor(container.itemView.getContext().getColor(R.color.white));
+                    }
+                });
             } else {
                 shiftText.setVisibility(View.GONE);
             }

@@ -1,4 +1,4 @@
-package com.example.schedulingassistant.ui.theme
+package com.schedule.assistant.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

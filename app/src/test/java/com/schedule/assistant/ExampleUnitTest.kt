@@ -1,7 +1,6 @@
-package com.example.schedulingassistant
+package com.schedule.assistant
 
 import org.junit.Test
-
 import org.junit.Assert.*
 
 /**

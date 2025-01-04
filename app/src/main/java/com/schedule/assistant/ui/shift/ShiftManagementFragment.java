@@ -1,4 +1,4 @@
-package com.schedule.assistant.ui.fragment;
+package com.schedule.assistant.ui.shift;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,7 +28,7 @@ import com.schedule.assistant.viewmodel.ShiftViewModel;
 
 import java.util.List;
 
-public class ShiftFragment extends Fragment implements ShiftListAdapter.OnShiftClickListener {
+public class ShiftManagementFragment extends Fragment implements ShiftListAdapter.OnShiftClickListener {
 
     private FragmentShiftManagementBinding binding;
     private ShiftViewModel viewModel;

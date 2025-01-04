@@ -35,9 +35,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/delete"
-            android:padding="@dimen/spacing_small"
+            android:padding="8dp"
             android:src="@drawable/ic_delete"
+            android:contentDescription="@string/delete_alarm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/gray"/>
