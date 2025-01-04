@@ -11,13 +11,14 @@
 
         <TextView
             android:id="@+id/titleText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/add_schedule"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -26,7 +27,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="@string/date">
+            android:hint="@string/date"
+            app:layout_constraintTop_toBottomOf="@id/titleText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/dateEditText"
@@ -44,13 +48,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="@string/select_shift_type"
-            app:layout_constraintTop_toBottomOf="@id/dateLayout">
+            app:layout_constraintTop_toBottomOf="@id/dateLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <AutoCompleteTextView
                 android:id="@+id/shiftTypeInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:inputType="none"
+                android:hint="@string/select_shift_type" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -60,7 +67,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="@string/start_time">
+            android:hint="@string/start_time"
+            app:layout_constraintTop_toBottomOf="@id/shiftTypeLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/startTimeEditText"
@@ -77,7 +87,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="@string/end_time">
+            android:hint="@string/end_time"
+            app:layout_constraintTop_toBottomOf="@id/startTimeLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/endTimeEditText"
@@ -94,7 +107,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="@string/note">
+            android:hint="@string/note"
+            app:layout_constraintTop_toBottomOf="@id/endTimeLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/noteEditText"
@@ -115,7 +131,8 @@
             app:layout_constraintEnd_toStartOf="@id/confirmButton"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteLayout" />
+            app:layout_constraintTop_toBottomOf="@id/noteLayout"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/confirmButton"
@@ -125,7 +142,8 @@
             android:text="@string/confirm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cancelButton"
-            app:layout_constraintTop_toTopOf="@id/cancelButton" />
+            app:layout_constraintTop_toTopOf="@id/cancelButton"
+            app:layout_constraintBottom_toBottomOf="@id/cancelButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
