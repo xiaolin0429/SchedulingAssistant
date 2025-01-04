@@ -222,7 +222,7 @@
 ### 安装步骤
 1. 克隆项目到本地
 ```bash
-git clone https://github.com/yourusername/SchedulingAssistant.git
+git clone https://github.com/xiaolin0429/SchedulingAssistant.git
 ```
 
 2. 使用Android Studio打开项目
@@ -256,18 +256,28 @@ git clone https://github.com/yourusername/SchedulingAssistant.git
    - 遵循Java代码规范
    - 使用统一的代码格式化工具
    - 保持代码简洁清晰
+   - 遵守最小修改原则，不允许随意修改现有代码
+   - 需要修改现有功能时，优先使用继承/重写方式
+   - 保留原有方法/类/接口的功能，确保向后兼容
 
-2. 命名规范
+2. 资源文件修改规范
+   - 修改资源文件前必须全局检查引用关系
+   - 确保修改不影响其他模块的正常调用
+   - 对于共用资源，需要评估修改影响范围
+   - 建议新增资源而不是修改现有资源
+   - 必要的修改需要在代码审查时重点关注
+
+3. 命名规范
    - 类名：大驼峰命名法
    - 变量名：小驼峰命名法
    - 常量：全大写下划线分隔
 
-3. 注释规范
+4. 注释规范
    - 类和方法必须添加文档注释
    - 关键代码添加必要的注释
    - 保持注释的及时更新
 
-4. 版本控制
+5. 版本控制
    - 使用Git进行版本控制
    - 遵循分支管理规范
    - 提交信息要清晰明确
@@ -297,7 +307,7 @@ git clone https://github.com/yourusername/SchedulingAssistant.git
   - 底部导航实现
 
 ### 作者
-- 开发团队：[团队名称]
+- 开发团队：[xiaolin0429]
 - 联系邮箱：[邮箱地址]
 
 ### 许可证
