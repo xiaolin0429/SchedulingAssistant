@@ -67,7 +67,5 @@
     <string name="error_duplicate_shift">该日期已存在班次安排</string>
     
     <!-- 备注相关 -->
-    <string name="add_note">添加备注</string>
-    <string name="note">备注</string>
     <string name="note_input_description">输入备注内容</string>
 </resources>
