@@ -1,9 +1,12 @@
 package com.schedule.assistant.ui.home;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -88,19 +91,6 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
         binding.calendarView.setup(firstMonth, lastMonth, DayOfWeek.MONDAY);
         binding.calendarView.scrollToMonth(currentMonth);
 
-        // 观察月度班次数据
-        viewModel.getMonthShifts().observe(getViewLifecycleOwner(), shifts -> {
-            if (shifts != null) {
-                Map<String, Shift> shiftsMap = new HashMap<>();
-                for (Shift shift : shifts) {
-                    shiftsMap.put(shift.getDate(), shift);
-                }
-                calendarDayBinder.updateShifts(shiftsMap);
-                binding.calendarView.notifyCalendarChanged();
-                updateShiftCounts(shifts);
-            }
-        });
-
         // 初始化时加载当前月份的数据
         viewModel.loadMonthShifts(currentMonth);
     }
@@ -167,30 +157,64 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
     }
 
     private void updateShiftCounts(List<Shift> shifts) {
-        int dayShiftCount = 0;
-        int nightShiftCount = 0;
-        int restCount = 0;
+        if (shifts == null) return;
 
+        // 使用Map统计每种班次类型的数量
+        Map<Long, Integer> typeCountMap = new HashMap<>();
+        
+        // 统计每种班次类型的数量
         for (Shift shift : shifts) {
-            switch (shift.getType()) {
-                case DAY_SHIFT:
-                    dayShiftCount++;
-                    break;
-                case NIGHT_SHIFT:
-                    nightShiftCount++;
-                    break;
-                case REST_DAY:
-                    restCount++;
-                    break;
+            if (shift.getType() == ShiftType.CUSTOM) {
+                long typeId = shift.getShiftTypeId();
+                typeCountMap.put(typeId, typeCountMap.getOrDefault(typeId, 0) + 1);
             }
         }
 
-        binding.dayShiftCount.setText(getString(R.string.shift_count_format, 
-            getString(R.string.day_shift), dayShiftCount));
-        binding.nightShiftCount.setText(getString(R.string.shift_count_format, 
-            getString(R.string.night_shift), nightShiftCount));
-        binding.restDayCount.setText(getString(R.string.shift_count_format, 
-            getString(R.string.rest_day), restCount));
+        // 获取所有班次类型并更新统计显示
+        viewModel.getAllShiftTypes().observe(getViewLifecycleOwner(), shiftTypes -> {
+            if (shiftTypes != null) {
+                // 获取统计容器
+                LinearLayout container = binding.shiftCountContainer;
+                // 清空容器
+                container.removeAllViews();
+
+                // 为每个班次类型创建并添加统计显示
+                for (ShiftTypeEntity shiftType : shiftTypes) {
+                    int count = typeCountMap.getOrDefault(shiftType.getId(), 0);
+                    
+                    // 创建新的TextView
+                    TextView countView = new TextView(requireContext());
+                    countView.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ));
+                    
+                    // 设置外边距
+                    if (container.getChildCount() > 0) {
+                        ((LinearLayout.LayoutParams) countView.getLayoutParams())
+                            .setMarginStart(getResources().getDimensionPixelSize(R.dimen.spacing_medium));
+                    }
+                    
+                    // 设置文本
+                    countView.setText(getString(R.string.shift_count_format, shiftType.getName(), count));
+                    countView.setTextSize(14);
+                    countView.setTextColor(getResources().getColor(R.color.black, null));
+                    
+                    // 设置图标
+                    Drawable circle = getResources().getDrawable(R.drawable.ic_circle_green, null);
+                    circle.setTint(shiftType.getColor());  // 使用班次类型的颜色
+                    countView.setCompoundDrawablesWithIntrinsicBounds(circle, null, null, null);
+                    countView.setCompoundDrawablePadding(
+                        getResources().getDimensionPixelSize(R.dimen.spacing_small));
+                    
+                    // 设置垂直居中
+                    countView.setGravity(Gravity.CENTER_VERTICAL);
+                    
+                    // 添加到容器
+                    container.addView(countView);
+                }
+            }
+        });
     }
 
     private void updateMonthDisplay() {
@@ -233,28 +257,31 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                 return;
             }
 
-            // 检查是否已经存在该日期的班次
-            viewModel.getSelectedShift().observe(getViewLifecycleOwner(), existingShift -> {
-                if (existingShift != null) {
-                    // 如果已存在班次，显示确认对话框
-                    new AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.shift_exists_title)
-                        .setMessage(R.string.shift_exists_message)
-                        .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            // 直接使用已获取的班次类型列表，不再重新获取
-                            showShiftTypeSelectionDialog(shiftTypes);
-                            // 移除观察者，避免重复触发
-                            viewModel.getSelectedShift().removeObservers(getViewLifecycleOwner());
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .show();
-                } else {
-                    // 如果不存在班次，直接显示选择对话框
-                    showShiftTypeSelectionDialog(shiftTypes);
+            // 创建一次性观察者检查是否存在班次
+            androidx.lifecycle.Observer<Shift> existingShiftObserver = new androidx.lifecycle.Observer<Shift>() {
+                @Override
+                public void onChanged(Shift existingShift) {
+                    if (existingShift != null) {
+                        // 如果已存在班次，显示确认对话框
+                        new AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.shift_exists_title)
+                            .setMessage(R.string.shift_exists_message)
+                            .setPositiveButton(R.string.ok, (dialog, which) -> {
+                                showShiftTypeSelectionDialog(shiftTypes);
+                            })
+                            .setNegativeButton(R.string.cancel, null)
+                            .show();
+                    } else {
+                        // 如果不存在班次，直接显示选择对话框
+                        showShiftTypeSelectionDialog(shiftTypes);
+                    }
+                    // 只移除这个临时观察者
+                    viewModel.getSelectedShift().removeObserver(this);
                 }
-                // 移除观察者，避免重复触发
-                viewModel.getSelectedShift().removeObservers(getViewLifecycleOwner());
-            });
+            };
+            
+            // 添加临时观察者
+            viewModel.getSelectedShift().observe(getViewLifecycleOwner(), existingShiftObserver);
         });
     }
 
@@ -278,6 +305,8 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                 binding.calendarView.notifyCalendarChanged();
                 // 刷新月度数据
                 viewModel.loadMonthShifts(YearMonth.from(selectedDate));
+                // 更新选中日期的排班信息
+                viewModel.selectDate(selectedDate);
             })
             .setNegativeButton(R.string.cancel, null)
             .show();
