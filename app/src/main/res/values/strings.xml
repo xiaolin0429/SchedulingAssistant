@@ -144,4 +144,10 @@
 
     <!-- 班次管理 -->
     <string name="refresh_widget">刷新小组件</string>
+
+    <!-- 主页按钮描述 -->
+    <string name="grid_view_button_description">切换到网格视图</string>
+    <string name="list_view_button_description">切换到列表视图</string>
+    <string name="cloud_sync_button_description">同步数据</string>
+    <string name="settings_button_description">设置</string>
 </resources>

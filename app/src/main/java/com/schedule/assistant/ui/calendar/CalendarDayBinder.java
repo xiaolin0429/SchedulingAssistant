@@ -12,7 +12,6 @@ import com.kizitonwose.calendarview.ui.ViewContainer;
 import com.kizitonwose.calendarview.ui.DayBinder;
 import com.schedule.assistant.R;
 import com.schedule.assistant.data.entity.Shift;
-import com.schedule.assistant.data.entity.ShiftType;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
