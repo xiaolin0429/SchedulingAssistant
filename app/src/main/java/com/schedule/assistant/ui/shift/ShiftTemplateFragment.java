@@ -48,7 +48,7 @@ public class ShiftTemplateFragment extends Fragment implements ShiftTemplateAdap
     private void setupButtons() {
         binding.addButton.setOnClickListener(v -> showTemplateDialog(null));
         binding.manageTypesButton.setOnClickListener(v -> 
-            Navigation.findNavController(v).navigate(R.id.action_shift_template_to_shift_type));
+            Navigation.findNavController(v).navigate(R.id.navigation_shift_type));
     }
 
     private void observeViewModel() {

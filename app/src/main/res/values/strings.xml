@@ -9,6 +9,7 @@
     <string name="title_alarm">闹钟</string>
     <string name="title_stats">统计</string>
     <string name="title_profile">我的</string>
+    <string name="title_shift_management">班次信息管理</string>
 
     <!-- 班次类型 -->
     <string name="day_shift">早班</string>

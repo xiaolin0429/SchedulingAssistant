@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,7 @@ import com.schedule.assistant.ui.adapter.ShiftListAdapter;
 import com.schedule.assistant.ui.dialog.ShiftDetailDialogFragment;
 import com.schedule.assistant.util.RecyclerViewAnimationUtil;
 import com.schedule.assistant.viewmodel.ShiftViewModel;
+import com.schedule.assistant.viewmodel.ShiftTypeViewModel;
 
 import java.util.List;
 
@@ -32,12 +34,14 @@ public class ShiftManagementFragment extends Fragment implements ShiftListAdapte
 
     private FragmentShiftManagementBinding binding;
     private ShiftViewModel viewModel;
+    private ShiftTypeViewModel shiftTypeViewModel;
     private ShiftListAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ShiftViewModel.class);
+        shiftTypeViewModel = new ViewModelProvider(requireActivity()).get(ShiftTypeViewModel.class);
     }
 
     @Nullable
@@ -74,6 +78,13 @@ public class ShiftManagementFragment extends Fragment implements ShiftListAdapte
         viewModel.getIsAscending().observe(getViewLifecycleOwner(), isAscending -> {
             binding.sortButton.setImageResource(isAscending ? 
                 R.drawable.ic_sort_ascending : R.drawable.ic_sort_descending);
+        });
+
+        // 观察班次类型更新事件
+        shiftTypeViewModel.getShiftTypeUpdateEvent().observe(getViewLifecycleOwner(), timestamp -> {
+            if (timestamp != null) {
+                viewModel.refreshShifts();
+            }
         });
 
         // 设置排序按钮点击事件
@@ -168,7 +179,9 @@ public class ShiftManagementFragment extends Fragment implements ShiftListAdapte
 
     @Override
     public void onShiftClick(Shift shift) {
-        showShiftDetailDialog(shift);
+        // 导航到班次类型管理界面
+        Navigation.findNavController(requireView())
+                .navigate(R.id.navigation_shift_type);
     }
 
     @Override

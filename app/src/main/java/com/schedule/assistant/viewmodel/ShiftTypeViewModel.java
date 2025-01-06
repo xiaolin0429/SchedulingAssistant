@@ -12,6 +12,7 @@ import java.util.List;
 public class ShiftTypeViewModel extends AndroidViewModel {
     private final ShiftTypeRepository repository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Long> shiftTypeUpdateEvent = new MutableLiveData<>();
 
     public ShiftTypeViewModel(@NonNull Application application) {
         super(application);
@@ -31,6 +32,7 @@ public class ShiftTypeViewModel extends AndroidViewModel {
     public void insert(ShiftTypeEntity shiftType) {
         try {
             repository.insert(shiftType);
+            shiftTypeUpdateEvent.setValue(System.currentTimeMillis());
         } catch (Exception e) {
             errorMessage.setValue("添加班次类型失败: " + e.getMessage());
         }
@@ -39,6 +41,7 @@ public class ShiftTypeViewModel extends AndroidViewModel {
     public void update(ShiftTypeEntity shiftType) {
         try {
             repository.update(shiftType);
+            shiftTypeUpdateEvent.setValue(System.currentTimeMillis());
         } catch (Exception e) {
             errorMessage.setValue("更新班次类型失败: " + e.getMessage());
         }
@@ -51,6 +54,7 @@ public class ShiftTypeViewModel extends AndroidViewModel {
                 return;
             }
             repository.delete(shiftType);
+            shiftTypeUpdateEvent.setValue(System.currentTimeMillis());
         } catch (Exception e) {
             errorMessage.setValue("删除班次类型失败: " + e.getMessage());
         }
@@ -58,5 +62,9 @@ public class ShiftTypeViewModel extends AndroidViewModel {
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
+    }
+
+    public LiveData<Long> getShiftTypeUpdateEvent() {
+        return shiftTypeUpdateEvent;
     }
 } 
