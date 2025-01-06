@@ -20,7 +20,7 @@ public class StatsViewModel extends AndroidViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Date> selectedMonth = new MutableLiveData<>();
     private LiveData<List<Shift>> monthShifts;
-    private final MutableLiveData<Map<ShiftType, Integer>> shiftTypeCounts = new MutableLiveData<>();
+    private LiveData<Map<ShiftType, Integer>> shiftTypeCounts;
 
     public StatsViewModel(Application application) {
         super(application);
@@ -54,16 +54,15 @@ public class StatsViewModel extends AndroidViewModel {
         monthShifts = repository.getShiftsBetween(start.toString(), end.toString());
         
         // 更新班次类型统计
-        monthShifts.observeForever(shifts -> {
+        shiftTypeCounts = Transformations.map(monthShifts, shifts -> {
             if (shifts != null) {
-                Map<ShiftType, Integer> typeCounts = shifts.stream()
+                return shifts.stream()
                     .collect(Collectors.groupingBy(
                         Shift::getType,
                         Collectors.collectingAndThen(Collectors.counting(), Long::intValue)
                     ));
-                shiftTypeCounts.setValue(typeCounts);
             } else {
-                shiftTypeCounts.setValue(Collections.emptyMap());
+                return Collections.emptyMap();
             }
         });
     }

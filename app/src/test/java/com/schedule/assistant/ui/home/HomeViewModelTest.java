@@ -1,6 +1,7 @@
 package com.schedule.assistant.ui.home;
 
 import android.app.Application;
+import android.content.Context;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 import com.schedule.assistant.data.entity.Shift;
@@ -11,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +30,9 @@ public class HomeViewModelTest {
     private Application application;
 
     @Mock
+    private Context context;
+
+    @Mock
     private ShiftRepository repository;
 
     private HomeViewModel viewModel;
@@ -35,15 +40,34 @@ public class HomeViewModelTest {
     private AutoCloseable mockitoCloseable;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         mockitoCloseable = MockitoAnnotations.openMocks(this);
+        
+        // 模拟Application的行为
+        when(application.getApplicationContext()).thenReturn(context);
+        
         viewModel = new HomeViewModel(application);
+        
+        // 使用反射设置repository
+        Field repositoryField = HomeViewModel.class.getDeclaredField("shiftRepository");
+        repositoryField.setAccessible(true);
+        repositoryField.set(viewModel, repository);
+        
+        // 使用反射设置其他repository
+        Field templateRepositoryField = HomeViewModel.class.getDeclaredField("templateRepository");
+        templateRepositoryField.setAccessible(true);
+        templateRepositoryField.set(viewModel, null);
+        
+        Field typeRepositoryField = HomeViewModel.class.getDeclaredField("shiftTypeRepository");
+        typeRepositoryField.setAccessible(true);
+        typeRepositoryField.set(viewModel, null);
     }
 
     @Test
     public void testSelectDate() {
         LocalDate date = LocalDate.now();
         MutableLiveData<Shift> shiftLiveData = new MutableLiveData<>();
+        shiftLiveData.setValue(new Shift(date.format(formatter), ShiftType.DAY_SHIFT));
         when(repository.getShiftByDate(date.format(formatter))).thenReturn(shiftLiveData);
 
         viewModel.selectDate(date);

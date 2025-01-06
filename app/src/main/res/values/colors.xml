@@ -56,4 +56,9 @@
     <color name="text_input_box_background">#FFFFFFFF</color>
     <color name="text_input_box_hint">#FF757575</color>
     <color name="text_input_box_text">#FF000000</color>
+
+    <!-- 新增的主题颜色 -->
+    <color name="primary_light">#E8F5E9</color>
+    <color name="background_light">#FAFAFA</color>
+    <color name="primary_text">#2E7D32</color>
 </resources>
