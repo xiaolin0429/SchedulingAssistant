@@ -9,63 +9,104 @@
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
     android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    android:stateListAnimator="@animator/card_state_list_anim">
+    android:focusable="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/colorIndicator"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/circle_background"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <TextView
-            android:id="@+id/typeName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text"
-            app:layout_constraintStart_toEndOf="@id/colorIndicator"
-            app:layout_constraintEnd_toStartOf="@id/deleteButton"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/typeTime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="4dp"
-            android:textSize="14sp"
-            android:textColor="?android:attr/textColorSecondary"
-            app:layout_constraintStart_toEndOf="@id/colorIndicator"
-            app:layout_constraintEnd_toStartOf="@id/deleteButton"
-            app:layout_constraintTop_toBottomOf="@id/typeName" />
-
-        <ImageButton
-            android:id="@+id/deleteButton"
+        <!-- 背景层（滑动按钮） -->
+        <LinearLayout
+            android:id="@+id/backgroundView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/delete_shift_type"
-            android:padding="8dp"
-            android:src="@drawable/ic_delete"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="?attr/colorError" />
+            android:layout_height="match_parent"
+            android:layout_alignTop="@id/foregroundView"
+            android:layout_alignBottom="@id/foregroundView"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <FrameLayout
+                android:id="@+id/editButton"
+                android:layout_width="68dp"
+                android:layout_height="match_parent"
+                android:background="@color/shift_type_edit_background"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_edit"
+                    android:contentDescription="@string/edit_shift_type"
+                    app:tint="@android:color/white"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/deleteButton"
+                android:layout_width="68dp"
+                android:layout_height="match_parent"
+                android:background="@color/shift_type_delete_background"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_delete"
+                    android:contentDescription="@string/delete_shift_type"
+                    app:tint="@android:color/white"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <!-- 前景层（班次信息） -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/foregroundView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="16dp">
+
+            <View
+                android:id="@+id/colorIndicator"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_background"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/typeName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                app:layout_constraintStart_toEndOf="@id/colorIndicator"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/typeTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                android:textColor="?android:attr/textColorSecondary"
+                app:layout_constraintStart_toEndOf="@id/colorIndicator"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/typeName" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView> 
