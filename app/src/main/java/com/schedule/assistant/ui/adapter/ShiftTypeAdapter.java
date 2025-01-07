@@ -1,28 +1,24 @@
 package com.schedule.assistant.ui.adapter;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import com.schedule.assistant.R;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.databinding.ItemShiftTypeBinding;
 import java.util.Objects;
 
 public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdapter.ViewHolder> {
+    private static final String TAG = "ShiftTypeAdapter";
     private final OnShiftTypeActionListener listener;
-    private ItemTouchHelper touchHelper;
-    private static final float SWIPE_THRESHOLD = 0.5f;
-    private ViewHolder currentOpenedItem = null;  // 跟踪当前打开的项目
+    private ViewHolder currentOpenedItem = null;
+    private static final long DEBOUNCE_TIME = 300L;
+    private long lastClickTime = 0;
 
     public ShiftTypeAdapter(OnShiftTypeActionListener listener) {
         super(new DiffUtil.ItemCallback<ShiftTypeEntity>() {
@@ -44,10 +40,6 @@ public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdap
         this.listener = listener;
     }
 
-    public void setTouchHelper(ItemTouchHelper touchHelper) {
-        this.touchHelper = touchHelper;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -59,47 +51,109 @@ public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(getItem(position));
-        
-        // 添加前景视图的点击监听，用于关闭其他打开的项目
-        holder.binding.foregroundView.setOnClickListener(v -> {
-            closeOpenedItem();
-        });
     }
 
     public void closeOpenedItem() {
+        // 用于调试按钮状态变化，记录当前是否有打开的项目
+        //Log.d(TAG, "closeOpenedItem called, currentOpenedItem: " + (currentOpenedItem != null));
         if (currentOpenedItem != null) {
-            currentOpenedItem.animateSwipeReset();
+            currentOpenedItem.hideButtons();
+            currentOpenedItem = null;
         }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private final ItemShiftTypeBinding binding;
-        private float currentSwipeX = 0f;
-        private boolean isSwipeOpen = false;
-        private ValueAnimator swipeAnimator;
 
         ViewHolder(ItemShiftTypeBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
 
-            binding.editButton.setOnClickListener(v -> {
-                int position = getBindingAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    listener.onShiftTypeEdit(getItem(position));
-                    animateSwipeReset();
+            // 设置整个卡片的点击事件
+            binding.contentLayout.setOnClickListener(v -> {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                    // 用于调试防抖动逻辑
+                    //Log.d(TAG, "contentLayout click debounced");
+                    return;
+                }
+                lastClickTime = currentTime;
+
+                if (currentOpenedItem == this) {
+                    // 用于调试按钮状态切换
+                    //Log.d(TAG, "contentLayout closing current item");
+                    hideButtons();
+                    currentOpenedItem = null;
+                } else {
+                    // 用于调试按钮状态切换
+                    //Log.d(TAG, "contentLayout opening new item");
+                    if (currentOpenedItem != null) {
+                        currentOpenedItem.hideButtons();
+                    }
+                    showButtons();
+                    currentOpenedItem = this;
                 }
             });
 
-            binding.deleteButton.setOnClickListener(v -> {
+            // 设置编辑按钮点击事件
+            binding.editButton.setOnClickListener(v -> {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                    return;
+                }
+                lastClickTime = currentTime;
+
                 int position = getBindingAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    listener.onShiftTypeDelete(getItem(position));
-                    animateSwipeReset();
+                    listener.onShiftTypeEdit(getItem(position));
+                    hideButtons();
+                    currentOpenedItem = null;
+                }
+            });
+
+            // 设置删除按钮点击事件
+            binding.deleteButton.setOnClickListener(v -> {
+                // 用于调试删除按钮点击事件的触发
+                //Log.d(TAG, "deleteButton clicked");
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                    // 用于调试防抖动逻辑
+                    //Log.d(TAG, "deleteButton click debounced");
+                    return;
+                }
+                lastClickTime = currentTime;
+
+                int position = getBindingAdapterPosition();
+                // 用于调试项目位置
+                //Log.d(TAG, "deleteButton position: " + position);
+                if (position != RecyclerView.NO_POSITION) {
+                    ShiftTypeEntity shiftType = getItem(position);
+                    // 用于调试班次类型信息和默认状态
+                    //Log.d(TAG, "deleteButton shiftType: " + shiftType.getName() + ", isDefault: " + shiftType.isDefault());
+                    if (shiftType.isDefault()) {
+                        // 用于调试默认班次类型的处理
+                        //Log.d(TAG, "deleteButton showing toast for default type");
+                        android.widget.Toast.makeText(
+                            v.getContext(),
+                            R.string.cannot_delete_default_shift_type,
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show();
+                        hideButtons();
+                        currentOpenedItem = null;
+                        return;
+                    }
+                    // 用于调试删除操作的触发
+                    //Log.d(TAG, "deleteButton calling listener.onShiftTypeDelete");
+                    listener.onShiftTypeDelete(shiftType);
+                    hideButtons();
+                    currentOpenedItem = null;
                 }
             });
         }
 
         void bind(ShiftTypeEntity shiftType) {
+            // 用于调试数据绑定过程
+            //Log.d(TAG, "binding shiftType: " + shiftType.getName() + ", isDefault: " + shiftType.isDefault());
             binding.typeName.setText(shiftType.getName());
             if (shiftType.getStartTime() != null && shiftType.getEndTime() != null) {
                 binding.typeTime.setText(String.format("%s - %s", 
@@ -111,137 +165,29 @@ public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdap
 
             binding.colorIndicator.setBackgroundColor(shiftType.getColor());
             
-            // 如果是默认班次，禁用删除按钮
-            binding.deleteButton.setEnabled(!shiftType.isDefault());
+            // 只设置透明度，不禁用按钮
             binding.deleteButton.setAlpha(shiftType.isDefault() ? 0.5f : 1.0f);
+            // 用于调试删除按钮状态
+            //Log.d(TAG, "deleteButton alpha: " + (shiftType.isDefault() ? 0.5f : 1.0f));
 
-            // 重置滑动状态
-            resetSwipe();
-        }
-
-        void onItemSwiped(float dX) {
-            if (dX < 0) { // 只处理向左滑动
-                // 如果有其他打开的项目，先关闭它
-                if (currentOpenedItem != null && currentOpenedItem != this) {
-                    currentOpenedItem.animateSwipeReset();
-                }
-
-                currentSwipeX = dX;
-                float swipeThreshold = -itemView.getWidth() * SWIPE_THRESHOLD;
-                
-                // 更新前景视图位置
-                binding.foregroundView.setTranslationX(dX);
-                
-                // 根据滑动距离显示/隐藏按钮
-                if (dX <= swipeThreshold && !isSwipeOpen) {
-                    binding.backgroundView.setVisibility(View.VISIBLE);
-                    isSwipeOpen = true;
-                    currentOpenedItem = this;
-                } else if (dX > swipeThreshold && isSwipeOpen) {
-                    binding.backgroundView.setVisibility(View.GONE);
-                    isSwipeOpen = false;
-                    if (currentOpenedItem == this) {
-                        currentOpenedItem = null;
-                    }
-                }
-            }
-        }
-
-        void animateSwipeReset() {
-            if (swipeAnimator != null && swipeAnimator.isRunning()) {
-                swipeAnimator.cancel();
-            }
-
-            swipeAnimator = ValueAnimator.ofFloat(currentSwipeX, 0f);
-            swipeAnimator.setDuration(200); // 200ms的动画时长
-            swipeAnimator.setInterpolator(new DecelerateInterpolator());
-            swipeAnimator.addUpdateListener(animation -> {
-                float value = (float) animation.getAnimatedValue();
-                binding.foregroundView.setTranslationX(value);
-            });
-            swipeAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    resetSwipe();
-                }
-            });
-            swipeAnimator.start();
-        }
-
-        void resetSwipe() {
-            if (swipeAnimator != null && swipeAnimator.isRunning()) {
-                swipeAnimator.cancel();
-            }
-            currentSwipeX = 0f;
-            isSwipeOpen = false;
-            binding.foregroundView.setTranslationX(0f);
-            binding.backgroundView.setVisibility(View.GONE);
+            // 重置按钮状态
+            hideButtons();
             if (currentOpenedItem == this) {
                 currentOpenedItem = null;
             }
         }
 
-        float getCurrentSwipeX() {
-            return currentSwipeX;
+        void showButtons() {
+            binding.buttonLayout.setVisibility(View.VISIBLE);
+        }
+
+        void hideButtons() {
+            binding.buttonLayout.setVisibility(View.GONE);
         }
     }
 
     public interface OnShiftTypeActionListener {
         void onShiftTypeEdit(ShiftTypeEntity shiftType);
         void onShiftTypeDelete(ShiftTypeEntity shiftType);
-    }
-
-    public static class SwipeController extends ItemTouchHelper.SimpleCallback {
-        private final ShiftTypeAdapter adapter;
-
-        public SwipeController(ShiftTypeAdapter adapter) {
-            super(0, ItemTouchHelper.LEFT);
-            this.adapter = adapter;
-        }
-
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            // 不需要实现，我们使用自定义的滑动逻辑
-        }
-
-        @Override
-        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
-                              float dX, float dY, int actionState, boolean isCurrentlyActive) {
-            if (viewHolder instanceof ViewHolder) {
-                ViewHolder holder = (ViewHolder) viewHolder;
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // 如果开始新的滑动，关闭其他打开的项目
-                    if (isCurrentlyActive && holder != ((ShiftTypeAdapter) recyclerView.getAdapter()).currentOpenedItem) {
-                        ((ShiftTypeAdapter) recyclerView.getAdapter()).closeOpenedItem();
-                    }
-                    float swipeThreshold = -viewHolder.itemView.getWidth() * SWIPE_THRESHOLD;
-                    float newX = Math.max(swipeThreshold, dX);
-                    holder.onItemSwiped(newX);
-                }
-            }
-        }
-
-        @Override
-        public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-            super.clearView(recyclerView, viewHolder);
-            if (viewHolder instanceof ViewHolder) {
-                ViewHolder holder = (ViewHolder) viewHolder;
-                // 如果松手时的位置超过阈值，保持打开状态，否则关闭
-                float swipeThreshold = -viewHolder.itemView.getWidth() * SWIPE_THRESHOLD;
-                if (holder.getCurrentSwipeX() > swipeThreshold) {
-                    holder.animateSwipeReset();
-                }
-            }
-        }
-
-        @Override
-        public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
-            return SWIPE_THRESHOLD;
-        }
     }
 }

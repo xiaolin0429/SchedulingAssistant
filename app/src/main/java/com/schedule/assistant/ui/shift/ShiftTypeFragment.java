@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.schedule.assistant.R;
@@ -33,7 +32,6 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ShiftTypeViewModel.class);
-        
         setupRecyclerView();
         setupAddButton();
         observeViewModel();
@@ -44,13 +42,7 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // 设置滑动操作
-        ShiftTypeAdapter.SwipeController swipeController = new ShiftTypeAdapter.SwipeController(adapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(swipeController);
-        touchHelper.attachToRecyclerView(binding.recyclerView);
-        adapter.setTouchHelper(touchHelper);
-
-        // 添加RecyclerView的触摸监听，用于关闭打开的项目
+        // 设置RecyclerView的触摸监听，点击空白区域时关闭已打开的按钮
         binding.recyclerView.setOnTouchListener((v, event) -> {
             if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
                 adapter.closeOpenedItem();
@@ -89,11 +81,12 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
     @Override
     public void onShiftTypeDelete(ShiftTypeEntity shiftType) {
         if (shiftType.isDefault()) {
-            new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.error)
-                .setMessage(R.string.cannot_delete_default_shift_type)
-                .setPositiveButton(R.string.ok, null)
-                .show();
+            // 在底部显示Toast提示
+            android.widget.Toast.makeText(
+                requireContext(),
+                R.string.cannot_delete_default_shift_type,
+                android.widget.Toast.LENGTH_SHORT
+            ).show();
             return;
         }
 
