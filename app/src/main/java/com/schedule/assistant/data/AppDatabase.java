@@ -21,7 +21,7 @@ import com.schedule.assistant.data.converter.ShiftTypeConverter;
 
 @Database(
     entities = {Shift.class, ShiftTemplate.class, ShiftTypeEntity.class, AlarmEntity.class},
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters({DateConverter.class, ShiftTypeConverter.class})
@@ -42,7 +42,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             "schedule_database"
                         )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                         .build();
                 }
             }
@@ -128,6 +128,16 @@ public abstract class AppDatabase extends RoomDatabase {
 
             // 重命名临时表为正式表
             database.execSQL("ALTER TABLE shift_types_temp RENAME TO shift_types");
+        }
+    };
+
+    private static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // 更新闹钟表结构
+            database.execSQL("ALTER TABLE alarms ADD COLUMN createTime INTEGER NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE alarms ADD COLUMN updateTime INTEGER NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE alarms RENAME COLUMN time TO timeInMillis");
         }
     };
 } 

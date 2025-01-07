@@ -1,21 +1,36 @@
 package com.schedule.assistant.data.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import java.util.Date;
 
+/**
+ * 闹钟实体类
+ * 用于存储闹钟的基本信息
+ */
 @Entity(tableName = "alarms")
 public class AlarmEntity {
     @PrimaryKey(autoGenerate = true)
     private long id;
-    private String name;
-    private long time;
-    private boolean enabled;
-    private boolean repeat;
-    private int repeatDays;
-    private String soundUri;
-    private boolean vibrate;
 
+    private String name;        // 闹钟名称
+    private long timeInMillis;  // 闹钟时间（毫秒）
+    private boolean enabled;    // 是否启用
+    private boolean repeat;     // 是否重复
+    private int repeatDays;    // 重复日期（位图：周日=1，周一=2，周二=4，以此类推）
+    private String soundUri;    // 铃声URI
+    private boolean vibrate;    // 是否震动
+    private long createTime;    // 创建时间
+    private long updateTime;    // 更新时间
+
+    public AlarmEntity() {
+        this.createTime = System.currentTimeMillis();
+        this.updateTime = System.currentTimeMillis();
+        this.enabled = true;
+        this.vibrate = true;
+    }
+
+    // Getters and Setters
     public long getId() {
         return id;
     }
@@ -32,12 +47,12 @@ public class AlarmEntity {
         this.name = name;
     }
 
-    public long getTime() {
-        return time;
+    public long getTimeInMillis() {
+        return timeInMillis;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setTimeInMillis(long timeInMillis) {
+        this.timeInMillis = timeInMillis;
     }
 
     public boolean isEnabled() {
@@ -78,5 +93,35 @@ public class AlarmEntity {
 
     public void setVibrate(boolean vibrate) {
         this.vibrate = vibrate;
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(long updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "AlarmEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", timeInMillis=" + timeInMillis +
+                ", enabled=" + enabled +
+                ", repeat=" + repeat +
+                ", repeatDays=" + repeatDays +
+                ", vibrate=" + vibrate +
+                '}';
     }
 } 
