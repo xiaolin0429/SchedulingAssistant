@@ -46,9 +46,16 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         binding.recyclerView.setOnTouchListener((v, event) -> {
             if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
                 adapter.closeOpenedItem();
-                v.performClick();
             }
+            // 确保点击事件能够正常传递
+            v.performClick();
+            // 返回false以允许其他触摸事件继续传递
             return false;
+        });
+
+        // 添加点击事件监听器以满足可访问性要求
+        binding.recyclerView.setOnClickListener(v -> {
+            // 空实现，仅用于满足可访问性要求
         });
     }
 
