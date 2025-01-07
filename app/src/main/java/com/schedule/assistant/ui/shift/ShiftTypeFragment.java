@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.schedule.assistant.R;
@@ -17,7 +18,7 @@ import com.schedule.assistant.ui.adapter.ShiftTypeAdapter;
 import com.schedule.assistant.ui.dialog.ShiftTypeDialogFragment;
 import com.schedule.assistant.viewmodel.ShiftTypeViewModel;
 
-public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnShiftTypeClickListener {
+public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnShiftTypeActionListener {
     private FragmentShiftTypeBinding binding;
     private ShiftTypeViewModel viewModel;
     private ShiftTypeAdapter adapter;
@@ -42,6 +43,21 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         adapter = new ShiftTypeAdapter(this);
         binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        // 设置滑动操作
+        ShiftTypeAdapter.SwipeController swipeController = new ShiftTypeAdapter.SwipeController(adapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(swipeController);
+        touchHelper.attachToRecyclerView(binding.recyclerView);
+        adapter.setTouchHelper(touchHelper);
+
+        // 添加RecyclerView的触摸监听，用于关闭打开的项目
+        binding.recyclerView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+                adapter.closeOpenedItem();
+                v.performClick();
+            }
+            return false;
+        });
     }
 
     private void setupAddButton() {
@@ -66,7 +82,7 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
     }
 
     @Override
-    public void onShiftTypeClick(ShiftTypeEntity shiftType) {
+    public void onShiftTypeEdit(ShiftTypeEntity shiftType) {
         showShiftTypeDialog(shiftType);
     }
 

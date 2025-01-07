@@ -61,4 +61,8 @@
     <color name="primary_light">#E8F5E9</color>
     <color name="background_light">#FAFAFA</color>
     <color name="primary_text">#2E7D32</color>
+
+    <!-- 操作按钮背景颜色 -->
+    <color name="shift_type_edit_background">#FF2196F3</color>    <!-- 蓝色，编辑操作 -->
+    <color name="shift_type_delete_background">#FFE53935</color>  <!-- 红色，删除操作 -->
 </resources>
