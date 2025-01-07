@@ -16,36 +16,77 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // 启用MultiDex支持
+        multiDexEnabled = true
+        
+        // 启用R8优化
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        debug {
+            isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
     
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // 使用新的编译优化选项
+        isCoreLibraryDesugaringEnabled = true
     }
     
     buildFeatures {
         viewBinding = true
         compose = true
+        
+        // 启用BuildConfig
+        buildConfig = true
     }
     
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.2"
     }
+    
+    // 启用并行编译
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "17"
+            // 启用Kotlin编译优化
+            freeCompilerArgs = listOf(
+                "-Xopt-in=kotlin.RequiresOptIn",
+                "-Xjvm-default=all"
+            )
+        }
+    }
+    
+    // 配置Lint选项
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = true
+        ignoreWarnings = false
+        warningsAsErrors = false
+    }
 }
 
 dependencies {
+    // Core dependencies
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment:2.7.5")
     implementation("androidx.navigation:navigation-ui:2.7.5")
+    
+    // Desugaring support
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     
     // Room dependencies
     implementation("androidx.room:room-runtime:2.6.1")

@@ -3,6 +3,7 @@ package com.schedule.assistant.data.entity;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.Ignore;
 
 @Entity(tableName = "shift_types")
 public class ShiftTypeEntity {
@@ -16,16 +17,19 @@ public class ShiftTypeEntity {
     private int color;         // 班次颜色
     private boolean isDefault;  // 是否为默认班次
     private long updateTime;    // 更新时间
-    private ShiftType type;    // 班次类型枚举
 
-    public ShiftTypeEntity(@NonNull String name, String startTime, String endTime, int color, ShiftType type) {
+    public ShiftTypeEntity(@NonNull String name, String startTime, String endTime, int color) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.color = color;
-        this.type = type;
         this.isDefault = false;
         this.updateTime = System.currentTimeMillis();
+    }
+
+    @Ignore
+    public ShiftTypeEntity(@NonNull String name, String startTime, String endTime, int color, ShiftType type) {
+        this(name, startTime, endTime, color);
     }
 
     // Getters and Setters
@@ -84,13 +88,5 @@ public class ShiftTypeEntity {
 
     public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public ShiftType getType() {
-        return type;
-    }
-
-    public void setType(ShiftType type) {
-        this.type = type;
     }
 } 

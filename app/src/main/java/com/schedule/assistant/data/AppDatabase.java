@@ -21,7 +21,7 @@ import com.schedule.assistant.data.converter.ShiftTypeConverter;
 
 @Database(
     entities = {Shift.class, ShiftTemplate.class, ShiftTypeEntity.class, AlarmEntity.class},
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters({DateConverter.class, ShiftTypeConverter.class})
@@ -42,7 +42,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             "schedule_database"
                         )
-                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                         .build();
                 }
             }
@@ -99,6 +99,35 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             // 添加shiftTypeId字段到shifts表
             database.execSQL("ALTER TABLE shifts ADD COLUMN shiftTypeId INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
+    private static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // 创建临时表
+            database.execSQL(
+                "CREATE TABLE IF NOT EXISTS shift_types_temp (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "startTime TEXT, " +
+                "endTime TEXT, " +
+                "color INTEGER NOT NULL, " +
+                "isDefault INTEGER NOT NULL, " +
+                "updateTime INTEGER NOT NULL)"
+            );
+
+            // 复制数据到临时表
+            database.execSQL(
+                "INSERT INTO shift_types_temp (id, name, startTime, endTime, color, isDefault, updateTime) " +
+                "SELECT id, name, startTime, endTime, color, isDefault, updateTime FROM shift_types"
+            );
+
+            // 删除旧表
+            database.execSQL("DROP TABLE shift_types");
+
+            // 重命名临时表为正式表
+            database.execSQL("ALTER TABLE shift_types_temp RENAME TO shift_types");
         }
     };
 } 
