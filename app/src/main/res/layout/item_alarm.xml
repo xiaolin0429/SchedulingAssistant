@@ -3,44 +3,72 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.App.CardView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_medium">
+        android:padding="16dp">
 
         <TextView
-            android:id="@+id/timeText"
-            android:layout_width="0dp"
+            android:id="@+id/time_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.App.Title"
-            app:layout_constraintEnd_toStartOf="@id/enableSwitch"
+            android:textSize="32sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="07:30"/>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/enableSwitch"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/name_text"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_medium"
-            app:layout_constraintEnd_toStartOf="@id/deleteButton"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/time_text"
+            app:layout_constraintEnd_toStartOf="@id/enable_switch"
+            app:layout_constraintTop_toTopOf="@id/time_text"
+            tools:text="Morning Alarm"/>
 
-        <ImageButton
-            android:id="@+id/deleteButton"
+        <TextView
+            android:id="@+id/repeat_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="?android:textColorSecondary"
+            app:layout_constraintStart_toStartOf="@id/name_text"
+            app:layout_constraintEnd_toEndOf="@id/name_text"
+            app:layout_constraintTop_toBottomOf="@id/name_text"
+            tools:text="Every weekday"/>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/enable_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:src="@drawable/ic_delete"
-            android:contentDescription="@string/delete_alarm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/gray"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/delete_alarm"
+            android:src="@drawable/ic_delete"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="?colorError"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

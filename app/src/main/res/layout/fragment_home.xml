@@ -36,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/black"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageButton
@@ -46,7 +46,7 @@
                     android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/grid_view_button_description"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:src="@drawable/ic_grid" />
 
                 <ImageButton
@@ -56,7 +56,7 @@
                     android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/list_view_button_description"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:src="@drawable/ic_list" />
 
                 <ImageButton
@@ -66,7 +66,7 @@
                     android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/cloud_sync_button_description"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:src="@drawable/ic_cloud" />
 
                 <ImageButton
@@ -76,7 +76,7 @@
                     android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/settings_button_description"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:src="@drawable/ic_settings" />
             </LinearLayout>
 

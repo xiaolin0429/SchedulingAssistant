@@ -1,4 +1,4 @@
-package com.schedule.assistant.ui.alarm;
+package com.schedule.assistant.ui.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
