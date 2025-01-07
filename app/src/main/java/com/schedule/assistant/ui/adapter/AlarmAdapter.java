@@ -64,10 +64,6 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         }
     }
 
-    public boolean isEditMode() {
-        return isEditMode;
-    }
-
     class AlarmViewHolder extends RecyclerView.ViewHolder {
         private final ItemAlarmBinding binding;
 

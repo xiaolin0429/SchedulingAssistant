@@ -229,9 +229,7 @@ app/src/main/
   private final MutableLiveData<List<ShiftType>> shiftTypes = new MutableLiveData<>();
   
   // Fragment中的观察者模式
-  viewModel.getShiftTypes().observe(getViewLifecycleOwner(), types -> {
-      adapter.submitList(types);
-  });
+  viewModel.getShiftTypes().observe(getViewLifecycleOwner(), adapter::submitList);
   ```
 
 - **异步操作处理**
@@ -243,9 +241,7 @@ app/src/main/
       }
       
       public void insertShift(Shift shift) {
-          executor.execute(() -> {
-              shiftDao.insert(shift);
-          });
+          executor.execute(() -> shiftDao.insert(shift));
       }
   }
   ```

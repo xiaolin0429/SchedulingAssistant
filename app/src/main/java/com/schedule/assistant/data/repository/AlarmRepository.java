@@ -1,6 +1,7 @@
 package com.schedule.assistant.data.repository;
 
 import android.app.Application;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.dao.AlarmDao;
@@ -14,6 +15,7 @@ import java.util.concurrent.Executors;
  * 负责管理闹钟数据的访问和异步操作
  */
 public class AlarmRepository {
+    private static final String TAG = "AlarmRepository";
     private final AlarmDao alarmDao;
     private final ExecutorService executorService;
 
@@ -51,7 +53,7 @@ public class AlarmRepository {
         try {
             return executorService.submit(() -> alarmDao.insert(alarm)).get();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to insert alarm: " + e.getMessage(), e);
             return -1;
         }
     }
@@ -68,13 +70,6 @@ public class AlarmRepository {
      */
     public void delete(AlarmEntity alarm) {
         executorService.execute(() -> alarmDao.delete(alarm));
-    }
-
-    /**
-     * 根据ID删除闹钟
-     */
-    public void deleteById(long id) {
-        executorService.execute(() -> alarmDao.deleteById(id));
     }
 
     /**
