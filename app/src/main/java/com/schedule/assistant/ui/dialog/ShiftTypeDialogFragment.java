@@ -11,7 +11,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.schedule.assistant.R;
-import com.schedule.assistant.data.entity.ShiftType;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.databinding.DialogShiftTypeBinding;
 import com.schedule.assistant.viewmodel.ShiftTypeViewModel;
@@ -38,7 +37,6 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
             args.putString("end_time", shiftType.getEndTime());
             args.putInt("color", shiftType.getColor());
             args.putBoolean("is_default", shiftType.isDefault());
-            args.putSerializable("type", shiftType.getType());
         }
         fragment.setArguments(args);
         return fragment;
@@ -57,8 +55,7 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
                 args.getString("name"),
                 args.getString("start_time"),
                 args.getString("end_time"),
-                args.getInt("color"),
-                (ShiftType) args.getSerializable("type")
+                args.getInt("color")
             );
             currentShiftType.setId(args.getLong("id"));
             currentShiftType.setDefault(args.getBoolean("is_default"));
@@ -92,36 +89,7 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
             binding.startTimeInput.setText(currentShiftType.getStartTime());
             binding.endTimeInput.setText(currentShiftType.getEndTime());
             binding.colorPreview.setBackgroundColor(currentShiftType.getColor());
-            // 设置当前班次类型
-            switch (currentShiftType.getType()) {
-                case DAY_SHIFT:
-                    binding.typeSpinner.setSelection(0);
-                    break;
-                case NIGHT_SHIFT:
-                    binding.typeSpinner.setSelection(1);
-                    break;
-                case REST_DAY:
-                    binding.typeSpinner.setSelection(2);
-                    break;
-                default:
-                    binding.typeSpinner.setSelection(0);
-                    break;
-            }
         }
-
-        // 设置班次类型选择器
-        String[] types = {
-            getString(R.string.day_shift),
-            getString(R.string.night_shift),
-            getString(R.string.rest_day)
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            types
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.typeSpinner.setAdapter(adapter);
     }
 
     private void setupListeners() {
@@ -193,36 +161,18 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
             return;
         }
 
-        // 获取选择的班次类型
-        ShiftType type;
-        switch (binding.typeSpinner.getSelectedItemPosition()) {
-            case 0:
-                type = ShiftType.DAY_SHIFT;
-                break;
-            case 1:
-                type = ShiftType.NIGHT_SHIFT;
-                break;
-            case 2:
-                type = ShiftType.REST_DAY;
-                break;
-            default:
-                type = ShiftType.DAY_SHIFT;
-                break;
-        }
-
         // 创建或更新班次类型
         ShiftTypeEntity shiftType;
         if (currentShiftType != null) {
             shiftType = currentShiftType;
         } else {
-            shiftType = new ShiftTypeEntity(name, startTime, endTime, selectedColor, type);
+            shiftType = new ShiftTypeEntity(name, startTime, endTime, selectedColor);
         }
 
         shiftType.setName(name);
         shiftType.setStartTime(startTime);
         shiftType.setEndTime(endTime);
         shiftType.setColor(selectedColor);
-        shiftType.setType(type);
         shiftType.setUpdateTime(System.currentTimeMillis());
 
         // 保存到数据库

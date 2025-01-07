@@ -27,8 +27,7 @@ public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdap
                         (oldItem.getStartTime() != null && oldItem.getStartTime().equals(newItem.getStartTime()))) &&
                        ((oldItem.getEndTime() == null && newItem.getEndTime() == null) ||
                         (oldItem.getEndTime() != null && oldItem.getEndTime().equals(newItem.getEndTime()))) &&
-                       oldItem.getColor() == newItem.getColor() &&
-                       Objects.equals(oldItem.getType(), newItem.getType());
+                       oldItem.getColor() == newItem.getColor();
             }
         });
         this.listener = listener;

@@ -31,22 +31,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/typeLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hint="@string/shift_type">
-
-        <Spinner
-            android:id="@+id/typeSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,16 +78,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/shift_type_color"
-        android:textAppearance="?attr/textAppearanceBody1"
-        android:layout_marginBottom="8dp" />
+        android:text="@string/select_color"
+        android:layout_marginBottom="8dp"
+        android:textAppearance="?attr/textAppearanceBody2" />
 
     <View
         android:id="@+id/colorPreview"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/circle_background" />
+        android:background="@drawable/color_preview_background" />
 
     <LinearLayout
         android:layout_width="match_parent"
