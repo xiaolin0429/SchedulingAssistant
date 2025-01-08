@@ -40,4 +40,4 @@ public interface ShiftDao {
 
     @Query("UPDATE shifts SET note = :note WHERE id = :shiftId")
     void updateNote(long shiftId, String note);
-} 
+}

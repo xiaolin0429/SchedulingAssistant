@@ -1,4 +1,5 @@
 package com.schedule.assistant.service;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,6 +16,7 @@ import com.schedule.assistant.R;
 import com.schedule.assistant.data.entity.AlarmEntity;
 import com.schedule.assistant.receiver.AlarmReceiver;
 import java.util.Calendar;
+import java.util.ArrayList;
 
 /**
  * 闹钟调度器
@@ -24,6 +26,7 @@ public class AlarmScheduler {
     private final Context context;
     private final AlarmManager alarmManager;
     private static final int REQUEST_SET_ALARM_PERMISSION = 2;
+    private static final String TAG = "AlarmScheduler";
 
     public AlarmScheduler(Context context) {
         this.context = context;
@@ -44,124 +47,169 @@ public class AlarmScheduler {
      * 检查是否有设置系统闹钟的权限
      */
     public boolean hasSetAlarmPermission() {
-        return ActivityCompat.checkSelfPermission(context, 
-            "com.android.alarm.permission.SET_ALARM") == PackageManager.PERMISSION_GRANTED;
+        return ActivityCompat.checkSelfPermission(context,
+                "com.android.alarm.permission.SET_ALARM") == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
      * 调度闹钟
-     * 同时设置应用内闹钟和系统闹钟
-     * 如果没有系统闹钟权限，则降级为仅应用内闹钟
+     * 只设置应用内闹钟，不涉及系统闹钟
      */
     public void scheduleAlarm(AlarmEntity alarm) {
-        boolean hasAllPermissions = hasExactAlarmPermission() && hasSetAlarmPermission();
-        boolean hasBasicPermissions = hasExactAlarmPermission();
-
-        if (!hasBasicPermissions) {
-            // 如果连基本的精确闹钟权限都没有，直接返回
+        if (!hasExactAlarmPermission()) {
             return;
         }
 
-        // 设置应用内闹钟
+        // 只设置应用内闹钟
         scheduleAppAlarm(alarm);
-        
-        if (alarm.isEnabled()) {
-            if (hasAllPermissions) {
-                // 有完整权限，设置系统闹钟
+    }
+
+    /**
+     * 处理闹钟状态变更
+     * 
+     * @param alarm   闹钟实体
+     * @param enabled 是否启用
+     */
+    public void handleAlarmStateChange(AlarmEntity alarm, boolean enabled) {
+        android.util.Log.d(TAG, "handleAlarmStateChange: alarmId=" + alarm.getId()
+                + ", enabled=" + enabled
+                + ", currentEnabled=" + alarm.isEnabled());
+
+        // 1. 更新应用内闹钟状态
+        scheduleAppAlarm(alarm);
+
+        // 2. 根据启用状态处理系统闹钟
+        if (enabled) {
+            // 只有在启用状态时才创建系统闹钟
+            boolean hasExactPermission = hasExactAlarmPermission();
+            boolean hasSetPermission = hasSetAlarmPermission();
+
+            android.util.Log.d(TAG, "系统闹钟权限状态: hasExactPermission=" + hasExactPermission
+                    + ", hasSetPermission=" + hasSetPermission);
+
+            if (hasExactPermission && hasSetPermission) {
+                android.util.Log.d(TAG, "开始设置系统闹钟");
                 scheduleSystemAlarm(alarm);
             } else {
-                // 降级提示
+                android.util.Log.w(TAG, "缺少必要权限，无法设置系统闹钟");
                 showDegradedModeToast();
             }
-        } else if (hasAllPermissions) {
-            // 只有在有完整权限时才取消系统闹钟
+        } else {
+            android.util.Log.d(TAG, "取消系统闹钟");
             cancelSystemAlarm(alarm);
         }
     }
 
     /**
      * 设置应用内闹钟
+     * 不涉及系统闹钟操作
      */
     private void scheduleAppAlarm(AlarmEntity alarm) {
+        android.util.Log.d(TAG, "scheduleAppAlarm: alarmId=" + alarm.getId()
+                + ", enabled=" + alarm.isEnabled()
+                + ", time=" + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                        java.util.Locale.getDefault()).format(new java.util.Date(alarm.getTimeInMillis())));
+
         Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.setAction(AlarmReceiver.ACTION_ALARM_TRIGGER);
+        intent.setAction(AlarmReceiver.ACTION_ALARM_TRIGGERED);
         intent.putExtra(AlarmReceiver.EXTRA_ALARM_ID, alarm.getId());
         intent.putExtra(AlarmReceiver.EXTRA_ALARM_NAME, alarm.getName());
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-            context,
-            (int) alarm.getId(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+                context,
+                (int) alarm.getId(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         if (alarm.isEnabled()) {
+            android.util.Log.d(TAG, "设置应用内闹钟");
             AlarmManagerCompat.setExactAndAllowWhileIdle(
-                alarmManager,
-                AlarmManager.RTC_WAKEUP,
-                alarm.getTimeInMillis(),
-                pendingIntent
-            );
+                    alarmManager,
+                    AlarmManager.RTC_WAKEUP,
+                    alarm.getTimeInMillis(),
+                    pendingIntent);
         } else {
+            android.util.Log.d(TAG, "取消应用内闹钟");
             alarmManager.cancel(pendingIntent);
         }
     }
 
     /**
      * 设置系统闹钟
+     * 只在闹钟启用时调用
      */
     private void scheduleSystemAlarm(AlarmEntity alarm) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(alarm.getTimeInMillis());
-        
-        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM)
-            .putExtra(AlarmClock.EXTRA_HOUR, calendar.get(Calendar.HOUR_OF_DAY))
-            .putExtra(AlarmClock.EXTRA_MINUTES, calendar.get(Calendar.MINUTE))
-            .putExtra(AlarmClock.EXTRA_MESSAGE, alarm.getName())
-            .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
-        
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        android.util.Log.d(TAG, "scheduleSystemAlarm: alarmId=" + alarm.getId()
+                + ", enabled=" + alarm.isEnabled()
+                + ", time=" + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                        java.util.Locale.getDefault()).format(new java.util.Date(alarm.getTimeInMillis())));
+
+        if (!alarm.isEnabled()) {
+            android.util.Log.w(TAG, "闹钟未启用，不设置系统闹钟");
+            return;
+        }
+
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(alarm.getTimeInMillis());
+
+            // 使用系统闹钟应用设置闹钟
+            Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+            intent.putExtra(AlarmClock.EXTRA_HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+            intent.putExtra(AlarmClock.EXTRA_MINUTES, calendar.get(Calendar.MINUTE));
+            // 添加应用标识符前缀，用于后续取消时匹配
+            intent.putExtra(AlarmClock.EXTRA_MESSAGE, "app_alarm_" + alarm.getId());
+            intent.putExtra(AlarmClock.EXTRA_VIBRATE, alarm.isVibrate());
+            if (alarm.isRepeat()) {
+                intent.putExtra(AlarmClock.EXTRA_DAYS, getDaysOfWeek(alarm.getRepeatDays()));
+            }
+            intent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(intent);
+            android.util.Log.d(TAG, "系统闹钟设置成功");
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "设置系统闹钟失败", e);
+            showDegradedModeToast();
+        }
     }
 
     /**
      * 取消系统闹钟
      */
     private void cancelSystemAlarm(AlarmEntity alarm) {
-        if (!hasSetAlarmPermission()) {
-            return;
-        }
+        android.util.Log.d(TAG, "cancelSystemAlarm: alarmId=" + alarm.getId());
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(alarm.getTimeInMillis());
-        
-        // 静默取消系统闹钟，不显示系统界面
-        Intent intent = new Intent(AlarmClock.ACTION_DISMISS_ALARM)
-            .putExtra(AlarmClock.EXTRA_ALARM_SEARCH_MODE, AlarmClock.ALARM_SEARCH_MODE_TIME)
-            .putExtra(AlarmClock.EXTRA_HOUR, calendar.get(Calendar.HOUR_OF_DAY))
-            .putExtra(AlarmClock.EXTRA_MINUTES, calendar.get(Calendar.MINUTE))
-            .putExtra(AlarmClock.EXTRA_SKIP_UI, true)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // 先尝试使用ACTION_DISMISS_ALARM
         try {
+            // 使用系统闹钟应用取消闹钟
+            Intent intent = new Intent(AlarmClock.ACTION_DISMISS_ALARM);
+            intent.putExtra(AlarmClock.EXTRA_ALARM_SEARCH_MODE, AlarmClock.ALARM_SEARCH_MODE_LABEL);
+            intent.putExtra(AlarmClock.EXTRA_MESSAGE, "app_alarm_" + alarm.getId());
+            intent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+
             context.startActivity(intent);
-            showCancelToast();
+            android.util.Log.d(TAG, "系统闹钟静默取消成功");
         } catch (Exception e) {
-            // 如果ACTION_DISMISS_ALARM失败，尝试使用ACTION_SET_ALARM将闹钟设置为禁用状态
-            try {
-                Intent setIntent = new Intent(AlarmClock.ACTION_SET_ALARM)
-                    .putExtra(AlarmClock.EXTRA_HOUR, calendar.get(Calendar.HOUR_OF_DAY))
-                    .putExtra(AlarmClock.EXTRA_MINUTES, calendar.get(Calendar.MINUTE))
-                    .putExtra(AlarmClock.EXTRA_MESSAGE, alarm.getName())
-                    .putExtra(AlarmClock.EXTRA_SKIP_UI, true)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(setIntent);
-                showCancelToast();
-            } catch (Exception e2) {
-                // 如果两种方式都失败，说明系统不支持静默操作闹钟
+            android.util.Log.e(TAG, "取消系统闹钟失败", e);
+        }
+    }
+
+    /**
+     * 将重复日期位图转换为系统闹钟的星期数组
+     */
+    private ArrayList<Integer> getDaysOfWeek(int repeatDays) {
+        ArrayList<Integer> days = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            if ((repeatDays & (1 << i)) != 0) {
+                // 系统闹钟的星期从周一开始为1，到周日为7
+                days.add(i == 0 ? 7 : i); // 将周日(0)转换为7
             }
         }
+        return days;
     }
 
     /**
@@ -169,28 +217,29 @@ public class AlarmScheduler {
      */
     private void showCancelToast() {
         android.widget.Toast.makeText(
-            context,
-            context.getString(R.string.alarm_disabled),
-            android.widget.Toast.LENGTH_SHORT
-        ).show();
+                context,
+                context.getString(R.string.alarm_disabled),
+                android.widget.Toast.LENGTH_SHORT).show();
     }
 
     /**
      * 取消闹钟
+     * 同时取消应用内闹钟和系统闹钟
      */
     public void cancelAlarm(AlarmEntity alarm) {
         // 取消应用内闹钟
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-            context,
-            (int) alarm.getId(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+                context,
+                (int) alarm.getId(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         alarmManager.cancel(pendingIntent);
-        
-        // 取消系统闹钟
-        cancelSystemAlarm(alarm);
+
+        // 如果闹钟当前是启用状态，则同时取消系统闹钟
+        if (alarm.isEnabled() && hasSetAlarmPermission()) {
+            cancelSystemAlarm(alarm);
+        }
     }
 
     /**
@@ -198,10 +247,9 @@ public class AlarmScheduler {
      */
     private void showDegradedModeToast() {
         android.widget.Toast.makeText(
-            context,
-            context.getString(R.string.alarm_degraded_mode),
-            android.widget.Toast.LENGTH_SHORT
-        ).show();
+                context,
+                context.getString(R.string.alarm_degraded_mode),
+                android.widget.Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -211,18 +259,17 @@ public class AlarmScheduler {
         // 检查并请求SET_ALARM权限
         if (!hasSetAlarmPermission()) {
             new MaterialAlertDialogBuilder(activity)
-                .setTitle(R.string.system_alarm_permission_title)
-                .setMessage(R.string.system_alarm_permission_message)
-                .setPositiveButton(R.string.grant_permission, (dialog, which) -> ActivityCompat.requestPermissions(
-                    activity,
-                    new String[]{"com.android.alarm.permission.SET_ALARM"},
-                    REQUEST_SET_ALARM_PERMISSION
-                ))
-                .setNegativeButton(R.string.use_app_alarm_only, (dialog, which) -> {
-                    showDegradedModeToast();
-                    checkExactAlarmPermission(activity, onGranted);
-                })
-                .show();
+                    .setTitle(R.string.system_alarm_permission_title)
+                    .setMessage(R.string.system_alarm_permission_message)
+                    .setPositiveButton(R.string.grant_permission, (dialog, which) -> ActivityCompat.requestPermissions(
+                            activity,
+                            new String[] { "com.android.alarm.permission.SET_ALARM" },
+                            REQUEST_SET_ALARM_PERMISSION))
+                    .setNegativeButton(R.string.use_app_alarm_only, (dialog, which) -> {
+                        showDegradedModeToast();
+                        checkExactAlarmPermission(activity, onGranted);
+                    })
+                    .show();
             return;
         }
 
@@ -237,17 +284,16 @@ public class AlarmScheduler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
                 new MaterialAlertDialogBuilder(activity)
-                    .setTitle(R.string.exact_alarm_permission_title)
-                    .setMessage(R.string.exact_alarm_permission_message)
-                    .setPositiveButton(R.string.go_to_settings, (dialog, which) -> activity.startActivity(
-                        new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                    ))
-                    .setNegativeButton(R.string.alarm_cancel, null)
-                    .show();
+                        .setTitle(R.string.exact_alarm_permission_title)
+                        .setMessage(R.string.exact_alarm_permission_message)
+                        .setPositiveButton(R.string.go_to_settings, (dialog, which) -> activity.startActivity(
+                                new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)))
+                        .setNegativeButton(R.string.alarm_cancel, null)
+                        .show();
                 return;
             }
         }
 
         onGranted.run();
     }
-} 
+}

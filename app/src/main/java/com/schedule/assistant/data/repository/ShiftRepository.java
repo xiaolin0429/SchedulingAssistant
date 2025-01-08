@@ -61,9 +61,12 @@ public class ShiftRepository {
                 }
 
                 // 确保所有字符串字段不为null
-                if (shift.getStartTime() == null) shift.setStartTime("");
-                if (shift.getEndTime() == null) shift.setEndTime("");
-                if (shift.getNote() == null) shift.setNote("");
+                if (shift.getStartTime() == null)
+                    shift.setStartTime("");
+                if (shift.getEndTime() == null)
+                    shift.setEndTime("");
+                if (shift.getNote() == null)
+                    shift.setNote("");
 
                 // 检查是否已存在相同日期的班次
                 Shift existingShift = shiftDao.getShiftByDateDirect(shift.getDate());
@@ -85,16 +88,18 @@ public class ShiftRepository {
 
     public void update(Shift shift) {
         if (shift == null) {
-            if (callback != null) callback.onError("error_invalid_shift");
+            if (callback != null)
+                callback.onError("error_invalid_shift");
             return;
         }
-        
+
         // 确保必需字段不为空
         if (shift.getDate() == null || shift.getType() == null) {
-            if (callback != null) callback.onError("error_required_fields");
+            if (callback != null)
+                callback.onError("error_required_fields");
             return;
         }
-        
+
         executorService.execute(() -> {
             try {
                 shiftDao.update(shift);
@@ -129,4 +134,4 @@ public class ShiftRepository {
     public interface OnShiftLoadedCallback {
         void onShiftLoaded(Shift shift);
     }
-} 
+}

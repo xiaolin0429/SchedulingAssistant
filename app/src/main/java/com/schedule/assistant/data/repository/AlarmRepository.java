@@ -85,4 +85,4 @@ public class AlarmRepository {
     public void disableAllAlarms() {
         executorService.execute(() -> alarmDao.disableAllAlarms());
     }
-} 
+}

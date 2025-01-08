@@ -174,7 +174,8 @@
     <string name="disable_all_alarms_title">关闭所有闹钟</string>
     <string name="disable_all_alarms_message">确定要关闭所有闹钟吗？</string>
     <string name="alarm_disabled">闹钟已关闭，系统闹钟已跟随关闭</string>
-
+    <string name="edit_alarm">编辑闹钟</string>
+    <string name="delete_alarm_title">删除闹钟</string>
     <string name="alarm_degraded_mode">未授予系统闹钟权限，将使用应用内闹钟提醒</string>
 
     <!-- 权限相关字符串 -->
@@ -185,4 +186,30 @@
     <string name="grant_permission">授予权限</string>
     <string name="use_app_alarm_only">仅使用应用内闹钟</string>
     <string name="go_to_settings">去设置</string>
+
+    <!-- 闹钟编辑 -->
+    <string name="edit_alarm_time">编辑闹钟时间</string>
+    <string name="alarm_name">闹钟名称</string>
+    <string name="repeat_alarm">重复闹钟</string>
+    <string name="alarm_sound">闹钟铃声</string>
+    <string name="select">选择</string>
+    <string name="vibrate">振动</string>
+    <string name="select_alarm_sound">选择闹钟铃声</string>
+    <string name="default_alarm_sound">默认铃声</string>
+    <string name="alarm_updated_successfully">闹钟已更新</string>
+
+    <!-- 星期 -->
+    <string name="sunday">星期日</string>
+    <string name="monday">星期一</string>
+    <string name="tuesday">星期二</string>
+    <string name="wednesday">星期三</string>
+    <string name="thursday">星期四</string>
+    <string name="friday">星期五</string>
+    <string name="saturday">星期六</string>
+
+    <!-- 添加闹钟编辑相关的字符串资源 -->
+    <string name="edit_time">编辑时间</string>
+
+    <string name="alarm_cannot_edit_enabled">已启用的闹钟不允许编辑</string>
+
 </resources>
