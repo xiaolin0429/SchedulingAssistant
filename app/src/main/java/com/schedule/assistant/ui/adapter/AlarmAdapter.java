@@ -16,11 +16,14 @@ import java.util.Locale;
 
 /**
  * 闹钟列表适配器
+ * 负责闹钟列表项的展示和交互
  */
 public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmViewHolder> {
     private final OnAlarmActionListener listener;
     private final SimpleDateFormat timeFormat;
-    private boolean isEditMode = false;
+    private AlarmViewHolder currentOpenedItem = null;
+    private static final long DEBOUNCE_TIME = 300L;
+    private long lastClickTime = 0;
 
     private static final DiffUtil.ItemCallback<AlarmEntity> DIFF_CALLBACK = new DiffUtil.ItemCallback<AlarmEntity>() {
         @Override
@@ -57,10 +60,13 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         holder.bind(getItem(position));
     }
 
-    public void setEditMode(boolean editMode) {
-        if (this.isEditMode != editMode) {
-            this.isEditMode = editMode;
-            notifyDataSetChanged();
+    /**
+     * 关闭当前打开的项目
+     */
+    public void closeOpenedItem() {
+        if (currentOpenedItem != null) {
+            currentOpenedItem.hideButtons();
+            currentOpenedItem = null;
         }
     }
 
@@ -70,8 +76,79 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         AlarmViewHolder(ItemAlarmBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+            setupClickListeners();
         }
 
+        /**
+         * 设置点击事件监听器
+         */
+        private void setupClickListeners() {
+            // 内容区域点击事件
+            binding.contentLayout.setOnClickListener(v -> {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                    return;
+                }
+                lastClickTime = currentTime;
+
+                if (currentOpenedItem == this) {
+                    hideButtons();
+                    currentOpenedItem = null;
+                } else {
+                    if (currentOpenedItem != null) {
+                        currentOpenedItem.hideButtons();
+                    }
+                    showButtons();
+                    currentOpenedItem = this;
+                }
+            });
+
+            // 编辑按钮点击事件
+            binding.editButton.setOnClickListener(v -> {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                    return;
+                }
+                lastClickTime = currentTime;
+
+                int position = getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onAlarmEdit(getItem(position));
+                    hideButtons();
+                    currentOpenedItem = null;
+                }
+            });
+
+            // 删除按钮点击事件
+            binding.deleteButton.setOnClickListener(v -> {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                    return;
+                }
+                lastClickTime = currentTime;
+
+                int position = getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onAlarmDelete(getItem(position));
+                    hideButtons();
+                    currentOpenedItem = null;
+                }
+            });
+
+            // 开关切换事件
+            binding.enableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (buttonView.isPressed()) {
+                    int position = getBindingAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onAlarmToggle(getItem(position), isChecked);
+                    }
+                }
+            });
+        }
+
+        /**
+         * 绑定闹钟数据
+         */
         void bind(AlarmEntity alarm) {
             // 设置时间
             binding.timeText.setText(timeFormat.format(new Date(alarm.getTimeInMillis())));
@@ -85,36 +162,18 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             // 设置开关状态
             binding.enableSwitch.setChecked(alarm.isEnabled());
             
-            // 根据编辑模式显示/隐藏删除按钮
-            binding.deleteButton.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
-            binding.enableSwitch.setVisibility(isEditMode ? View.GONE : View.VISIBLE);
-
-            // 设置点击事件
-            binding.getRoot().setOnClickListener(v -> {
-                if (!isEditMode) {
-                    listener.onAlarmClick(alarm);
-                }
-            });
-
-            binding.getRoot().setOnLongClickListener(v -> {
-                setEditMode(!isEditMode);
-                return true;
-            });
-
-            // 设置开关切换事件
-            binding.enableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (buttonView.isPressed()) {
-                    listener.onAlarmToggle(alarm, isChecked);
-                }
-            });
-
-            // 设置删除事件
-            binding.deleteButton.setOnClickListener(v -> listener.onAlarmDelete(alarm));
+            // 重置按钮状态
+            hideButtons();
+            if (currentOpenedItem == this) {
+                currentOpenedItem = null;
+            }
         }
 
+        /**
+         * 获取重复文本
+         */
         private String getRepeatText(AlarmEntity alarm) {
             if (!alarm.isRepeat()) {
-                // 检查是否是今天
                 Calendar alarmTime = Calendar.getInstance();
                 alarmTime.setTimeInMillis(alarm.getTimeInMillis());
                 
@@ -160,11 +219,24 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
             }
             return days.toString();
         }
+
+        void showButtons() {
+            binding.buttonLayout.setVisibility(View.VISIBLE);
+            binding.enableSwitch.setVisibility(View.GONE);
+        }
+
+        void hideButtons() {
+            binding.buttonLayout.setVisibility(View.GONE);
+            binding.enableSwitch.setVisibility(View.VISIBLE);
+        }
     }
 
+    /**
+     * 闹钟操作监听器接口
+     */
     public interface OnAlarmActionListener {
-        void onAlarmClick(AlarmEntity alarm);
-        void onAlarmToggle(AlarmEntity alarm, boolean enabled);
+        void onAlarmEdit(AlarmEntity alarm);
         void onAlarmDelete(AlarmEntity alarm);
+        void onAlarmToggle(AlarmEntity alarm, boolean enabled);
     }
 } 

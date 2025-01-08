@@ -19,6 +19,7 @@ public class AlarmViewModel extends AndroidViewModel {
     private final AlarmRepository repository;
     private final LiveData<List<AlarmEntity>> allAlarms;
     private final AlarmScheduler alarmScheduler;
+    private static final String TAG = "AlarmViewModel";
 
     public AlarmViewModel(@NonNull Application application) {
         super(application);
@@ -39,30 +40,34 @@ public class AlarmViewModel extends AndroidViewModel {
      */
     public void createAlarm(FragmentActivity activity, int hour, int minute, String name, boolean repeat, 
                           int repeatDays, String soundUri, boolean vibrate) {
-        alarmScheduler.requestPermissions(activity, () -> {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-            calendar.set(Calendar.MINUTE, minute);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-            // 如果设置的时间早于当前时间，设置为第二天
-            if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-            }
+        // 如果设置的时间早于当前时间，设置为第二天
+        if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
-            AlarmEntity alarm = new AlarmEntity();
-            alarm.setTimeInMillis(calendar.getTimeInMillis());
-            alarm.setName(name != null ? name : "闹钟");
-            alarm.setRepeat(repeat);
-            alarm.setRepeatDays(repeatDays);
-            alarm.setSoundUri(soundUri != null ? soundUri : "");
-            alarm.setVibrate(vibrate);
+        AlarmEntity alarm = new AlarmEntity();
+        alarm.setTimeInMillis(calendar.getTimeInMillis());
+        alarm.setName(name != null ? name : "闹钟");
+        alarm.setRepeat(repeat);
+        alarm.setRepeatDays(repeatDays);
+        alarm.setSoundUri(soundUri != null ? soundUri : "");
+        alarm.setVibrate(vibrate);
+        alarm.setEnabled(true);  // 默认启用
 
-            long alarmId = repository.insert(alarm);
-            alarm.setId(alarmId);
-            alarmScheduler.scheduleAlarm(alarm);
-        });
+        // 1. 保存到数据库
+        long alarmId = repository.insert(alarm);
+        alarm.setId(alarmId);
+
+        // 2. 如果创建时就启用，需要请求权限并设置系统闹钟
+        alarmScheduler.requestPermissions(activity, () -> 
+            alarmScheduler.handleAlarmStateChange(alarm, true)
+        );
     }
 
     /**
@@ -77,32 +82,57 @@ public class AlarmViewModel extends AndroidViewModel {
      * 切换闹钟启用状态
      */
     public void toggleAlarm(FragmentActivity activity, long id, boolean enabled) {
-        alarmScheduler.requestPermissions(activity, () -> {
-            repository.updateEnabled(id, enabled);
-            List<AlarmEntity> alarms = allAlarms.getValue();
-            if (alarms != null) {
-                AlarmEntity alarm = alarms.stream()
-                    .filter(a -> a.getId() == id)
-                    .findFirst()
-                    .orElse(null);
-                if (alarm != null) {
-                    alarm.setEnabled(enabled);
-                    alarmScheduler.scheduleAlarm(alarm);
+        android.util.Log.d(TAG, "toggleAlarm: id=" + id + ", enabled=" + enabled);
+
+        // 1. 更新数据库中的启用状态
+        repository.updateEnabled(id, enabled);
+
+        // 2. 更新内存中的闹钟状态
+        List<AlarmEntity> alarms = allAlarms.getValue();
+        if (alarms != null) {
+            AlarmEntity alarm = alarms.stream()
+                .filter(a -> a.getId() == id)
+                .findFirst()
+                .orElse(null);
+            
+            if (alarm != null) {
+                android.util.Log.d(TAG, "找到闹钟: " + alarm.getId() 
+                    + ", 当前状态=" + alarm.isEnabled()
+                    + ", 目标状态=" + enabled);
+
+                alarm.setEnabled(enabled);
+                // 3. 如果是启用操作，需要请求权限
+                if (enabled) {
+                    android.util.Log.d(TAG, "请求权限并启用系统闹钟");
+                    alarmScheduler.requestPermissions(activity, () -> {
+                        android.util.Log.d(TAG, "权限请求完成，开始设置系统闹钟");
+                        alarmScheduler.handleAlarmStateChange(alarm, true);
+                    });
+                } else {
+                    android.util.Log.d(TAG, "直接禁用系统闹钟");
+                    alarmScheduler.handleAlarmStateChange(alarm, false);
                 }
+            } else {
+                android.util.Log.w(TAG, "未找到闹钟: " + id);
             }
-        });
+        } else {
+            android.util.Log.w(TAG, "闹钟列表为空");
+        }
     }
 
     /**
      * 禁用所有闹钟
      */
     public void disableAllAlarms() {
+        // 1. 更新数据库中的启用状态
         repository.disableAllAlarms();
+
+        // 2. 更新内存中的闹钟状态并取消系统闹钟
         List<AlarmEntity> alarms = allAlarms.getValue();
         if (alarms != null) {
             for (AlarmEntity alarm : alarms) {
                 alarm.setEnabled(false);
-                alarmScheduler.cancelAlarm(alarm);
+                alarmScheduler.handleAlarmStateChange(alarm, false);
             }
         }
     }
@@ -133,5 +163,17 @@ public class AlarmViewModel extends AndroidViewModel {
      */
     public void requestAlarmPermissions(FragmentActivity activity, Runnable onGranted) {
         alarmScheduler.requestPermissions(activity, onGranted);
+    }
+
+    /**
+     * 更新闹钟
+     * 同时更新应用内闹钟和系统闹钟
+     */
+    public void updateAlarm(FragmentActivity activity, AlarmEntity alarm) {
+        alarmScheduler.requestPermissions(activity, () -> {
+            alarm.setUpdateTime(System.currentTimeMillis());
+            repository.update(alarm);
+            alarmScheduler.scheduleAlarm(alarm);
+        });
     }
 } 
