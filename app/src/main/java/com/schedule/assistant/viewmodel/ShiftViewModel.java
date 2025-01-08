@@ -25,7 +25,7 @@ public class ShiftViewModel extends AndroidViewModel {
         super(application);
         shiftRepository = new ShiftRepository(application);
         templateRepository = new ShiftTemplateRepository(application);
-        
+
         // 初始加载数据
         loadShifts();
     }
@@ -118,6 +118,7 @@ public class ShiftViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         // 移除观察者，防止内存泄漏
-        shiftRepository.getAllShifts().removeObserver(shifts -> {});
+        shiftRepository.getAllShifts().removeObserver(shifts -> {
+        });
     }
-} 
+}

@@ -42,9 +42,11 @@ import com.schedule.assistant.ui.adapter.AlarmAdapter;
 import com.schedule.assistant.viewmodel.AlarmViewModel;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.res.ResourcesCompat;
 
 /**
  * 闹钟列表界面
@@ -130,6 +132,17 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
             adapter.submitList(alarms);
             binding.emptyView.setVisibility(alarms == null || alarms.isEmpty() ? View.VISIBLE : View.GONE);
         });
+
+        // 观察alarmUpdated，当数据更新时刷新UI
+        viewModel.getAlarmUpdated().observe(getViewLifecycleOwner(), updated -> {
+            if (updated != null && updated) {
+                int position = adapter.getCurrentList().indexOf(currentEditingAlarm);
+                if (position != -1) {
+                    adapter.notifyItemChanged(position);
+                }
+                viewModel.resetAlarmUpdated();
+            }
+        });
     }
 
     /**
@@ -139,8 +152,17 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
      */
     private void showTimePicker(@Nullable AlarmEntity alarm) {
         // 如果是编辑现有闹钟，直接显示编辑对话框
-        if (alarm != null) {
-            showEditAlarmDialog(alarm);
+        if (alarm != null && alarm.isEnabled()) {
+            Snackbar snackbar = Snackbar.make(binding.getRoot(), R.string.alarm_cannot_edit_enabled,
+                    Snackbar.LENGTH_LONG);
+            View snackbarView = snackbar.getView();
+            snackbarView
+                    .setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.snackbar_background, null));
+            TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+            textView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.snackbar_text, null));
+            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warning, 0, 0, 0);
+            textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
+            snackbar.show();
             return;
         }
 
@@ -185,15 +207,14 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         binding.alarmList.setOnClickListener(v -> adapter.closeOpenedItem());
         binding.alarmList.setOnTouchListener((v, event) -> {
             if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
-                // 检查点击是否在任何item上
                 View child = binding.alarmList.findChildViewUnder(event.getX(), event.getY());
                 if (child == null) {
-                    // 点击在空白区域
                     adapter.closeOpenedItem();
                 }
-                return v.performClick(); // 修改这里，直接返回performClick的结果
+                v.performClick();
+                return true;
             }
-            return false; // 其他事件继续传递
+            return false;
         });
 
         // 设置根布局的点击事件，用于处理列表外的点击
@@ -210,6 +231,10 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
     @Override
     public void onAlarmEdit(AlarmEntity alarm) {
         adapter.closeOpenedItem();
+        if (alarm.isEnabled()) {
+            Snackbar.make(binding.getRoot(), R.string.alarm_cannot_edit_enabled, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
         showEditAlarmDialog(alarm);
     }
 
@@ -284,7 +309,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
         // 设置时间显示
         TextView timeText = dialogView.findViewById(R.id.text_time);
-        timeText.setText(String.format("%02d:%02d", currentHour, currentMinute));
+        timeText.setText(String.format(Locale.getDefault(), "%02d:%02d", currentHour, currentMinute));
 
         // 设置时间选择点击事件
         View timePickerButton = dialogView.findViewById(R.id.button_time);
@@ -299,7 +324,8 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
             timePicker.addOnPositiveButtonClickListener(view -> {
                 calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.set(Calendar.MINUTE, timePicker.getMinute());
-                timeText.setText(String.format("%02d:%02d", timePicker.getHour(), timePicker.getMinute()));
+                timeText.setText(
+                        String.format(Locale.getDefault(), "%02d:%02d", timePicker.getHour(), timePicker.getMinute()));
             });
 
             timePicker.show(getChildFragmentManager(), "time_picker");

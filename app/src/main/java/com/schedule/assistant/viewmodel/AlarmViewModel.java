@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Calendar;
 import com.schedule.assistant.service.AlarmScheduler;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
 
 /**
  * 闹钟ViewModel
@@ -20,6 +21,7 @@ public class AlarmViewModel extends AndroidViewModel {
     private final LiveData<List<AlarmEntity>> allAlarms;
     private final AlarmScheduler alarmScheduler;
     private static final String TAG = "AlarmViewModel";
+    private final MutableLiveData<Boolean> alarmUpdated = new MutableLiveData<>();
 
     public AlarmViewModel(@NonNull Application application) {
         super(application);
@@ -182,7 +184,20 @@ public class AlarmViewModel extends AndroidViewModel {
         alarmScheduler.requestPermissions(activity, () -> {
             alarm.setUpdateTime(System.currentTimeMillis());
             repository.update(alarm);
-            alarmScheduler.scheduleAlarm(alarm);
+            if (alarm.isEnabled()) {
+                android.util.Log.w(TAG, "已启用的闹钟不允许编辑: " + alarm.getId());
+                return;
+            }
+            alarmScheduler.scheduleAlarm(alarm); // 重新调度系统闹钟
+            alarmUpdated.postValue(true); // 通知UI数据已更新
         });
+    }
+
+    public LiveData<Boolean> getAlarmUpdated() {
+        return alarmUpdated;
+    }
+
+    public void resetAlarmUpdated() {
+        alarmUpdated.setValue(false);
     }
 }

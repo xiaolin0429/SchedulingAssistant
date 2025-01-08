@@ -210,4 +210,6 @@
     <!-- 添加闹钟编辑相关的字符串资源 -->
     <string name="edit_time">编辑时间</string>
 
+    <string name="alarm_cannot_edit_enabled">已启用的闹钟不允许编辑</string>
+
 </resources>

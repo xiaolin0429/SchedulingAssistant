@@ -1,1 +1,4 @@
-<string name="edit_time">编辑时间</string> 
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_time">编辑时间</string>
+</resources> 

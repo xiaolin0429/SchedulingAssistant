@@ -69,4 +69,7 @@
     <!-- 闹钟按钮背景颜色 -->
     <color name="alarm_edit_background">#2196F3</color>  <!-- Material Blue -->
     <color name="alarm_delete_background">#F44336</color>  <!-- Material Red -->
+
+    <color name="snackbar_background">#A5D6A7</color>
+    <color name="snackbar_text">#FFFFFF</color>
 </resources>
