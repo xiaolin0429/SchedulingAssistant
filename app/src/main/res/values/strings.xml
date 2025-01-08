@@ -207,4 +207,7 @@
     <string name="friday">星期五</string>
     <string name="saturday">星期六</string>
 
+    <!-- 添加闹钟编辑相关的字符串资源 -->
+    <string name="edit_time">编辑时间</string>
+
 </resources>

@@ -38,8 +38,16 @@ public class AlarmViewModel extends AndroidViewModel {
     /**
      * 创建新闹钟
      */
-    public void createAlarm(FragmentActivity activity, int hour, int minute, String name, boolean repeat, 
-                          int repeatDays, String soundUri, boolean vibrate) {
+    public void createAlarm(
+            int hour,
+            int minute,
+            String name,
+            boolean repeat,
+            int repeatDays,
+            String soundUri,
+            boolean vibrate,
+            boolean enabled) {
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
@@ -53,21 +61,22 @@ public class AlarmViewModel extends AndroidViewModel {
 
         AlarmEntity alarm = new AlarmEntity();
         alarm.setTimeInMillis(calendar.getTimeInMillis());
-        alarm.setName(name != null ? name : "闹钟");
+        alarm.setName(name);
+        alarm.setEnabled(enabled);
         alarm.setRepeat(repeat);
         alarm.setRepeatDays(repeatDays);
-        alarm.setSoundUri(soundUri != null ? soundUri : "");
+        alarm.setSoundUri(soundUri);
         alarm.setVibrate(vibrate);
-        alarm.setEnabled(true);  // 默认启用
 
-        // 1. 保存到数据库
+        // 插入闹钟数据
         long alarmId = repository.insert(alarm);
-        alarm.setId(alarmId);
-
-        // 2. 如果创建时就启用，需要请求权限并设置系统闹钟
-        alarmScheduler.requestPermissions(activity, () -> 
-            alarmScheduler.handleAlarmStateChange(alarm, true)
-        );
+        if (alarmId > 0) {
+            alarm.setId(alarmId);
+            // 只有在启用状态时才创建系统闹钟
+            if (enabled) {
+                alarmScheduler.handleAlarmStateChange(alarm, true);
+            }
+        }
     }
 
     /**
@@ -91,14 +100,14 @@ public class AlarmViewModel extends AndroidViewModel {
         List<AlarmEntity> alarms = allAlarms.getValue();
         if (alarms != null) {
             AlarmEntity alarm = alarms.stream()
-                .filter(a -> a.getId() == id)
-                .findFirst()
-                .orElse(null);
-            
+                    .filter(a -> a.getId() == id)
+                    .findFirst()
+                    .orElse(null);
+
             if (alarm != null) {
-                android.util.Log.d(TAG, "找到闹钟: " + alarm.getId() 
-                    + ", 当前状态=" + alarm.isEnabled()
-                    + ", 目标状态=" + enabled);
+                android.util.Log.d(TAG, "找到闹钟: " + alarm.getId()
+                        + ", 当前状态=" + alarm.isEnabled()
+                        + ", 目标状态=" + enabled);
 
                 alarm.setEnabled(enabled);
                 // 3. 如果是启用操作，需要请求权限
@@ -176,4 +185,4 @@ public class AlarmViewModel extends AndroidViewModel {
             alarmScheduler.scheduleAlarm(alarm);
         });
     }
-} 
+}

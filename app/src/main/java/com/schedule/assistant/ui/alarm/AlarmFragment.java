@@ -60,17 +60,16 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
     // 注册铃声选择结果回调
     private final ActivityResultLauncher<Intent> soundPickerLauncher = registerForActivityResult(
-        new ActivityResultContracts.StartActivityForResult(),
-        result -> {
-            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-                if (uri != null && currentEditingAlarm != null && currentSoundText != null) {
-                    currentEditingAlarm.setSoundUri(uri.toString());
-                    currentSoundText.setText(getSoundName(uri.toString()));
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                    if (uri != null && currentEditingAlarm != null && currentSoundText != null) {
+                        currentEditingAlarm.setSoundUri(uri.toString());
+                        currentSoundText.setText(getSoundName(uri.toString()));
+                    }
                 }
-            }
-        }
-    );
+            });
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,7 +80,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         viewModel = new ViewModelProvider(this).get(AlarmViewModel.class);
         checkNotificationPermission();
         setupRecyclerView();
@@ -113,11 +112,11 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
     private void showDisableAllConfirmDialog() {
         new MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.disable_all_alarms_title)
-            .setMessage(R.string.disable_all_alarms_message)
-            .setPositiveButton(R.string.alarm_confirm, (dialog, which) -> viewModel.disableAllAlarms())
-            .setNegativeButton(R.string.alarm_cancel, null)
-            .show();
+                .setTitle(R.string.disable_all_alarms_title)
+                .setMessage(R.string.disable_all_alarms_message)
+                .setPositiveButton(R.string.alarm_confirm, (dialog, which) -> viewModel.disableAllAlarms())
+                .setNegativeButton(R.string.alarm_cancel, null)
+                .show();
     }
 
     private void setupRecyclerView() {
@@ -135,54 +134,34 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
     /**
      * 显示时间选择器
+     * 
      * @param alarm 要编辑的闹钟，如果是新建则为null
      */
     private void showTimePicker(@Nullable AlarmEntity alarm) {
-        Calendar calendar = Calendar.getInstance();
+        // 如果是编辑现有闹钟，直接显示编辑对话框
         if (alarm != null) {
-            calendar.setTimeInMillis(alarm.getTimeInMillis());
+            showEditAlarmDialog(alarm);
+            return;
         }
 
-        MaterialTimePicker picker = new MaterialTimePicker.Builder()
-            .setTimeFormat(TimeFormat.CLOCK_24H)
-            .setHour(calendar.get(Calendar.HOUR_OF_DAY))
-            .setMinute(calendar.get(Calendar.MINUTE))
-            .setTitleText(alarm == null ? R.string.add_alarm : R.string.edit_alarm)
-            .build();
+        // 创建新闹钟
+        AlarmEntity newAlarm = new AlarmEntity();
+        Calendar calendar = Calendar.getInstance();
+        // 设置默认时间为当前时间的下一个整点
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-        picker.addOnPositiveButtonClickListener(v -> {
-            calendar.set(Calendar.HOUR_OF_DAY, picker.getHour());
-            calendar.set(Calendar.MINUTE, picker.getMinute());
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
+        newAlarm.setTimeInMillis(calendar.getTimeInMillis());
+        newAlarm.setName(getString(R.string.default_alarm_name));
+        newAlarm.setEnabled(false); // 新建闹钟默认为未启用状态
+        newAlarm.setRepeat(false);
+        newAlarm.setRepeatDays(0);
+        newAlarm.setVibrate(true);
+        newAlarm.setSoundUri("");
 
-            // 如果设置的时间早于当前时间，设置为第二天
-            if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-            }
-
-            if (alarm == null) {
-                // 创建新闹钟
-                viewModel.requestAlarmPermissions(requireActivity(), () -> 
-                    viewModel.createAlarm(
-                        requireActivity(),
-                        picker.getHour(),
-                        picker.getMinute(),
-                        getString(R.string.default_alarm_name),
-                        false,
-                        0,
-                        null,
-                        true
-                    )
-                );
-            } else {
-                // 更新现有闹钟
-                alarm.setTimeInMillis(calendar.getTimeInMillis());
-                viewModel.updateAlarm(requireActivity(), alarm);
-            }
-        });
-
-        picker.show(getChildFragmentManager(), "time_picker");
+        showEditAlarmDialog(newAlarm);
     }
 
     private void setupClickListeners() {
@@ -204,9 +183,6 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
         // 设置RecyclerView的触摸和点击事件监听
         binding.alarmList.setOnClickListener(v -> adapter.closeOpenedItem());
-        
-        // 重写RecyclerView的performClick方法
-        binding.alarmList.setOnClickListener(v -> adapter.closeOpenedItem());
         binding.alarmList.setOnTouchListener((v, event) -> {
             if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
                 // 检查点击是否在任何item上
@@ -215,9 +191,9 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
                     // 点击在空白区域
                     adapter.closeOpenedItem();
                 }
+                return v.performClick(); // 修改这里，直接返回performClick的结果
             }
-            v.performClick();
-            return false; // 继续传递事件
+            return false; // 其他事件继续传递
         });
 
         // 设置根布局的点击事件，用于处理列表外的点击
@@ -241,38 +217,43 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
     public void onAlarmDelete(AlarmEntity alarm) {
         adapter.closeOpenedItem();
         new MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.delete_alarm_title)
-            .setMessage(R.string.alarm_delete_confirm)
-            .setPositiveButton(R.string.delete, (dialog, which) -> {
-                viewModel.deleteAlarm(alarm);
-                showDeleteSuccessMessage();
-            })
-            .setNegativeButton(R.string.cancel, null)
-            .show();
+                .setTitle(R.string.delete_alarm_title)
+                .setMessage(R.string.alarm_delete_confirm)
+                .setPositiveButton(R.string.delete, (dialog, which) -> {
+                    viewModel.deleteAlarm(alarm);
+                    showDeleteSuccessMessage();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     @Override
     public void onAlarmToggle(AlarmEntity alarm, boolean enabled) {
-        viewModel.toggleAlarm(requireActivity(), alarm.getId(), enabled);
+        if (enabled) {
+            // 启用闹钟时，先请求权限再创建系统闹钟
+            viewModel.requestAlarmPermissions(requireActivity(),
+                    () -> viewModel.toggleAlarm(requireActivity(), alarm.getId(), true));
+        } else {
+            // 禁用闹钟时，直接关闭
+            viewModel.toggleAlarm(requireActivity(), alarm.getId(), false);
+        }
     }
 
     private void showDeleteSuccessMessage() {
         Snackbar.make(
-            binding.getRoot(),
-            R.string.alarm_delete_success,
-            Snackbar.LENGTH_SHORT
-        ).show();
+                binding.getRoot(),
+                R.string.alarm_delete_success,
+                Snackbar.LENGTH_SHORT).show();
     }
 
     private void checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(requireContext(), 
+            if (ActivityCompat.checkSelfPermission(requireContext(),
                     Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                    REQUEST_NOTIFICATION_PERMISSION
-                );
+                        requireActivity(),
+                        new String[] { Manifest.permission.POST_NOTIFICATIONS },
+                        REQUEST_NOTIFICATION_PERMISSION);
             }
         }
     }
@@ -294,12 +275,35 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
      */
     private void showEditAlarmDialog(AlarmEntity alarm) {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_alarm, null);
-        MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
-            .setTimeFormat(TimeFormat.CLOCK_24H)
-            .setHour(getHourFromMillis(alarm.getTimeInMillis()))
-            .setMinute(getMinuteFromMillis(alarm.getTimeInMillis()))
-            .setTitleText(R.string.edit_alarm_time)
-            .build();
+
+        // 获取当前闹钟时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(alarm.getTimeInMillis());
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        // 设置时间显示
+        TextView timeText = dialogView.findViewById(R.id.text_time);
+        timeText.setText(String.format("%02d:%02d", currentHour, currentMinute));
+
+        // 设置时间选择点击事件
+        View timePickerButton = dialogView.findViewById(R.id.button_time);
+        timePickerButton.setOnClickListener(v -> {
+            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(currentHour)
+                    .setMinute(currentMinute)
+                    .setTitleText(R.string.edit_alarm_time)
+                    .build();
+
+            timePicker.addOnPositiveButtonClickListener(view -> {
+                calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
+                calendar.set(Calendar.MINUTE, timePicker.getMinute());
+                timeText.setText(String.format("%02d:%02d", timePicker.getHour(), timePicker.getMinute()));
+            });
+
+            timePicker.show(getChildFragmentManager(), "time_picker");
+        });
 
         EditText nameEdit = dialogView.findViewById(R.id.edit_alarm_name);
         nameEdit.setText(alarm.getName());
@@ -313,18 +317,17 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         // 重复日期选择
         CheckBox[] dayCheckBoxes = new CheckBox[7];
         int[] dayCheckBoxIds = {
-            R.id.check_day_0, R.id.check_day_1, R.id.check_day_2,
-            R.id.check_day_3, R.id.check_day_4, R.id.check_day_5,
-            R.id.check_day_6
+                R.id.check_day_0, R.id.check_day_1, R.id.check_day_2,
+                R.id.check_day_3, R.id.check_day_4, R.id.check_day_5,
+                R.id.check_day_6
         };
         for (int i = 0; i < 7; i++) {
             dayCheckBoxes[i] = dialogView.findViewById(dayCheckBoxIds[i]);
             dayCheckBoxes[i].setChecked((alarm.getRepeatDays() & (1 << i)) != 0);
         }
 
-        repeatCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            repeatDaysLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        });
+        repeatCheck.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> repeatDaysLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE));
 
         // 声音和振动设置
         CheckBox vibrateCheck = dialogView.findViewById(R.id.check_vibrate);
@@ -337,43 +340,51 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         soundButton.setOnClickListener(v -> showSoundPicker(alarm, soundText));
 
         new MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.edit_alarm)
-            .setView(dialogView)
-            .setPositiveButton(R.string.save, (dialog, which) -> {
-                // 保存时间设置
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(alarm.getTimeInMillis());
-                calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
-                calendar.set(Calendar.MINUTE, timePicker.getMinute());
-
-                if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                    calendar.add(Calendar.DAY_OF_MONTH, 1);
-                }
-
-                alarm.setTimeInMillis(calendar.getTimeInMillis());
-                alarm.setName(nameEdit.getText().toString().trim());
-                alarm.setRepeat(repeatCheck.isChecked());
-
-                // 保存重复日期设置
-                if (alarm.isRepeat()) {
-                    int repeatDays = 0;
-                    for (int i = 0; i < 7; i++) {
-                        if (dayCheckBoxes[i].isChecked()) {
-                            repeatDays |= (1 << i);
-                        }
+                .setTitle(alarm.getId() == 0 ? R.string.add_alarm : R.string.edit_alarm)
+                .setView(dialogView)
+                .setPositiveButton(R.string.save, (dialog, which) -> {
+                    // 保存时间设置
+                    if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
                     }
-                    alarm.setRepeatDays(repeatDays);
-                }
 
-                alarm.setVibrate(vibrateCheck.isChecked());
-                viewModel.updateAlarm(requireActivity(), alarm);
-                showUpdateSuccessMessage();
-            })
-            .setNegativeButton(R.string.cancel, null)
-            .show();
+                    alarm.setTimeInMillis(calendar.getTimeInMillis());
+                    alarm.setName(nameEdit.getText().toString().trim());
+                    alarm.setRepeat(repeatCheck.isChecked());
 
-        // 显示时间选择器
-        timePicker.show(getChildFragmentManager(), "time_picker");
+                    // 保存重复日期设置
+                    if (alarm.isRepeat()) {
+                        int repeatDays = 0;
+                        for (int i = 0; i < 7; i++) {
+                            if (dayCheckBoxes[i].isChecked()) {
+                                repeatDays |= (1 << i);
+                            }
+                        }
+                        alarm.setRepeatDays(repeatDays);
+                    }
+
+                    alarm.setVibrate(vibrateCheck.isChecked());
+
+                    // 区分新建和编辑闹钟
+                    if (alarm.getId() == 0) {
+                        // 新建闹钟，直接保存到数据库，不创建系统闹钟
+                        viewModel.createAlarm(
+                                getHourFromMillis(alarm.getTimeInMillis()),
+                                getMinuteFromMillis(alarm.getTimeInMillis()),
+                                alarm.getName(),
+                                alarm.isRepeat(),
+                                alarm.getRepeatDays(),
+                                alarm.getSoundUri(),
+                                alarm.isVibrate(),
+                                false); // 新建闹钟时默认为未启用状态
+                    } else {
+                        // 更新现有闹钟
+                        viewModel.updateAlarm(requireActivity(), alarm);
+                    }
+                    showUpdateSuccessMessage();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     /**
@@ -385,8 +396,8 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.select_alarm_sound));
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, 
-            alarm.getSoundUri().isEmpty() ? null : Uri.parse(alarm.getSoundUri()));
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                alarm.getSoundUri().isEmpty() ? null : Uri.parse(alarm.getSoundUri()));
         soundPickerLauncher.launch(intent);
     }
 
@@ -425,4 +436,4 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
     private void showUpdateSuccessMessage() {
         Snackbar.make(binding.getRoot(), R.string.alarm_updated_successfully, Snackbar.LENGTH_SHORT).show();
     }
-} 
+}

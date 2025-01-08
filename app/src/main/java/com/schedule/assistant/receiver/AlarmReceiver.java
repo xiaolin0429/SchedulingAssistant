@@ -47,14 +47,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private void createNotificationChannel(Context context) {
         NotificationChannel channel = new NotificationChannel(
-            CHANNEL_ID,
-            CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_HIGH
-        );
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription("闹钟提醒通知");
         channel.enableVibration(true);
-        channel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+        channel.setVibrationPattern(new long[] { 0, 1000, 500, 1000 });
 
         NotificationManagerCompat.from(context).createNotificationChannel(channel);
     }
-} 
+}
