@@ -83,6 +83,6 @@ public class AlarmRepository {
      * 禁用所有闹钟
      */
     public void disableAllAlarms() {
-        executorService.execute(() -> alarmDao.disableAllAlarms());
+        executorService.execute(alarmDao::disableAllAlarms);
     }
 }

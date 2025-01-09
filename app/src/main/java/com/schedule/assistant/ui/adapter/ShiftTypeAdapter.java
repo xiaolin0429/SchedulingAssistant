@@ -21,7 +21,7 @@ public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdap
     private long lastClickTime = 0;
 
     public ShiftTypeAdapter(OnShiftTypeActionListener listener) {
-        super(new DiffUtil.ItemCallback<ShiftTypeEntity>() {
+        super(new DiffUtil.ItemCallback<>() {
             @Override
             public boolean areItemsTheSame(@NonNull ShiftTypeEntity oldItem, @NonNull ShiftTypeEntity newItem) {
                 return oldItem.getId() == newItem.getId();
@@ -30,11 +30,11 @@ public class ShiftTypeAdapter extends ListAdapter<ShiftTypeEntity, ShiftTypeAdap
             @Override
             public boolean areContentsTheSame(@NonNull ShiftTypeEntity oldItem, @NonNull ShiftTypeEntity newItem) {
                 return Objects.equals(oldItem.getName(), newItem.getName()) &&
-                       ((oldItem.getStartTime() == null && newItem.getStartTime() == null) ||
-                        (oldItem.getStartTime() != null && oldItem.getStartTime().equals(newItem.getStartTime()))) &&
-                       ((oldItem.getEndTime() == null && newItem.getEndTime() == null) ||
-                        (oldItem.getEndTime() != null && oldItem.getEndTime().equals(newItem.getEndTime()))) &&
-                       oldItem.getColor() == newItem.getColor();
+                        ((oldItem.getStartTime() == null && newItem.getStartTime() == null) ||
+                                (oldItem.getStartTime() != null && oldItem.getStartTime().equals(newItem.getStartTime()))) &&
+                        ((oldItem.getEndTime() == null && newItem.getEndTime() == null) ||
+                                (oldItem.getEndTime() != null && oldItem.getEndTime().equals(newItem.getEndTime()))) &&
+                        oldItem.getColor() == newItem.getColor();
             }
         });
         this.listener = listener;

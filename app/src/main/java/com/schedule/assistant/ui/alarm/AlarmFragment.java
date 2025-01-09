@@ -1,6 +1,7 @@
 package com.schedule.assistant.ui.alarm;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -116,8 +117,8 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.disable_all_alarms_title)
                 .setMessage(R.string.disable_all_alarms_message)
-                .setPositiveButton(R.string.alarm_confirm, (dialog, which) -> viewModel.disableAllAlarms())
-                .setNegativeButton(R.string.alarm_cancel, null)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.disableAllAlarms())
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -186,6 +187,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         showEditAlarmDialog(newAlarm);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setupClickListeners() {
         // 添加闹钟按钮点击事件
         binding.fabAddAlarm.setOnClickListener(v -> {
@@ -242,9 +244,9 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
     public void onAlarmDelete(AlarmEntity alarm) {
         adapter.closeOpenedItem();
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.delete_alarm_title)
+                .setTitle(R.string.delete_alarm)
                 .setMessage(R.string.alarm_delete_confirm)
-                .setPositiveButton(R.string.delete, (dialog, which) -> {
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
                     viewModel.deleteAlarm(alarm);
                     showDeleteSuccessMessage();
                 })
@@ -318,7 +320,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
                     .setTimeFormat(TimeFormat.CLOCK_24H)
                     .setHour(currentHour)
                     .setMinute(currentMinute)
-                    .setTitleText(R.string.edit_alarm_time)
+                    .setTitleText(R.string.select_alarm_time)
                     .build();
 
             timePicker.addOnPositiveButtonClickListener(view -> {
@@ -368,7 +370,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(alarm.getId() == 0 ? R.string.add_alarm : R.string.edit_alarm)
                 .setView(dialogView)
-                .setPositiveButton(R.string.save, (dialog, which) -> {
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
                     // 保存时间设置
                     if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
                         calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -421,7 +423,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         currentSoundText = soundText;
         Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.select_alarm_sound));
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, getString(R.string.alarm_sound_hint));
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
                 alarm.getSoundUri().isEmpty() ? null : Uri.parse(alarm.getSoundUri()));
         soundPickerLauncher.launch(intent);
@@ -432,10 +434,10 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
      */
     private String getSoundName(String uriString) {
         if (uriString == null || uriString.isEmpty()) {
-            return getString(R.string.default_alarm_sound);
+            return getString(R.string.alarm_sound_hint);
         }
         Ringtone ringtone = RingtoneManager.getRingtone(requireContext(), Uri.parse(uriString));
-        return ringtone != null ? ringtone.getTitle(requireContext()) : getString(R.string.default_alarm_sound);
+        return ringtone != null ? ringtone.getTitle(requireContext()) : getString(R.string.alarm_sound_hint);
     }
 
     /**
@@ -460,6 +462,6 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
      * 显示更新成功提示
      */
     private void showUpdateSuccessMessage() {
-        Snackbar.make(binding.getRoot(), R.string.alarm_updated_successfully, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(binding.getRoot(), R.string.alarm_update_success, Snackbar.LENGTH_SHORT).show();
     }
 }

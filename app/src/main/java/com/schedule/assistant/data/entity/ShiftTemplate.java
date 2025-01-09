@@ -26,12 +26,10 @@ public class ShiftTemplate {
         this.isDefault = false;
         this.updateTime = System.currentTimeMillis();
         // 根据名称设置默认的班次类型
-        if (name.equals("早班")) {
-            this.type = ShiftType.DAY_SHIFT;
-        } else if (name.equals("晚班")) {
-            this.type = ShiftType.NIGHT_SHIFT;
-        } else if (name.equals("休息")) {
-            this.type = ShiftType.REST_DAY;
+        switch (name) {
+            case "早班" -> this.type = ShiftType.DAY_SHIFT;
+            case "晚班" -> this.type = ShiftType.NIGHT_SHIFT;
+            case "休息" -> this.type = ShiftType.REST_DAY;
         }
     }
 

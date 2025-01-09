@@ -288,7 +288,7 @@ public class AlarmScheduler {
                         .setMessage(R.string.exact_alarm_permission_message)
                         .setPositiveButton(R.string.go_to_settings, (dialog, which) -> activity.startActivity(
                                 new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)))
-                        .setNegativeButton(R.string.alarm_cancel, null)
+                        .setNegativeButton(R.string.cancel, null)
                         .show();
                 return;
             }

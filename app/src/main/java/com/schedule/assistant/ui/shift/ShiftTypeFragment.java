@@ -72,10 +72,10 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.error)
-                    .setMessage(message)
-                    .setPositiveButton(R.string.ok, null)
-                    .show();
+                        .setTitle(R.string.error)
+                        .setMessage(message)
+                        .setPositiveButton(R.string.confirm, null)
+                        .show();
             }
         });
     }
@@ -90,19 +90,18 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         if (shiftType.isDefault()) {
             // 在底部显示Toast提示
             android.widget.Toast.makeText(
-                requireContext(),
-                R.string.cannot_delete_default_shift_type,
-                android.widget.Toast.LENGTH_SHORT
-            ).show();
+                    requireContext(),
+                    R.string.cannot_delete_default_shift_type,
+                    android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
 
         new MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.delete_shift_type)
-            .setMessage(R.string.confirm_delete_shift_type)
-            .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.delete(shiftType))
-            .setNegativeButton(R.string.cancel, null)
-            .show();
+                .setTitle(R.string.delete_shift_type)
+                .setMessage(R.string.confirm_delete_shift_type)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.delete(shiftType))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void showShiftTypeDialog(@Nullable ShiftTypeEntity shiftType) {
@@ -115,4 +114,4 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         super.onDestroyView();
         binding = null;
     }
-} 
+}

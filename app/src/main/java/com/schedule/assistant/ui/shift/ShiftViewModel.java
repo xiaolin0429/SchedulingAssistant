@@ -36,7 +36,7 @@ public class ShiftViewModel extends AndroidViewModel {
         LocalDate start = month.withDayOfMonth(1);
         LocalDate end = month.withDayOfMonth(month.lengthOfMonth());
         repository.getShiftsBetween(start.toString(), end.toString())
-                .observeForever(monthShifts -> shifts.setValue(monthShifts));
+                .observeForever(shifts::setValue);
     }
 
     public LiveData<String> getErrorMessage() {

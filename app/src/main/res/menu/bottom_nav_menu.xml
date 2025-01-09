@@ -21,7 +21,7 @@
         android:title="@string/title_stats" />
 
     <item
-        android:id="@+id/navigation_profile"
-        android:icon="@android:drawable/ic_menu_myplaces"
+        android:id="@+id/profileMainFragment"
+        android:icon="@drawable/ic_profile"
         android:title="@string/title_profile" />
 </menu> 

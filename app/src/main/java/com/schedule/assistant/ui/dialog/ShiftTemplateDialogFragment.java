@@ -50,7 +50,8 @@ public class ShiftTemplateDialogFragment extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         binding = DialogShiftTemplateBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -58,7 +59,7 @@ public class ShiftTemplateDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         setupViews();
         loadTemplateData();
         setupListeners();
@@ -78,13 +79,12 @@ public class ShiftTemplateDialogFragment extends BottomSheetDialogFragment {
             binding.endTimeInput.setText(args.getString("end_time"));
             selectedColor = args.getInt("color");
             binding.colorPreview.setBackgroundColor(selectedColor);
-            
+
             currentTemplate = new ShiftTemplate(
-                args.getString("name"),
-                args.getString("start_time"),
-                args.getString("end_time"),
-                args.getInt("color")
-            );
+                    args.getString("name"),
+                    args.getString("start_time"),
+                    args.getString("end_time"),
+                    args.getInt("color"));
             currentTemplate.setId(args.getLong("template_id"));
             currentTemplate.setDefault(args.getBoolean("is_default"));
         }
@@ -97,42 +97,39 @@ public class ShiftTemplateDialogFragment extends BottomSheetDialogFragment {
 
     private void showTimePicker(boolean isStartTime) {
         LocalTime defaultTime = LocalTime.of(isStartTime ? 9 : 18, 0);
-        String currentTime = isStartTime ? 
-            binding.startTimeInput.getText().toString() : 
-            binding.endTimeInput.getText().toString();
-        
+        String currentTime = isStartTime ? binding.startTimeInput.getText().toString()
+                : binding.endTimeInput.getText().toString();
+
         if (!currentTime.isEmpty()) {
             defaultTime = LocalTime.parse(currentTime, timeFormatter);
         }
 
         TimePickerDialog dialog = new TimePickerDialog(
-            requireContext(),
-            (view, hourOfDay, minute) -> {
-                String time = String.format("%02d:%02d", hourOfDay, minute);
-                if (isStartTime) {
-                    binding.startTimeInput.setText(time);
-                } else {
-                    binding.endTimeInput.setText(time);
-                }
-            },
-            defaultTime.getHour(),
-            defaultTime.getMinute(),
-            true
-        );
+                requireContext(),
+                (view, hourOfDay, minute) -> {
+                    String time = String.format("%02d:%02d", hourOfDay, minute);
+                    if (isStartTime) {
+                        binding.startTimeInput.setText(time);
+                    } else {
+                        binding.endTimeInput.setText(time);
+                    }
+                },
+                defaultTime.getHour(),
+                defaultTime.getMinute(),
+                true);
         dialog.show();
     }
 
     private void showColorPicker() {
-        new ColorPickerDialog
-            .Builder(requireContext())
-            .setTitle(getString(R.string.select_color))
-            .setColorShape(ColorShape.SQAURE)
-            .setDefaultColor(selectedColor)
-            .setColorListener((color, colorHex) -> {
-                selectedColor = color;
-                binding.colorPreview.setBackgroundColor(color);
-            })
-            .show();
+        new ColorPickerDialog.Builder(requireContext())
+                .setTitle(getString(R.string.select_color))
+                .setColorShape(ColorShape.SQAURE)
+                .setDefaultColor(selectedColor)
+                .setColorListener((color, colorHex) -> {
+                    selectedColor = color;
+                    binding.colorPreview.setBackgroundColor(color);
+                })
+                .show();
     }
 
     private void saveTemplate() {
@@ -162,4 +159,4 @@ public class ShiftTemplateDialogFragment extends BottomSheetDialogFragment {
         super.onDestroyView();
         binding = null;
     }
-} 
+}
