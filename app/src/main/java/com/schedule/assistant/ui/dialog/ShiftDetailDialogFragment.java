@@ -59,16 +59,15 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
         // 设置对话框宽度为屏幕宽度
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            );
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                           @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         binding = DialogShiftDetailBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -83,8 +82,9 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
 
     private void observeViewModel() {
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
-            if (errorMessage == null) return;
-            
+            if (errorMessage == null)
+                return;
+
             switch (errorMessage) {
                 case "error_duplicate_shift":
                     binding.dateLayout.setError(getString(R.string.error_duplicate_shift));
@@ -101,17 +101,17 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
                 case "error_database_operation":
                     // 显示通用错误消息
                     new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.error)
-                        .setMessage(R.string.error_database_operation)
-                        .setPositiveButton(R.string.ok, null)
-                        .show();
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.error_database_operation)
+                            .setPositiveButton(R.string.confirm, null)
+                            .show();
                     break;
                 case "error_required_fields":
                     new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.error)
-                        .setMessage(R.string.error_required_fields)
-                        .setPositiveButton(R.string.ok, null)
-                        .show();
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.error_required_fields)
+                            .setPositiveButton(R.string.confirm, null)
+                            .show();
                     break;
             }
         });
@@ -128,14 +128,13 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
                 for (int i = 0; i < templates.size(); i++) {
                     shiftNames[i] = templates.get(i).getName();
                 }
-                
+
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    requireContext(),
-                    android.R.layout.simple_dropdown_item_1line,
-                    shiftNames
-                );
+                        requireContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        shiftNames);
                 binding.shiftTypeInput.setAdapter(adapter);
-                
+
                 // 如果是编辑模式，设置当前值
                 if (currentShift != null) {
                     binding.dateEditText.setText(currentShift.getDate());
@@ -180,10 +179,9 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
     }
 
     private void showDatePicker() {
-        LocalDate initialDate = currentShift != null ? 
-                LocalDate.parse(currentShift.getDate(), dateFormatter) : 
-                LocalDate.now();
-        
+        LocalDate initialDate = currentShift != null ? LocalDate.parse(currentShift.getDate(), dateFormatter)
+                : LocalDate.now();
+
         DatePickerDialog dialog = new DatePickerDialog(
                 requireContext(),
                 (view, year, month, dayOfMonth) -> {
@@ -192,8 +190,7 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
                 },
                 initialDate.getYear(),
                 initialDate.getMonthValue() - 1,
-                initialDate.getDayOfMonth()
-        );
+                initialDate.getDayOfMonth());
         dialog.show();
     }
 
@@ -219,8 +216,7 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
                 },
                 initialTime.getHour(),
                 initialTime.getMinute(),
-                true
-        );
+                true);
         dialog.show();
     }
 
@@ -295,40 +291,30 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
 
     // 获取默认的班次类型（兜底策略）
     private ShiftType getDefaultShiftType(String shiftTypeName) {
-        switch (shiftTypeName) {
-            case "早班":
-                return ShiftType.DAY_SHIFT;
-            case "晚班":
-                return ShiftType.NIGHT_SHIFT;
-            case "休息":
-                return ShiftType.REST_DAY;
-            default:
-                return ShiftType.DAY_SHIFT;  // 默认返回早班
-        }
+        return switch (shiftTypeName) {
+            case "早班" -> ShiftType.DAY_SHIFT;
+            case "晚班" -> ShiftType.NIGHT_SHIFT;
+            case "休息" -> ShiftType.REST_DAY;
+            default -> ShiftType.DAY_SHIFT; // 默认返回早班
+        };
     }
 
     // 获取默认的开始时间
     private String getDefaultStartTime(ShiftType type) {
-        switch (type) {
-            case DAY_SHIFT:
-                return "08:00";
-            case NIGHT_SHIFT:
-                return "16:00";
-            default:
-                return "";
-        }
+        return switch (type) {
+            case DAY_SHIFT -> "08:00";
+            case NIGHT_SHIFT -> "16:00";
+            default -> "";
+        };
     }
 
     // 获取默认的结束时间
     private String getDefaultEndTime(ShiftType type) {
-        switch (type) {
-            case DAY_SHIFT:
-                return "16:00";
-            case NIGHT_SHIFT:
-                return "00:00";
-            default:
-                return "";
-        }
+        return switch (type) {
+            case DAY_SHIFT -> "16:00";
+            case NIGHT_SHIFT -> "00:00";
+            default -> "";
+        };
     }
 
     private boolean validateInputs() {
@@ -411,4 +397,4 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
         super.onDestroyView();
         binding = null;
     }
-} 
+}

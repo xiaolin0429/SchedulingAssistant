@@ -18,6 +18,8 @@ import com.github.dhaval2404.colorpicker.ColorPickerDialog;
 import com.github.dhaval2404.colorpicker.model.ColorShape;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
 import android.widget.ArrayAdapter;
 
 public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
@@ -163,11 +165,7 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
 
         // 创建或更新班次类型
         ShiftTypeEntity shiftType;
-        if (currentShiftType != null) {
-            shiftType = currentShiftType;
-        } else {
-            shiftType = new ShiftTypeEntity(name, startTime, endTime, selectedColor);
-        }
+        shiftType = Objects.requireNonNullElseGet(currentShiftType, () -> new ShiftTypeEntity(name, startTime, endTime, selectedColor));
 
         shiftType.setName(name);
         shiftType.setStartTime(startTime);

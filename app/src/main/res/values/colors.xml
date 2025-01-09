@@ -72,4 +72,6 @@
 
     <color name="snackbar_background">#A5D6A7</color>
     <color name="snackbar_text">#FFFFFF</color>
+
+    <color name="blue_500">#2196F3</color>
 </resources>

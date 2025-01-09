@@ -1,5 +1,6 @@
 package com.schedule.assistant.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -10,6 +11,7 @@ import com.schedule.assistant.R;
 
 public class RecyclerViewAnimationUtil {
     
+    @SuppressLint("NotifyDataSetChanged")
     public static void runLayoutAnimation(final RecyclerView recyclerView) {
         if (recyclerView == null || recyclerView.getAdapter() == null) return;
         

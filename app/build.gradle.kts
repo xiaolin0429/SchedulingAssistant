@@ -60,7 +60,7 @@ android {
             jvmTarget = "17"
             // 启用Kotlin编译优化
             freeCompilerArgs = listOf(
-                "-Xopt-in=kotlin.RequiresOptIn",
+                "-opt-in=kotlin.RequiresOptIn",
                 "-Xjvm-default=all"
             )
         }
@@ -129,4 +129,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
+    
+    // AndroidX Fragment dependency
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
 }

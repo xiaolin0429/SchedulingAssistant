@@ -1,4 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">排班助手</string>
+    
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+    <string name="delete">删除</string>
+    <string name="save">保存</string>
+    <string name="select">选择</string>
     <string name="edit_time">编辑时间</string>
+    <string name="vibrate">振动</string>
+
+    <string name="error">错误</string>
+    <string name="error_name_required">名称不能为空</string>
+    <string name="error_time_required">时间不能为空</string>
+    <string name="error_color_required">颜色不能为空</string>
+    <string name="error_type_required">类型不能为空</string>
+    <string name="error_save_template">保存模板失败</string>
+    <string name="error_delete_template">删除模板失败</string>
+    <string name="error_load_templates">加载模板失败</string>
+    <string name="error_invalid_time_range">结束时间必须晚于开始时间</string>
+    <string name="error_note_too_long">备注不能超过200个字符</string>
+    <string name="error_duplicate_shift">该日期已存在排班</string>
+    <string name="error_empty_name">请输入班次名称</string>
+    <string name="error_database_operation">数据库操作失败，请重试</string>
+    <string name="error_required_fields">必填字段不能为空</string>
+    <string name="error_date_required">请选择日期</string>
+    <string name="error_shift_type_required">请选择班次类型</string>
+    <string name="error_invalid_date_format">日期格式无效</string>
+    <string name="error_save_failed">保存失败，请重试</string>
+    <string name="invalid_date">无效日期</string>
+    <string name="empty_note">备注不能为空</string>
+    <string name="note_too_long">备注过长</string>
+
+    <string name="title_home">主页</string>
+    <string name="title_shift_template">班次</string>
+    <string name="title_shift_type">班次类型</string>
+    <string name="title_alarm">闹钟</string>
+    <string name="title_stats">统计</string>
+    <string name="title_profile">我的</string>
+    <string name="title_shift">排班</string>
+
+    <string name="day_shift">白班</string>
+    <string name="night_shift">夜班</string>
+    <string name="rest_day">休息</string>
+    <string name="no_shift">无班次</string>
+    <string name="custom_shift">自定义班次</string>
+
+    <string name="today_shift">今日排班</string>
+    <string name="selected_day_shift">选中日期排班</string>
+    <string name="no_shift_today">暂无排班</string>
+    <string name="shift_count_format">%1$s：%2$d</string>
+    <string name="please_select_date">请选择日期</string>
+    <string name="add_note">添加备注</string>
+    <string name="start_schedule">开始排班</string>
+    <string name="next_shift">下一班次</string>
+    <string name="select_shift_type">选择班次类型</string>
+
+    <string name="note_input_description">输入备注内容</string>
+    <string name="note_hint">在此输入备注</string>
+    <string name="note_date_format">%1$s 备注</string>
+    <string name="save_note">保存备注</string>
+    <string name="delete_note">删除备注</string>
+    <string name="note_saved">备注已保存</string>
+    <string name="note_deleted">备注已删除</string>
+
+    <string name="manage_shift_types">管理班次类型</string>
+    <string name="edit_shift_template">编辑班次</string>
+    <string name="shift_name">班次名称</string>
+    <string name="shift_color">班次颜色</string>
+    <string name="delete_template_title">删除班次</string>
+    <string name="delete_template_message">确定要删除此班次吗？</string>
+    <string name="add_shift_template">添加班次</string>
+    <string name="edit_shift_template_title">编辑班次</string>
+    <string name="delete_shift_template">删除班次</string>
+    <string name="no_shift_templates">暂无班次，点击右下角添加</string>
+
+    <string name="select_color">选择颜色</string>
+
+    <string name="no_shift_types_available">暂无班次类型，点击右下角添加</string>
+    <string name="add_shift_type">添加班次类型</string>
+    <string name="edit_shift_type">编辑班次类型</string>
+    <string name="delete_shift_type">删除班次类型</string>
+    <string name="shift_type_name">班次类型名称</string>
+    <string name="shift_type_time">班次时间</string>
+    <string name="shift_type_color">班次类型颜色</string>
+    <string name="shift_type_default">默认班次</string>
+    <string name="shift_type_saved">班次类型已保存</string>
+    <string name="shift_type_deleted">班次类型已删除</string>
+    <string name="shift_type_exists">班次类型已存在</string>
+    <string name="shift_type_required">请选择班次类型</string>
+    <string name="cannot_delete_default_shift_type">无法删除默认班次类型</string>
+    <string name="confirm_delete_shift_type">确定要删除此班次类型吗？</string>
+    <string name="shift_type_list">班次类型列表</string>
+    <string name="shift_type_management">班次类型管理</string>
+    <string name="shift_type">班次类型</string>
+
+    <string name="add_template">添加模板</string>
+    <string name="edit_template">编辑模板</string>
+    <string name="delete_template">删除模板</string>
+    <string name="template_name">模板名称</string>
+    <string name="start_time">开始时间</string>
+    <string name="end_time">结束时间</string>
+    <string name="template_color">模板颜色</string>
+
+    <string name="add_schedule">添加排班</string>
+    <string name="edit_shift">编辑排班</string>
+    <string name="confirm_delete">确定要删除吗？</string>
+
+    <string name="date">日期</string>
+    <string name="note">备注</string>
+    <string name="hint_note">添加备注…</string>
+
+    <string name="refresh_widget">刷新小部件</string>
+
+    <string name="grid_view_button_description">切换到网格视图</string>
+    <string name="list_view_button_description">切换到列表视图</string>
+    <string name="cloud_sync_button_description">同步数据</string>
+
+    <string name="add_alarm">添加闹钟</string>
+    <string name="delete_alarm">删除闹钟</string>
+    <string name="no_alarms">暂无闹钟</string>
+    <string name="select_alarm_time">选择闹钟时间</string>
+    <string name="default_alarm_name">闹钟</string>
+    <string name="alarm_repeat_everyday">每天</string>
+    <string name="alarm_repeat_workday">工作日</string>
+    <string name="alarm_repeat_weekend">周末</string>
+    <string name="alarm_repeat_once">仅一次</string>
+    <string name="alarm_today">今天</string>
+    <string name="alarm_tomorrow">明天</string>
+    <string name="edit_alarm">编辑闹钟</string>
+    <string name="alarm_delete_confirm">确定要删除此闹钟吗？</string>
+    <string name="alarm_delete_success">闹钟已删除</string>
+    <string name="alarm_update_success">闹钟已更新</string>
+    <string name="alarm_create_success">闹钟已创建</string>
+    <string name="alarm_name">闹钟名称</string>
+    <string name="alarm_repeat_hint">重复</string>
+    <string name="alarm_sound_hint">铃声</string>
+    <string name="alarm_vibrate_hint">振动</string>
+    <string name="alarm_cannot_edit_enabled">无法编辑已启用的闹钟，请先禁用</string>
+    <string name="disable_all_alarms">禁用所有闹钟</string>
+    <string name="disable_all_alarms_title">禁用所有闹钟</string>
+    <string name="disable_all_alarms_message">确定要禁用所有闹钟吗？</string>
+    <string name="alarm_disabled">闹钟已禁用，系统闹钟已相应禁用</string>
+    <string name="alarm_degraded_mode">未授予系统闹钟权限，将使用应用内闹钟通知</string>
+
+    <string name="system_alarm_permission_title">系统闹钟权限</string>
+    <string name="system_alarm_permission_message">建议授予系统闹钟权限以同步系统时钟。如不授权，将仅使用应用内闹钟通知。</string>
+    <string name="exact_alarm_permission_title">需要权限</string>
+    <string name="exact_alarm_permission_message">为确保闹钟通知及时，需要设置精确闹钟的权限。</string>
+    <string name="grant_permission">授予权限</string>
+    <string name="use_app_alarm_only">仅使用应用内闹钟</string>
+    <string name="go_to_settings">前往设置</string>
+
+    <string name="sunday">星期日</string>
+    <string name="monday">星期一</string>
+    <string name="tuesday">星期二</string>
+    <string name="wednesday">星期三</string>
+    <string name="thursday">星期四</string>
+    <string name="friday">星期五</string>
+    <string name="saturday">星期六</string>
+
+    <string name="profile_image_desc">头像</string>
+    <string name="profile_name_hint">输入昵称</string>
+    <string name="profile_email_hint">输入邮箱</string>
+    <string name="profile_title">个人信息</string>
+    <string name="profile_avatar">头像</string>
+    <string name="profile_nickname">昵称</string>
+    <string name="profile_email">邮箱</string>
+    <string name="profile_save_success">个人信息保存成功</string>
+    <string name="profile_save_failed">个人信息保存失败</string>
+    <string name="profile_edit">编辑个人信息</string>
+    <string name="profile_change_avatar">更换头像</string>
+    <string name="profile_basic_info">基本信息</string>
+
+    <string name="settings">设置</string>
+    <string name="notification_settings">通知设置</string>
+    <string name="theme_settings">主题设置</string>
+    <string name="language_settings">语言设置</string>
+    <string name="arrow_right">向右箭头</string>
+
+    <string name="data_management">数据管理</string>
+    <string name="data_backup">数据备份</string>
+    <string name="data_clear">清除数据</string>
+
+    <string name="help_feedback">帮助与反馈</string>
+    <string name="faq">常见问题</string>
+    <string name="feedback">反馈</string>
+
+    <string name="about">关于</string>
+    <string name="version_info">版本信息</string>
+    <string name="open_source_licenses">开源许可</string>
+
+    <string name="repeat_alarm">重复闹钟</string>
+    <string name="alarm_sound">闹钟铃声</string>
+
+    <string name="sort_by_date_asc">按日期升序</string>
+    <string name="sort_by_date_desc">按日期降序</string>
+    <string name="sort_by_type">按类型排序</string>
+    <string name="sort_by_update_time">按更新时间排序</string>
+
+    <string name="settings_button_description">设置</string>
+
+    <string name="profile_name_not_set">未设置昵称</string>
+    <string name="profile_email_not_set">未设置邮箱</string>
 </resources> 

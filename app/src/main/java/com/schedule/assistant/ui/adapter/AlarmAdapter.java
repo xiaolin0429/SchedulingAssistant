@@ -25,7 +25,7 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
     private static final long DEBOUNCE_TIME = 300L;
     private long lastClickTime = 0;
 
-    private static final DiffUtil.ItemCallback<AlarmEntity> DIFF_CALLBACK = new DiffUtil.ItemCallback<AlarmEntity>() {
+    private static final DiffUtil.ItemCallback<AlarmEntity> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
             return oldItem.getId() == newItem.getId();
@@ -34,10 +34,10 @@ public class AlarmAdapter extends ListAdapter<AlarmEntity, AlarmAdapter.AlarmVie
         @Override
         public boolean areContentsTheSame(@NonNull AlarmEntity oldItem, @NonNull AlarmEntity newItem) {
             return oldItem.getTimeInMillis() == newItem.getTimeInMillis() &&
-                   oldItem.isEnabled() == newItem.isEnabled() &&
-                   oldItem.isRepeat() == newItem.isRepeat() &&
-                   oldItem.getRepeatDays() == newItem.getRepeatDays() &&
-                   oldItem.getName().equals(newItem.getName());
+                    oldItem.isEnabled() == newItem.isEnabled() &&
+                    oldItem.isRepeat() == newItem.isRepeat() &&
+                    oldItem.getRepeatDays() == newItem.getRepeatDays() &&
+                    oldItem.getName().equals(newItem.getName());
         }
     };
 

@@ -31,9 +31,7 @@ public class ShiftViewModel extends AndroidViewModel {
     }
 
     private void loadShifts() {
-        shiftRepository.getAllShifts().observeForever(shifts -> {
-            shiftsData.setValue(shifts);
-        });
+        shiftRepository.getAllShifts().observeForever(shiftsData::setValue);
     }
 
     // 添加刷新方法

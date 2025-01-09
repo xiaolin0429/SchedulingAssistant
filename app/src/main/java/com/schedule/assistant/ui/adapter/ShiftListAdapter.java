@@ -71,21 +71,12 @@ public class ShiftListAdapter extends ListAdapter<Shift, ShiftListAdapter.ShiftV
         void bind(Shift shift) {
             this.currentShift = shift;
             // 根据班次类型获取对应的显示名称
-            String shiftTypeName;
-            switch (shift.getType()) {
-                case DAY_SHIFT:
-                    shiftTypeName = "早班";
-                    break;
-                case NIGHT_SHIFT:
-                    shiftTypeName = "晚班";
-                    break;
-                case REST_DAY:
-                    shiftTypeName = "休息";
-                    break;
-                default:
-                    shiftTypeName = "未排班";
-                    break;
-            }
+            String shiftTypeName = switch (shift.getType()) {
+                case DAY_SHIFT -> "早班";
+                case NIGHT_SHIFT -> "晚班";
+                case REST_DAY -> "休息";
+                default -> "未排班";
+            };
             binding.shiftNameText.setText(shiftTypeName);
             
             // 设置时间显示

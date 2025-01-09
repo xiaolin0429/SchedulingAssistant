@@ -33,7 +33,7 @@ public class ShiftTemplateFragment extends Fragment implements ShiftTemplateAdap
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ShiftTemplateViewModel.class);
-        
+
         setupRecyclerView();
         setupButtons();
         observeViewModel();
@@ -47,8 +47,8 @@ public class ShiftTemplateFragment extends Fragment implements ShiftTemplateAdap
 
     private void setupButtons() {
         binding.addButton.setOnClickListener(v -> showTemplateDialog(null));
-        binding.manageTypesButton.setOnClickListener(v -> 
-            Navigation.findNavController(v).navigate(R.id.navigation_shift_type));
+        binding.manageTypesButton
+                .setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.navigation_shift_type));
     }
 
     private void observeViewModel() {
@@ -60,10 +60,10 @@ public class ShiftTemplateFragment extends Fragment implements ShiftTemplateAdap
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.error)
-                    .setMessage(message)
-                    .setPositiveButton(R.string.ok, null)
-                    .show();
+                        .setTitle(R.string.error)
+                        .setMessage(message)
+                        .setPositiveButton(R.string.confirm, null)
+                        .show();
             }
         });
     }
@@ -81,11 +81,11 @@ public class ShiftTemplateFragment extends Fragment implements ShiftTemplateAdap
     @Override
     public void onTemplateDelete(ShiftTemplate template) {
         new MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.delete_template_title)
-            .setMessage(R.string.delete_template_message)
-            .setPositiveButton(R.string.ok, (dialog, which) -> viewModel.delete(template))
-            .setNegativeButton(R.string.cancel, null)
-            .show();
+                .setTitle(R.string.delete_template_title)
+                .setMessage(R.string.delete_template_message)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.delete(template))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void showTemplateDialog(@Nullable ShiftTemplate template) {
@@ -98,4 +98,4 @@ public class ShiftTemplateFragment extends Fragment implements ShiftTemplateAdap
         super.onDestroyView();
         binding = null;
     }
-} 
+}
