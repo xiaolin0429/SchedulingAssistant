@@ -14,18 +14,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // 设置底部导航
-        BottomNavigationView bottomNav = findViewById(R.id.nav_view);
-
-        // 获取 NavHostFragment
+        BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-
-        if (navHostFragment != null) {
-            NavController navController = navHostFragment.getNavController();
-            NavigationUI.setupWithNavController(bottomNav, navController);
-        } else {
-            throw new IllegalStateException("Activity " + this + " cannot find NavHostFragment. " +
-                    "Please ensure that a NavHostFragment is correctly set up in activity_main.xml.");
-        }
+        NavController navController = navHostFragment.getNavController();
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 }

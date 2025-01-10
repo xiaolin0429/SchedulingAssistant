@@ -198,7 +198,10 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                     // 设置文本
                     countView.setText(getString(R.string.shift_count_format, shiftType.getName(), count));
                     countView.setTextSize(14);
-                    countView.setTextColor(getResources().getColor(R.color.black, null));
+                    int[] attrs = new int[] { android.R.attr.textColorPrimary };
+                    android.content.res.TypedArray ta = requireContext().obtainStyledAttributes(attrs);
+                    countView.setTextColor(ta.getColor(0, getResources().getColor(R.color.black, null)));
+                    ta.recycle();
 
                     // 设置图标
                     Drawable circle = getResources().getDrawable(R.drawable.ic_circle_green, null);
@@ -266,7 +269,8 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                         new AlertDialog.Builder(requireContext())
                                 .setTitle(R.string.error)
                                 .setMessage(R.string.error_duplicate_shift)
-                                .setPositiveButton(R.string.confirm, (dialog, which) -> showShiftTypeSelectionDialog(shiftTypes))
+                                .setPositiveButton(R.string.confirm,
+                                        (dialog, which) -> showShiftTypeSelectionDialog(shiftTypes))
                                 .setNegativeButton(R.string.cancel, null)
                                 .show();
                     } else {

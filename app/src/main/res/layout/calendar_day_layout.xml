@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -13,7 +14,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textSize="12sp"
-        android:textColor="@color/black"/>
+        android:textColor="?attr/colorOnSurface"/>
 
     <TextView
         android:id="@+id/shiftTypeText"
@@ -22,6 +23,6 @@
         android:layout_marginTop="1dp"
         android:gravity="center"
         android:textSize="10sp"
-        android:textColor="@color/white"/>
+        android:textColor="?attr/colorOnSurface"/>
 
 </LinearLayout> 
