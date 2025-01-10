@@ -199,7 +199,19 @@
     <string name="notification_settings">Notification Settings</string>
     <string name="theme_settings">Theme Settings</string>
     <string name="language_settings">Language Settings</string>
-    <string name="arrow_right">Arrow Right</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="notification_advance_time">Notification Advance Time (minutes)</string>
+    <string name="theme_follow_system">Follow System</string>
+    <string name="theme_light">Light Theme</string>
+    <string name="theme_dark">Dark Theme</string>
+    <string name="language_follow_system">Follow System</string>
+    <string name="language_chinese">Chinese</string>
+    <string name="language_english">English</string>
+    <string name="notification_enabled">Notifications enabled</string>
+    <string name="notification_disabled">Notifications disabled</string>
+    <string name="notification_time_updated">Notification time updated</string>
+    <string name="theme_updated">Theme updated</string>
+    <string name="language_updated">Language updated</string>
 
     <!-- Data Management -->
     <string name="data_management">Data Management</string>
@@ -228,4 +240,8 @@
 
     <!-- Button Descriptions -->
     <string name="settings_button_description">Settings</string>
+    <string name="arrow_right">Arrow Right</string>
+
+    <!-- App Settings -->
+    <string name="app_settings">App Settings</string>
 </resources>

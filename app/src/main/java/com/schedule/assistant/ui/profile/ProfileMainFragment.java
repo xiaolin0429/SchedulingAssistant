@@ -44,17 +44,9 @@ public class ProfileMainFragment extends Fragment {
             }
         }).start();
 
-        // 设置其他点击事件
-        view.findViewById(R.id.notification_settings).setOnClickListener(v -> {
-            // TODO: 导航到通知设置页面
-        });
-
-        view.findViewById(R.id.theme_settings).setOnClickListener(v -> {
-            // TODO: 导航到主题设置页面
-        });
-
-        view.findViewById(R.id.language_settings).setOnClickListener(v -> {
-            // TODO: 导航到语言设置页面
+        // 设置“应用设置”点击事件
+        view.findViewById(R.id.app_settings).setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_profileMainFragment_to_settingsFragment);
         });
 
         view.findViewById(R.id.data_backup).setOnClickListener(v -> {

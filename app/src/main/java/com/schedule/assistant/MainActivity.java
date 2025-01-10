@@ -15,11 +15,11 @@ public class MainActivity extends AppCompatActivity {
 
         // 设置底部导航
         BottomNavigationView bottomNav = findViewById(R.id.nav_view);
-        
+
         // 获取 NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        
+
         if (navHostFragment != null) {
             NavController navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(bottomNav, navController);
@@ -28,4 +28,4 @@ public class MainActivity extends AppCompatActivity {
                     "Please ensure that a NavHostFragment is correctly set up in activity_main.xml.");
         }
     }
-} 
+}

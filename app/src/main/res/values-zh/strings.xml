@@ -178,7 +178,19 @@
     <string name="notification_settings">通知设置</string>
     <string name="theme_settings">主题设置</string>
     <string name="language_settings">语言设置</string>
-    <string name="arrow_right">向右箭头</string>
+    <string name="enable_notifications">启用通知</string>
+    <string name="notification_advance_time">提前通知时间（分钟）</string>
+    <string name="theme_follow_system">跟随系统</string>
+    <string name="theme_light">浅色主题</string>
+    <string name="theme_dark">深色主题</string>
+    <string name="language_follow_system">跟随系统</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">英文</string>
+    <string name="notification_enabled">已启用通知</string>
+    <string name="notification_disabled">已禁用通知</string>
+    <string name="notification_time_updated">通知时间已更新</string>
+    <string name="theme_updated">主题已更新</string>
+    <string name="language_updated">语言已更新</string>
 
     <string name="data_management">数据管理</string>
     <string name="data_backup">数据备份</string>
@@ -201,7 +213,10 @@
     <string name="sort_by_update_time">按更新时间排序</string>
 
     <string name="settings_button_description">设置</string>
+    <string name="arrow_right">向右箭头</string>
 
     <string name="profile_name_not_set">未设置昵称</string>
     <string name="profile_email_not_set">未设置邮箱</string>
+
+    <string name="app_settings">应用设置</string>
 </resources> 

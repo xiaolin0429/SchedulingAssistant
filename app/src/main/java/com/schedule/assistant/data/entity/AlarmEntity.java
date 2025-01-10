@@ -13,15 +13,15 @@ public class AlarmEntity {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    private String name;        // 闹钟名称
-    private long timeInMillis;  // 闹钟时间（毫秒）
-    private boolean enabled;    // 是否启用
-    private boolean repeat;     // 是否重复
-    private int repeatDays;    // 重复日期（位图：周日=1，周一=2，周二=4，以此类推）
-    private String soundUri;    // 铃声URI
-    private boolean vibrate;    // 是否震动
-    private long createTime;    // 创建时间
-    private long updateTime;    // 更新时间
+    private String name; // 闹钟名称
+    private long timeInMillis; // 闹钟时间（毫秒）
+    private boolean enabled; // 是否启用
+    private boolean repeat; // 是否重复
+    private int repeatDays; // 重复日期（位图：周日=1，周一=2，周二=4，以此类推）
+    private String soundUri; // 铃声URI
+    private boolean vibrate; // 是否震动
+    private long createTime; // 创建时间
+    private long updateTime; // 更新时间
 
     public AlarmEntity() {
         this.createTime = System.currentTimeMillis();
@@ -124,4 +124,4 @@ public class AlarmEntity {
                 ", vibrate=" + vibrate +
                 '}';
     }
-} 
+}
