@@ -74,4 +74,9 @@
     <color name="snackbar_text">#FFFFFF</color>
 
     <color name="blue_500">#2196F3</color>
+
+    <!-- 卡片颜色 -->
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="card_stroke">#FFEEEEEE</color>
+    <color name="card_ripple">#1F000000</color>
 </resources>

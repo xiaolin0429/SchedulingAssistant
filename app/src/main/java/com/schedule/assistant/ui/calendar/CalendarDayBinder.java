@@ -67,9 +67,10 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
             } else {
                 dayText.setBackgroundResource(0);
                 int[] attrs = new int[] { android.R.attr.textColorPrimary };
-                android.content.res.TypedArray ta = container.itemView.getContext().obtainStyledAttributes(attrs);
-                dayText.setTextColor(ta.getColor(0, container.itemView.getContext().getColor(R.color.black)));
-                ta.recycle();
+                try (android.content.res.TypedArray ta = container.itemView.getContext()
+                        .obtainStyledAttributes(attrs)) {
+                    dayText.setTextColor(ta.getColor(0, container.itemView.getContext().getColor(R.color.black)));
+                }
                 dayText.setTypeface(null, Typeface.NORMAL);
             }
 

@@ -14,22 +14,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.core.content.res.ResourcesCompat;
 
-import com.kizitonwose.calendarview.CalendarView;
 import com.kizitonwose.calendarview.model.CalendarDay;
-import com.kizitonwose.calendarview.model.CalendarMonth;
-import com.kizitonwose.calendarview.ui.ViewContainer;
-import com.kizitonwose.calendarview.ui.DayBinder;
-import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder;
 import com.schedule.assistant.R;
 import com.schedule.assistant.databinding.FragmentHomeBinding;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
-import com.schedule.assistant.data.entity.ShiftTemplate;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.ui.calendar.CalendarDayBinder;
 import com.schedule.assistant.ui.calendar.CalendarHeaderBinder;
-import com.schedule.assistant.ui.dialog.ShiftDetailDialogFragment;
 import com.schedule.assistant.ui.dialog.NoteDialogFragment;
 
 import java.time.DayOfWeek;
@@ -167,7 +161,7 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
         for (Shift shift : shifts) {
             if (shift.getType() == ShiftType.CUSTOM) {
                 long typeId = shift.getShiftTypeId();
-                typeCountMap.put(typeId, typeCountMap.getOrDefault(typeId, 0) + 1);
+                typeCountMap.merge(typeId, 1, Integer::sum);
             }
         }
 
@@ -181,7 +175,9 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
 
                 // 为每个班次类型创建并添加统计显示
                 for (ShiftTypeEntity shiftType : shiftTypes) {
-                    int count = typeCountMap.getOrDefault(shiftType.getId(), 0);
+                    Integer count = typeCountMap.get(shiftType.getId());
+                    if (count == null)
+                        count = 0;
 
                     // 创建新的TextView
                     TextView countView = new TextView(requireContext());
@@ -198,17 +194,21 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                     // 设置文本
                     countView.setText(getString(R.string.shift_count_format, shiftType.getName(), count));
                     countView.setTextSize(14);
-                    int[] attrs = new int[] { android.R.attr.textColorPrimary };
-                    android.content.res.TypedArray ta = requireContext().obtainStyledAttributes(attrs);
-                    countView.setTextColor(ta.getColor(0, getResources().getColor(R.color.black, null)));
-                    ta.recycle();
 
-                    // 设置图标
-                    Drawable circle = getResources().getDrawable(R.drawable.ic_circle_green, null);
-                    circle.setTint(shiftType.getColor()); // 使用班次类型的颜色
-                    countView.setCompoundDrawablesWithIntrinsicBounds(circle, null, null, null);
-                    countView.setCompoundDrawablePadding(
-                            getResources().getDimensionPixelSize(R.dimen.spacing_small));
+                    // 使用try-with-resources处理TypedArray
+                    int[] attrs = new int[] { android.R.attr.textColorPrimary };
+                    try (android.content.res.TypedArray ta = requireContext().obtainStyledAttributes(attrs)) {
+                        countView.setTextColor(ta.getColor(0, getResources().getColor(R.color.black, null)));
+                    }
+
+                    // 使用ResourcesCompat.getDrawable
+                    Drawable circle = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_circle_green, null);
+                    if (circle != null) {
+                        circle.setTint(shiftType.getColor()); // 使用班次类型的颜色
+                        countView.setCompoundDrawablesWithIntrinsicBounds(circle, null, null, null);
+                        countView.setCompoundDrawablePadding(
+                                getResources().getDimensionPixelSize(R.dimen.spacing_small));
+                    }
 
                     // 设置垂直居中
                     countView.setGravity(Gravity.CENTER_VERTICAL);
@@ -318,15 +318,6 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    private static class MonthViewContainer extends ViewContainer {
-        public final TextView textView;
-
-        public MonthViewContainer(@NonNull View view) {
-            super(view);
-            this.textView = view.findViewById(R.id.monthText);
-        }
     }
 
     private void updateTodayShiftInfo(Shift shift) {
