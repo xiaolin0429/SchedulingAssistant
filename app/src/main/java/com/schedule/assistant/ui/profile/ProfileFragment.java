@@ -107,16 +107,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void saveProfileInfo() {
-        String name = Objects.requireNonNull(profileName.getText()).toString();
-        String email = Objects.requireNonNull(profileEmail.getText()).toString();
+        String name = Objects.requireNonNull(profileName.getText()).toString().trim();
+        String email = Objects.requireNonNull(profileEmail.getText()).toString().trim();
 
-        if (name.isEmpty()) {
-            Toast.makeText(getActivity(), "Please enter a name", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(getActivity(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+        if (!email.isEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(getActivity(), getString(R.string.invalid_email_format), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -140,8 +135,8 @@ public class ProfileFragment extends Fragment {
             }
 
             if (getActivity() != null) {
-                getActivity()
-                        .runOnUiThread(() -> Toast.makeText(getActivity(), "Profile saved", Toast.LENGTH_SHORT).show());
+                getActivity().runOnUiThread(() -> Toast
+                        .makeText(getActivity(), getString(R.string.profile_saved), Toast.LENGTH_SHORT).show());
             }
         }).start();
     }

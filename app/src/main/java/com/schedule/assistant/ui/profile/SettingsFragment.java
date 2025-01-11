@@ -37,7 +37,6 @@ public class SettingsFragment extends Fragment {
     private SettingsViewModel viewModel;
     private SwitchMaterial notificationSwitch;
     private Slider notificationTimeSlider;
-    private TextView notificationTimeText;
     private MaterialRadioButton themeSystemRadio;
     private MaterialRadioButton themeLightRadio;
     private MaterialRadioButton themeDarkRadio;
@@ -104,8 +103,8 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // 初始化视图
-        SwitchMaterial notificationSwitch = view.findViewById(R.id.notificationSwitch);
-        Slider notificationTimeSlider = view.findViewById(R.id.notificationTimeSlider);
+        notificationSwitch = view.findViewById(R.id.notificationSwitch);
+        notificationTimeSlider = view.findViewById(R.id.notificationTimeSlider);
         TextView notificationTimeText = view.findViewById(R.id.notificationTimeText);
 
         // 设置滑动条监听器
@@ -122,8 +121,8 @@ public class SettingsFragment extends Fragment {
             if (settings != null) {
                 notificationSwitch.setChecked(settings.isNotificationEnabled());
                 notificationTimeSlider.setValue(settings.getNotificationAdvanceTime());
-                notificationTimeText
-                        .setText(getString(R.string.notification_time_format, settings.getNotificationAdvanceTime()));
+                notificationTimeText.setText(getString(R.string.notification_time_format,
+                        settings.getNotificationAdvanceTime()));
             }
         });
     }
@@ -151,7 +150,6 @@ public class SettingsFragment extends Fragment {
         // 初始化通知设置
         notificationSwitch = view.findViewById(R.id.notificationSwitch);
         notificationTimeSlider = view.findViewById(R.id.notificationTimeSlider);
-        notificationTimeText = view.findViewById(R.id.notificationTimeText);
         syncSystemAlarmSwitch = view.findViewById(R.id.syncSystemAlarmSwitch);
 
         // 初始化主题设置
@@ -176,9 +174,8 @@ public class SettingsFragment extends Fragment {
         });
 
         // 系统闹钟同步开关监听器
-        syncSystemAlarmSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            saveSyncSystemAlarmSettings(isChecked);
-        });
+        syncSystemAlarmSwitch
+                .setOnCheckedChangeListener((buttonView, isChecked) -> saveSyncSystemAlarmSettings(isChecked));
 
         // 通知时间滑块监听器
         notificationTimeSlider.addOnChangeListener((slider, value, fromUser) -> {
@@ -300,7 +297,7 @@ public class SettingsFragment extends Fragment {
                 if (settings != null) {
                     userSettingsDao.updateNotificationAdvanceTime(settings.getId(), minutes);
                     // 更新应用的通知设置
-                    updateNotificationSettings(settings.isNotificationEnabled(), minutes);
+                    updateNotificationSettings(settings.isNotificationEnabled());
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error saving notification time", e);
@@ -312,40 +309,35 @@ public class SettingsFragment extends Fragment {
      * 更新应用的通知设置
      * 
      * @param enabled 是否启用通知
-     * @param minutes 提前通知的分钟数
      */
-    private void updateNotificationSettings(boolean enabled, int minutes) {
+    private void updateNotificationSettings(boolean enabled) {
         try {
             if (enabled) {
                 // 请求通知权限
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    requireActivity().requestPermissions(
-                            new String[] { android.Manifest.permission.POST_NOTIFICATIONS },
-                            100);
+                    requestNotificationPermission();
                 }
                 // TODO: 实现通知服务的启动逻辑
-            } else {
-                // TODO: 实现通知服务的停止逻辑
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating notification settings", e);
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100) {
-            if (grantResults.length > 0
-                    && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                // 权限已授予，启用通知
-                notificationSwitch.setChecked(true);
-            } else {
-                // 权限被拒绝，禁用通知
-                notificationSwitch.setChecked(false);
-                saveNotificationSettings(false);
-            }
+    private void requestNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            registerForActivityResult(
+                    new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (isGranted) {
+                            // 权限已授予，启用通知
+                            notificationSwitch.setChecked(true);
+                        } else {
+                            // 权限被拒绝，禁用通知
+                            notificationSwitch.setChecked(false);
+                            saveNotificationSettings(false);
+                        }
+                    }).launch(android.Manifest.permission.POST_NOTIFICATIONS);
         }
     }
 

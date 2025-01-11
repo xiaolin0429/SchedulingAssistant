@@ -190,7 +190,9 @@
     <string name="profile_edit">Edit Profile</string>
     <string name="profile_change_avatar">Change Avatar</string>
     <string name="profile_basic_info">Basic Information</string>
-    <string name="profile_name_not_set">Nickname not set</string>
+    <string name="profile_saved">Profile saved</string>
+    <string name="invalid_email_format">Please enter a valid email format</string>
+    <string name="profile_name_not_set">Name not set</string>
     <string name="profile_email_not_set">Email not set</string>
 
     <!-- Settings -->

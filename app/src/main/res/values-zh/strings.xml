@@ -163,15 +163,9 @@
     <string name="profile_image_desc">头像</string>
     <string name="profile_name_hint">输入昵称</string>
     <string name="profile_email_hint">输入邮箱</string>
-    <string name="profile_title">个人信息</string>
-    <string name="profile_avatar">头像</string>
-    <string name="profile_nickname">昵称</string>
-    <string name="profile_email">邮箱</string>
     <string name="profile_save_success">个人信息保存成功</string>
     <string name="profile_save_failed">个人信息保存失败</string>
     <string name="profile_edit">编辑个人信息</string>
-    <string name="profile_change_avatar">更换头像</string>
-    <string name="profile_basic_info">基本信息</string>
 
     <string name="settings">设置</string>
     <string name="theme_settings">主题设置</string>
@@ -212,9 +206,6 @@
     <string name="settings_button_description">设置</string>
     <string name="arrow_right">向右箭头</string>
 
-    <string name="profile_name_not_set">未设置昵称</string>
-    <string name="profile_email_not_set">未设置邮箱</string>
-
     <string name="app_settings">应用设置</string>
 
     <!-- Shift Type Management -->
@@ -247,4 +238,16 @@
 
     <!-- Data Management -->
     <string name="alarm_notification_tip">闹钟提醒功能需要在设置中开启通知权限，并可选择是否同步到系统闹钟</string>
+
+    <!-- Profile -->
+    <string name="profile_title">个人信息</string>
+    <string name="profile_basic_info">基本信息</string>
+    <string name="profile_avatar">头像</string>
+    <string name="profile_change_avatar">更换头像</string>
+    <string name="profile_nickname">昵称</string>
+    <string name="profile_email">邮箱</string>
+    <string name="profile_saved">个人信息已保存</string>
+    <string name="invalid_email_format">请输入有效的邮箱格式</string>
+    <string name="profile_name_not_set">未设置昵称</string>
+    <string name="profile_email_not_set">未设置邮箱</string>
 </resources> 
