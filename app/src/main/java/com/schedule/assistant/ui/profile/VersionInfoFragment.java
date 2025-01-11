@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.Navigation;
 
 import com.schedule.assistant.R;
 import com.schedule.assistant.databinding.FragmentVersionInfoBinding;
@@ -24,7 +27,17 @@ public class VersionInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         binding = FragmentVersionInfoBinding.inflate(inflater, container, false);
+        setupToolbar();
         return binding.getRoot();
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = binding.toolbar;
+        AppCompatActivity activity = (AppCompatActivity) requireActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).navigateUp());
     }
 
     @Override
@@ -40,6 +53,7 @@ public class VersionInfoFragment extends Fragment {
             PackageInfo packageInfo = packageManager.getPackageInfo(requireContext().getPackageName(), 0);
 
             String versionName = String.format(getString(R.string.version_name_format), packageInfo.versionName);
+            @SuppressWarnings("deprecation")
             String versionCode = String.format(getString(R.string.version_code_format), packageInfo.versionCode);
 
             binding.versionName.setText(String.format("%s\n%s", versionName, versionCode));
