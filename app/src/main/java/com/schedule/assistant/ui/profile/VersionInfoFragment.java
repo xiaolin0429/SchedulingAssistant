@@ -35,8 +35,11 @@ public class VersionInfoFragment extends Fragment {
         Toolbar toolbar = binding.toolbar;
         AppCompatActivity activity = (AppCompatActivity) requireActivity();
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            activity.getSupportActionBar().setTitle(R.string.version_info);
+        }
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).navigateUp());
     }
 
@@ -53,7 +56,6 @@ public class VersionInfoFragment extends Fragment {
             PackageInfo packageInfo = packageManager.getPackageInfo(requireContext().getPackageName(), 0);
 
             String versionName = String.format(getString(R.string.version_name_format), packageInfo.versionName);
-            @SuppressWarnings("deprecation")
             String versionCode = String.format(getString(R.string.version_code_format), packageInfo.versionCode);
 
             binding.versionName.setText(String.format("%s\n%s", versionName, versionCode));
