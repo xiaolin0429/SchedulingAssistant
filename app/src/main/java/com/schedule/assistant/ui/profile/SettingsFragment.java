@@ -9,6 +9,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.SavedStateHandle;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.radiobutton.MaterialRadioButton;
@@ -24,6 +29,7 @@ import com.schedule.assistant.data.entity.UserSettings;
  */
 public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
+    private static final String KEY_SHOULD_POP_BACK = "should_pop_back";
     private UserSettingsDao userSettingsDao;
     private SwitchMaterial notificationSwitch;
     private Slider notificationTimeSlider;
@@ -33,6 +39,31 @@ public class SettingsFragment extends Fragment {
     private MaterialRadioButton languageSystemRadio;
     private MaterialRadioButton languageChineseRadio;
     private MaterialRadioButton languageEnglishRadio;
+    private SavedStateHandle savedStateHandle;
+
+    @Override
+    public void onCreate(@NonNull Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        savedStateHandle = new SavedStateHandle();
+
+        // 添加生命周期观察者来处理Fragment状态变化
+        getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            if (event == Lifecycle.Event.ON_STOP) {
+                // 在Fragment停止时检查是否需要清理导航栈
+                if (isBottomNavigation() && isAdded() && !requireActivity().isChangingConfigurations()) {
+                    savedStateHandle.set(KEY_SHOULD_POP_BACK, true);
+                }
+            } else if (event == Lifecycle.Event.ON_RESUME) {
+                // 在Fragment恢复时检查是否需要返回
+                if (savedStateHandle.contains(KEY_SHOULD_POP_BACK) &&
+                        savedStateHandle.get(KEY_SHOULD_POP_BACK) == Boolean.TRUE) {
+                    savedStateHandle.remove(KEY_SHOULD_POP_BACK);
+                    NavHostFragment.findNavController(this)
+                            .popBackStack(R.id.profileMainFragment, false);
+                }
+            }
+        });
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,11 +85,21 @@ public class SettingsFragment extends Fragment {
                 new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
-                        requireActivity().finish();
+                        Navigation.findNavController(requireView()).navigateUp();
                     }
                 });
 
         return view;
+    }
+
+    /**
+     * 检查是否是通过底部导航栏切换
+     */
+    private boolean isBottomNavigation() {
+        if (!isAdded())
+            return false;
+        View navView = requireActivity().findViewById(R.id.nav_view);
+        return navView != null && navView.getVisibility() == View.VISIBLE;
     }
 
     /**
@@ -69,7 +110,7 @@ public class SettingsFragment extends Fragment {
     private void initializeViews(View view) {
         // 初始化Toolbar
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
         // 初始化通知设置
         notificationSwitch = view.findViewById(R.id.notification_switch);

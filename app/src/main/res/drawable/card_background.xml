@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/colorSurfaceVariant" />
-    <corners android:radius="8dp" />
-</shape> 
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 阴影层 -->
+    <item>
+        <shape>
+            <padding
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"
+                android:top="2dp" />
+            <solid android:color="#10000000" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <!-- 背景层 -->
+    <item>
+        <shape>
+            <solid android:color="?attr/colorSurface" />
+            <corners android:radius="8dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#20000000" />
+        </shape>
+    </item>
+</layer-list> 
