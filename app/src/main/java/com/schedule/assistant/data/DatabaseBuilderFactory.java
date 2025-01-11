@@ -46,7 +46,8 @@ public class DatabaseBuilderFactory {
                         MIGRATION_8_9,
                         MIGRATION_9_10,
                         MIGRATION_9_100,
-                        MIGRATION_100_101);
+                        MIGRATION_100_101,
+                        MIGRATION_101_102);
     }
 
     // 数据库迁移策略定义
@@ -173,6 +174,13 @@ public class DatabaseBuilderFactory {
                             "languageMode INTEGER NOT NULL DEFAULT 0, " +
                             "notificationEnabled INTEGER NOT NULL DEFAULT 1, " +
                             "notificationAdvanceTime INTEGER NOT NULL DEFAULT 30)");
+        }
+    };
+
+    private static final Migration MIGRATION_101_102 = new Migration(101, 102) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE user_settings ADD COLUMN syncSystemAlarm INTEGER NOT NULL DEFAULT 0");
         }
     };
 }

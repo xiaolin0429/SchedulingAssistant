@@ -195,11 +195,8 @@
 
     <!-- Settings -->
     <string name="settings">Settings</string>
-    <string name="notification_settings">Notification Settings</string>
     <string name="theme_settings">Theme Settings</string>
     <string name="language_settings">Language Settings</string>
-    <string name="enable_notifications">Enable Notifications</string>
-    <string name="notification_advance_time">Notification Advance Time (minutes)</string>
     <string name="theme_follow_system">Follow System</string>
     <string name="theme_light">Light Theme</string>
     <string name="theme_dark">Dark Theme</string>
@@ -209,8 +206,10 @@
     <string name="notification_enabled">Notifications enabled</string>
     <string name="notification_disabled">Notifications disabled</string>
     <string name="notification_time_updated">Notification time updated</string>
+    <string name="notification_time_format">(%d minutes)</string>
     <string name="theme_updated">Theme updated</string>
     <string name="language_updated">Language updated</string>
+    <string name="alarm_notification_tip">Alarm notifications require notification permission in settings, and you can choose whether to sync with system alarms</string>
 
     <!-- Data Management -->
     <string name="data_management">Data Management</string>
@@ -255,4 +254,22 @@
     <string name="shift_count_day">Day</string>
     <string name="shift_count_night">Night</string>
     <string name="shift_count_rest">Rest</string>
+
+    <!-- 通知相关 -->
+    <string name="notification_channel_name">Schedule Assistant Notifications</string>
+    <string name="notification_channel_description">For schedule reminders and other important notifications</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="notification_advance_time">Notification Advance Time (minutes)</string>
+    <string name="notification_permission_required">Notification permission is required for reminders</string>
+    <string name="notification_permission_denied">Notification permission denied, you won\'t receive reminders</string>
+    <string name="shift_notification_title">Schedule Reminder</string>
+    <string name="shift_notification_content">You have an upcoming shift</string>
+    <string name="notification_service_running">Schedule Assistant is running in background</string>
+    <string name="notification_service_description">Monitoring upcoming shifts</string>
+
+    <!-- Sync System Alarm -->
+    <string name="sync_system_alarm">Sync with System Alarm</string>
+    <string name="sync_system_alarm_enabled">System alarm sync enabled</string>
+    <string name="sync_system_alarm_disabled">System alarm sync disabled</string>
 </resources>
