@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Locale;
 
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentDestinationId != item.getItemId()) {
                     // 清除导航栈到根目标
-                    navController.popBackStack(navController.getGraph().getStartDestination(), false);
+                    navController.popBackStack(R.id.navigation_home, false);
                     // 导航到选中的目标
                     navController.navigate(item.getItemId());
                 }

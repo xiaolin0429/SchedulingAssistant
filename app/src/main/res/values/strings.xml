@@ -55,7 +55,6 @@
     <string name="today_shift">Today\'s Schedule</string>
     <string name="selected_day_shift">Selected Date Schedule</string>
     <string name="no_shift_today">No Schedule</string>
-    <string name="shift_count_format">%1$s: %2$d</string>
     <string name="please_select_date">Please select a date</string>
     <string name="add_note">Add Note</string>
     <string name="start_schedule">Start Schedule</string>
@@ -244,4 +243,16 @@
 
     <!-- App Settings -->
     <string name="app_settings">App Settings</string>
+
+    <!-- Shift Type Management -->
+    <string name="shift_types_management">Shift Type Management</string>
+    <string name="add_shift">Add Shift</string>
+
+    <!-- Date Format -->
+    <string name="date_format_year_month">%1$s %2$d</string>
+    <string name="month_year_format">MMMM yyyy</string>
+    <string name="shift_count_format">%1$s: %2$d</string>
+    <string name="shift_count_day">Day</string>
+    <string name="shift_count_night">Night</string>
+    <string name="shift_count_rest">Rest</string>
 </resources>

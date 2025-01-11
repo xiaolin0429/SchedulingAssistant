@@ -1,5 +1,6 @@
 package com.schedule.assistant.ui.calendar;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -10,7 +11,12 @@ import com.schedule.assistant.R;
 import java.time.format.DateTimeFormatter;
 
 public class CalendarHeaderBinder implements MonthHeaderFooterBinder<CalendarHeaderBinder.MonthViewContainer> {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月");
+    private final DateTimeFormatter formatter;
+
+    public CalendarHeaderBinder(Context context) {
+        String pattern = context.getString(R.string.month_year_format);
+        formatter = DateTimeFormatter.ofPattern(pattern);
+    }
 
     @NonNull
     @Override
@@ -21,7 +27,7 @@ public class CalendarHeaderBinder implements MonthHeaderFooterBinder<CalendarHea
     @Override
     public void bind(@NonNull MonthViewContainer container, @NonNull CalendarMonth month) {
         if (container.textView != null) {
-            container.textView.setText(month.getYearMonth().format(FORMATTER));
+            container.textView.setText(month.getYearMonth().format(formatter));
         }
     }
 
@@ -33,4 +39,4 @@ public class CalendarHeaderBinder implements MonthHeaderFooterBinder<CalendarHea
             textView = view.findViewById(R.id.headerTextView);
         }
     }
-} 
+}

@@ -50,7 +50,6 @@
     <string name="today_shift">今日排班</string>
     <string name="selected_day_shift">选中日期排班</string>
     <string name="no_shift_today">暂无排班</string>
-    <string name="shift_count_format">%1$s：%2$d</string>
     <string name="please_select_date">请选择日期</string>
     <string name="add_note">添加备注</string>
     <string name="start_schedule">开始排班</string>
@@ -219,4 +218,16 @@
     <string name="profile_email_not_set">未设置邮箱</string>
 
     <string name="app_settings">应用设置</string>
+
+    <!-- Shift Type Management -->
+    <string name="shift_types_management">班次类型管理</string>
+    <string name="add_shift">添加班次</string>
+
+    <!-- Date Format -->
+    <string name="date_format_year_month">%1$d年%2$s</string>
+    <string name="month_year_format">yyyy年M月</string>
+    <string name="shift_count_format">%1$s: %2$d</string>
+    <string name="shift_count_day">白班</string>
+    <string name="shift_count_night">夜班</string>
+    <string name="shift_count_rest">休息</string>
 </resources> 

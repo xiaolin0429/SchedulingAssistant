@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
 
         calendarDayBinder.setCalendarView(binding.calendarView);
         binding.calendarView.setDayBinder(calendarDayBinder);
-        binding.calendarView.setMonthHeaderBinder(new CalendarHeaderBinder());
+        binding.calendarView.setMonthHeaderBinder(new CalendarHeaderBinder(requireContext()));
 
         // 设置日历范围
         YearMonth currentMonth = YearMonth.now();
@@ -222,7 +222,8 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
 
     private void updateMonthDisplay() {
         YearMonth currentMonth = YearMonth.now();
-        binding.yearMonthText.setText(currentMonth.format(DateTimeFormatter.ofPattern("yyyy年MM月")));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(getString(R.string.month_year_format));
+        binding.yearMonthText.setText(currentMonth.format(formatter));
     }
 
     @Override

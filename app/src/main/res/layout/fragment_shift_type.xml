@@ -34,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="班次类型管理"
+                    android:text="@string/shift_types_management"
                     android:textAppearance="?attr/textAppearanceHeadline6"
                     android:letterSpacing="0.1" />
 
@@ -73,7 +73,7 @@
             android:layout_marginBottom="16dp"
             android:paddingHorizontal="24dp"
             android:paddingVertical="12dp"
-            android:text="添加班次"
+            android:text="@string/add_shift"
             android:textSize="16sp"
             app:icon="@drawable/ic_add"
             app:iconGravity="textStart"
