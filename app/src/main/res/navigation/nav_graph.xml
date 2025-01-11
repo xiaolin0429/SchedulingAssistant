@@ -59,11 +59,23 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_profileMainFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.schedule.assistant.ui.profile.ProfileFragment"
         android:label="@string/profile_title" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.schedule.assistant.ui.profile.SettingsFragment"
+        android:label="@string/settings" />
 
 </navigation> 

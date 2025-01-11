@@ -48,13 +48,13 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
         container.day = day;
         TextView dayText = container.dayText;
         TextView shiftText = container.shiftText;
-        
+
         dayText.setText(String.valueOf(day.getDate().getDayOfMonth()));
-        
+
         if (day.getOwner() == DayOwner.THIS_MONTH) {
             dayText.setVisibility(View.VISIBLE);
             shiftText.setVisibility(View.VISIBLE);
-            
+
             // 设置选中状态的背景和文字颜色
             if (day.getDate().equals(selectedDate)) {
                 dayText.setBackgroundResource(R.drawable.selected_day_background);
@@ -66,15 +66,19 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
                 dayText.setTypeface(null, Typeface.BOLD);
             } else {
                 dayText.setBackgroundResource(0);
-                dayText.setTextColor(container.itemView.getContext().getColor(R.color.black));
+                int[] attrs = new int[] { android.R.attr.textColorPrimary };
+                try (android.content.res.TypedArray ta = container.itemView.getContext()
+                        .obtainStyledAttributes(attrs)) {
+                    dayText.setTextColor(ta.getColor(0, container.itemView.getContext().getColor(R.color.black)));
+                }
                 dayText.setTypeface(null, Typeface.NORMAL);
             }
-            
+
             // 设置班次信息
             Shift shift = shifts.get(day.getDate().toString());
             if (shift != null) {
                 shiftText.setVisibility(View.VISIBLE);
-                
+
                 // 根据shiftTypeId获取对应的ShiftTypeEntity
                 viewModel.getShiftTypeById(shift.getShiftTypeId()).observe(lifecycleOwner, shiftType -> {
                     if (shiftType != null) {
@@ -82,14 +86,18 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
                         // 创建动态背景
                         GradientDrawable background = new GradientDrawable();
                         background.setColor(shiftType.getColor());
-                        background.setCornerRadius(container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_corner_radius));
+                        background.setCornerRadius(container.itemView.getContext().getResources()
+                                .getDimensionPixelSize(R.dimen.shift_type_corner_radius));
                         // 设置内边距
                         shiftText.setPadding(
-                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_horizontal),
-                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_vertical),
-                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_horizontal),
-                            container.itemView.getContext().getResources().getDimensionPixelSize(R.dimen.shift_type_padding_vertical)
-                        );
+                                container.itemView.getContext().getResources()
+                                        .getDimensionPixelSize(R.dimen.shift_type_padding_horizontal),
+                                container.itemView.getContext().getResources()
+                                        .getDimensionPixelSize(R.dimen.shift_type_padding_vertical),
+                                container.itemView.getContext().getResources()
+                                        .getDimensionPixelSize(R.dimen.shift_type_padding_horizontal),
+                                container.itemView.getContext().getResources()
+                                        .getDimensionPixelSize(R.dimen.shift_type_padding_vertical));
                         // 设置背景
                         shiftText.setBackground(background);
                         shiftText.setTextColor(container.itemView.getContext().getColor(R.color.white));
@@ -144,4 +152,4 @@ public class CalendarDayBinder implements DayBinder<CalendarDayBinder.DayViewCon
     public interface OnDayClickListener {
         void onDayClick(CalendarDay day);
     }
-} 
+}

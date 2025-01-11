@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Design 主题颜色 -->
+    <color name="primary">#FF64B5F6</color>  <!-- 更亮的蓝色 -->
+    <color name="primary_dark">#FF1976D2</color>
+    <color name="accent">#FF4081</color>
+    <color name="error">#FFB00020</color>
+
+    <!-- 基础颜色 -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#FFB0B0B0</color>
+    <color name="light_gray">#FF424242</color>
+    
+    <!-- 班次类型颜色 -->
+    <color name="day_shift_color">#FF81C784</color>    <!-- 更亮的绿色 -->
+    <color name="night_shift_color">#FF64B5F6</color>  <!-- 更亮的蓝色 -->
+    <color name="rest_day_color">#FFFFB74D</color>     <!-- 更亮的橙色 -->
+    <color name="no_shift">#FF757575</color>           <!-- 深色灰色 -->
+    
+    <!-- 文本颜色 -->
+    <color name="text_primary">#DEFFFFFF</color>
+    <color name="text_secondary">#99FFFFFF</color>
+    <color name="text_hint">#61FFFFFF</color>
+    
+    <!-- 背景颜色 -->
+    <color name="background">#FF121212</color>
+    <color name="surface">#FF1E1E1E</color>
+    <color name="divider">#1FFFFFFF</color>
+
+    <!-- Material Design 主题相关颜色 -->
+    <color name="on_primary">#FF000000</color>
+    <color name="on_surface">#FFFFFFFF</color>
+    <color name="on_background">#FFFFFFFF</color>
+    <color name="on_error">#FF000000</color>
+
+    <!-- 输入框颜色 -->
+    <color name="text_input_box_stroke">#FF64B5F6</color>
+    <color name="text_input_box_background">#FF1E1E1E</color>
+    <color name="text_input_box_hint">#FFB0B0B0</color>
+    <color name="text_input_box_text">#FFFFFFFF</color>
+
+    <!-- 新增的主题颜色 -->
+    <color name="primary_light">#FF1E1E1E</color>
+    <color name="background_light">#FF121212</color>
+    <color name="primary_text">#FF81C784</color>
+
+    <!-- 操作按钮背景颜色 -->
+    <color name="shift_type_edit_background">#FF64B5F6</color>    <!-- 更亮的蓝色 -->
+    <color name="shift_type_delete_background">#FFE57373</color>  <!-- 更亮的红色 -->
+
+    <!-- 闹钟按钮背景颜色 -->
+    <color name="alarm_edit_background">#FF64B5F6</color>
+    <color name="alarm_delete_background">#FFE57373</color>
+
+    <color name="snackbar_background">#FF424242</color>
+    <color name="snackbar_text">#FFFFFFFF</color>
+
+    <!-- 卡片颜色 -->
+    <color name="card_background">#FF2D2D2D</color>
+    <color name="card_stroke">#FF424242</color>
+    <color name="card_ripple">#1FFFFFFF</color>
+</resources> 

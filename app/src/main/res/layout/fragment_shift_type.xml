@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_light">
+        android:background="?android:attr/windowBackground">
 
         <!-- 标题栏卡片 -->
         <com.google.android.material.card.MaterialCardView
@@ -17,15 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary_light">
+                android:layout_height="?attr/actionBarSize">
 
                 <TextView
                     android:id="@+id/titleText"
@@ -33,9 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="班次类型管理"
-                    android:textColor="@color/primary_text"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
                     android:letterSpacing="0.1" />
 
             </androidx.appcompat.widget.Toolbar>
