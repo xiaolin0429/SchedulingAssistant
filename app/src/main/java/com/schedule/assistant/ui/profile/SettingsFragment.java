@@ -1,33 +1,29 @@
 package com.schedule.assistant.ui.profile;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.schedule.assistant.R;
+import com.schedule.assistant.SchedulingAssistantApp;
 import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.dao.UserSettingsDao;
 import com.schedule.assistant.data.entity.UserSettings;
-import com.schedule.assistant.viewmodel.SettingsViewModel;
-import androidx.appcompat.app.AppCompatDelegate;
-import java.util.Locale;
 
 /**
  * 设置页面Fragment
  * 用于管理用户设置，包括主题、语言、通知等
  */
 public class SettingsFragment extends Fragment {
-    private SettingsViewModel viewModel;
+    private static final String TAG = "SettingsFragment";
     private UserSettingsDao userSettingsDao;
     private SwitchMaterial notificationSwitch;
     private Slider notificationTimeSlider;
@@ -41,7 +37,6 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        viewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
         // 初始化数据库
         AppDatabase db = AppDatabase.getDatabase(requireContext());
@@ -54,6 +49,15 @@ public class SettingsFragment extends Fragment {
         // 加载设置
         loadSettings();
 
+        // 设置返回键处理
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        requireActivity().finish();
+                    }
+                });
+
         return view;
     }
 
@@ -65,7 +69,7 @@ public class SettingsFragment extends Fragment {
     private void initializeViews(View view) {
         // 初始化Toolbar
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
 
         // 初始化通知设置
         notificationSwitch = view.findViewById(R.id.notification_switch);
@@ -135,45 +139,49 @@ public class SettingsFragment extends Fragment {
      */
     private void loadSettings() {
         new Thread(() -> {
-            UserSettings settings = userSettingsDao.getUserSettings();
-            if (settings == null) {
-                settings = new UserSettings();
-                userSettingsDao.insert(settings);
+            try {
+                UserSettings settings = userSettingsDao.getUserSettings();
+                if (settings == null) {
+                    settings = new UserSettings();
+                    userSettingsDao.insert(settings);
+                }
+
+                UserSettings finalSettings = settings;
+                requireActivity().runOnUiThread(() -> {
+                    // 设置通知状态
+                    notificationSwitch.setChecked(finalSettings.isNotificationEnabled());
+                    notificationTimeSlider.setValue(finalSettings.getNotificationAdvanceTime());
+                    notificationTimeSlider.setEnabled(finalSettings.isNotificationEnabled());
+
+                    // 设置主题状态
+                    switch (finalSettings.getThemeMode()) {
+                        case 1:
+                            themeLightRadio.setChecked(true);
+                            break;
+                        case 2:
+                            themeDarkRadio.setChecked(true);
+                            break;
+                        default:
+                            themeSystemRadio.setChecked(true);
+                            break;
+                    }
+
+                    // 设置语言状态
+                    switch (finalSettings.getLanguageMode()) {
+                        case 1:
+                            languageChineseRadio.setChecked(true);
+                            break;
+                        case 2:
+                            languageEnglishRadio.setChecked(true);
+                            break;
+                        default:
+                            languageSystemRadio.setChecked(true);
+                            break;
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading settings", e);
             }
-
-            UserSettings finalSettings = settings;
-            requireActivity().runOnUiThread(() -> {
-                // 设置通知状态
-                notificationSwitch.setChecked(finalSettings.isNotificationEnabled());
-                notificationTimeSlider.setValue(finalSettings.getNotificationAdvanceTime());
-                notificationTimeSlider.setEnabled(finalSettings.isNotificationEnabled());
-
-                // 设置主题状态
-                switch (finalSettings.getThemeMode()) {
-                    case 1:
-                        themeLightRadio.setChecked(true);
-                        break;
-                    case 2:
-                        themeDarkRadio.setChecked(true);
-                        break;
-                    default:
-                        themeSystemRadio.setChecked(true);
-                        break;
-                }
-
-                // 设置语言状态
-                switch (finalSettings.getLanguageMode()) {
-                    case 1:
-                        languageChineseRadio.setChecked(true);
-                        break;
-                    case 2:
-                        languageEnglishRadio.setChecked(true);
-                        break;
-                    default:
-                        languageSystemRadio.setChecked(true);
-                        break;
-                }
-            });
         }).start();
     }
 
@@ -184,9 +192,13 @@ public class SettingsFragment extends Fragment {
      */
     private void saveNotificationSettings(boolean enabled) {
         new Thread(() -> {
-            UserSettings settings = userSettingsDao.getUserSettings();
-            if (settings != null) {
-                userSettingsDao.updateNotificationEnabled(settings.getId(), enabled);
+            try {
+                UserSettings settings = userSettingsDao.getUserSettings();
+                if (settings != null) {
+                    userSettingsDao.updateNotificationEnabled(settings.getId(), enabled);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving notification settings", e);
             }
         }).start();
     }
@@ -198,9 +210,13 @@ public class SettingsFragment extends Fragment {
      */
     private void saveNotificationTime(int minutes) {
         new Thread(() -> {
-            UserSettings settings = userSettingsDao.getUserSettings();
-            if (settings != null) {
-                userSettingsDao.updateNotificationAdvanceTime(settings.getId(), minutes);
+            try {
+                UserSettings settings = userSettingsDao.getUserSettings();
+                if (settings != null) {
+                    userSettingsDao.updateNotificationAdvanceTime(settings.getId(), minutes);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving notification time", e);
             }
         }).start();
     }
@@ -212,10 +228,19 @@ public class SettingsFragment extends Fragment {
      */
     private void saveThemeSettings(int themeMode) {
         new Thread(() -> {
-            UserSettings settings = userSettingsDao.getUserSettings();
-            if (settings != null) {
-                userSettingsDao.updateThemeMode(settings.getId(), themeMode);
-                applyTheme(themeMode);
+            try {
+                UserSettings settings = userSettingsDao.getUserSettings();
+                if (settings != null) {
+                    settings.setThemeMode(themeMode);
+                    userSettingsDao.update(settings);
+                    requireActivity().runOnUiThread(() -> {
+                        ((SchedulingAssistantApp) requireActivity().getApplication()).updateSettings(settings);
+                        // 重新创建Activity以应用新主题
+                        requireActivity().recreate();
+                    });
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving theme settings", e);
             }
         }).start();
     }
@@ -227,63 +252,19 @@ public class SettingsFragment extends Fragment {
      */
     private void saveLanguageSettings(int languageMode) {
         new Thread(() -> {
-            UserSettings settings = userSettingsDao.getUserSettings();
-            if (settings != null) {
-                userSettingsDao.updateLanguageMode(settings.getId(), languageMode);
-                applyLanguage(languageMode);
+            try {
+                UserSettings settings = userSettingsDao.getUserSettings();
+                if (settings != null) {
+                    settings.setLanguageMode(languageMode);
+                    userSettingsDao.update(settings);
+                    requireActivity().runOnUiThread(() -> {
+                        ((SchedulingAssistantApp) requireActivity().getApplication()).updateSettings(settings);
+                        requireActivity().recreate();
+                    });
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving language settings", e);
             }
         }).start();
-    }
-
-    /**
-     * 应用主题设置
-     * 
-     * @param themeMode 主题模式
-     */
-    private void applyTheme(int themeMode) {
-        requireActivity().runOnUiThread(() -> {
-            switch (themeMode) {
-                case 0:
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                    break;
-                case 1:
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    break;
-                case 2:
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    break;
-            }
-        });
-    }
-
-    /**
-     * 应用语言设置
-     * 
-     * @param languageMode 语言模式
-     */
-    private void applyLanguage(int languageMode) {
-        requireActivity().runOnUiThread(() -> {
-            Locale locale;
-            switch (languageMode) {
-                case 0:
-                    locale = Resources.getSystem().getConfiguration().locale;
-                    break;
-                case 1:
-                    locale = new Locale("zh");
-                    break;
-                case 2:
-                    locale = new Locale("en");
-                    break;
-                default:
-                    locale = Resources.getSystem().getConfiguration().locale;
-                    break;
-            }
-            Locale.setDefault(locale);
-            Resources resources = getResources();
-            Configuration config = resources.getConfiguration();
-            config.setLocale(locale);
-            resources.updateConfiguration(config, resources.getDisplayMetrics());
-            requireActivity().recreate();
-        });
     }
 }

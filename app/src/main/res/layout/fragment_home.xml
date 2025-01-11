@@ -259,7 +259,10 @@
                         android:layout_height="48dp"
                         android:layout_weight="1"
                         android:text="@string/add_note"
-                        android:textSize="14sp" />
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="8sp"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeStepGranularity="1sp" />
 
                     <Button
                         android:id="@+id/startScheduleButton"
@@ -269,7 +272,10 @@
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:text="@string/start_schedule"
-                        android:textSize="14sp" />
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="8sp"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeStepGranularity="1sp" />
 
                     <Button
                         android:id="@+id/nextShiftButton"
@@ -279,7 +285,10 @@
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:text="@string/next_shift"
-                        android:textSize="14sp" />
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="8sp"
+                        android:autoSizeMaxTextSize="14sp"
+                        android:autoSizeStepGranularity="1sp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
