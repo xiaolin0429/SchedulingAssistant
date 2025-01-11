@@ -130,9 +130,7 @@ public class AlarmScheduler {
      * 在主线程上显示降级模式提示
      */
     private void showDegradedModeToastOnMainThread() {
-        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
-            showDegradedModeToast();
-        });
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(this::showDegradedModeToast);
     }
 
     /**
