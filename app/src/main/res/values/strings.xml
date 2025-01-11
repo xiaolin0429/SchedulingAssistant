@@ -227,6 +227,14 @@
     <string name="about">About</string>
     <string name="version_info">Version Info</string>
     <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="update_history">Update History</string>
+    <string name="version_name_format">Version %s</string>
+    <string name="version_code_format">Build %d</string>
+
+    <!-- Version History -->
+    <string name="version_history_v010">• Project initialization\n• Basic framework setup\n• Bottom navigation implementation</string>
+    <string name="version_history_v020">• Personal information module improvements\n• String resource optimization\n• Code quality enhancements</string>
+    <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Alarm Settings -->
     <string name="repeat_alarm">Repeat Alarm</string>

@@ -194,6 +194,9 @@
     <string name="about">关于</string>
     <string name="version_info">版本信息</string>
     <string name="open_source_licenses">开源许可</string>
+    <string name="update_history">更新历史</string>
+    <string name="version_name_format">版本 %s</string>
+    <string name="version_code_format">构建版本 %d</string>
 
     <string name="repeat_alarm">重复闹钟</string>
     <string name="alarm_sound">闹钟铃声</string>
@@ -250,4 +253,9 @@
     <string name="invalid_email_format">请输入有效的邮箱格式</string>
     <string name="profile_name_not_set">未设置昵称</string>
     <string name="profile_email_not_set">未设置邮箱</string>
+
+    <!-- Version History -->
+    <string name="version_history_v010">• 项目初始化\n• 基础框架搭建\n• 底部导航实现</string>
+    <string name="version_history_v020">• 完善个人信息模块\n• 优化字符串资源\n• 改进代码质量</string>
+    <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 </resources> 
