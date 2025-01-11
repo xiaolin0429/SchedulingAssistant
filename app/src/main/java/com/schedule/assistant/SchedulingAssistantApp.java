@@ -16,7 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.lang.reflect.Field;
+import android.app.Activity;
+import android.os.Bundle;
 
 public class SchedulingAssistantApp extends Application {
     private static final String TAG = "SchedulingAssistantApp";
@@ -24,6 +25,7 @@ public class SchedulingAssistantApp extends Application {
     private static UserSettings cachedSettings;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private boolean isInitialized = false;
+    private android.app.Activity currentActivity;
 
     @Override
     protected void attachBaseContext(@NonNull Context base) {
@@ -94,6 +96,43 @@ public class SchedulingAssistantApp extends Application {
         } else {
             isInitialized = true;
         }
+
+        // 注册 Activity 生命周期回调
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityResumed(@NonNull Activity activity) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityPaused(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+            }
+
+            @Override
+            public void onActivityDestroyed(@NonNull Activity activity) {
+                if (currentActivity == activity) {
+                    currentActivity = null;
+                }
+            }
+        });
     }
 
     private void initializeSettings() {
@@ -130,26 +169,7 @@ public class SchedulingAssistantApp extends Application {
     }
 
     private android.app.Activity getCurrentActivity() {
-        try {
-            Class activityThreadClass = Class.forName("android.app.ActivityThread");
-            Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
-            Field activitiesField = activityThreadClass.getDeclaredField("mActivities");
-            activitiesField.setAccessible(true);
-            Object activities = activitiesField.get(activityThread);
-            if (activities instanceof java.util.Map) {
-                for (Object activityRecord : ((java.util.Map) activities).values()) {
-                    Field activityField = activityRecord.getClass().getDeclaredField("activity");
-                    activityField.setAccessible(true);
-                    android.app.Activity activity = (android.app.Activity) activityField.get(activityRecord);
-                    if (activity != null) {
-                        return activity;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting current activity", e);
-        }
-        return null;
+        return currentActivity;
     }
 
     private void setLocale(int languageMode) {
@@ -216,6 +236,13 @@ public class SchedulingAssistantApp extends Application {
         return currentLocale;
     }
 
+    /**
+     * 获取当前缓存的用户设置
+     * 此方法用于其他组件获取用户设置信息
+     * 
+     * @return 当前缓存的用户设置
+     */
+    @SuppressWarnings("unused")
     public static UserSettings getCachedSettings() {
         return cachedSettings;
     }
