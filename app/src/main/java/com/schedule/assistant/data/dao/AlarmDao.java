@@ -41,4 +41,10 @@ public interface AlarmDao {
 
     @Query("DELETE FROM alarms WHERE id = :id")
     void deleteById(long id);
-} 
+
+    @Query("SELECT * FROM alarms")
+    List<AlarmEntity> getAllAlarmsSync();
+
+    @Query("DELETE FROM alarms")
+    void deleteAll();
+}

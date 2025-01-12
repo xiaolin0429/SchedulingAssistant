@@ -1,20 +1,29 @@
 package com.schedule.assistant;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.LocaleList;
+import android.util.Log;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.schedule.assistant.service.DataBackupService;
+import java.io.File;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "MainActivity";
     private NavController navController;
 
     @Override
@@ -52,6 +61,50 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupNavigation();
+
+        // 注册广播接收器
+        IntentFilter filter = new IntentFilter("com.schedule.assistant.ACTION_SHOW_RESTORE_DIALOG");
+        ContextCompat.registerReceiver(this, restoreDialogReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 注销广播接收器
+        unregisterReceiver(restoreDialogReceiver);
+    }
+
+    private final BroadcastReceiver restoreDialogReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String backupFile = intent.getStringExtra("backup_file");
+            if (backupFile != null) {
+                showRestoreDialog(backupFile);
+            }
+        }
+    };
+
+    private void showRestoreDialog(String backupFile) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.backup_restore)
+                .setMessage(R.string.backup_restore_confirm)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    // 启动恢复过程
+                    DataBackupService backupService = new DataBackupService(this);
+                    new Thread(() -> {
+                        try {
+                            backupService.restoreData(new File(backupFile));
+                            runOnUiThread(() -> Toast.makeText(this, R.string.backup_restore_success,
+                                    Toast.LENGTH_SHORT).show());
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error restoring data", e);
+                            runOnUiThread(() -> Toast.makeText(this, R.string.backup_restore_failed,
+                                    Toast.LENGTH_SHORT).show());
+                        }
+                    }).start();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void setupNavigation() {

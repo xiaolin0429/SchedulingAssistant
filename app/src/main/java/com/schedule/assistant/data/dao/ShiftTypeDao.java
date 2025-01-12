@@ -23,6 +23,9 @@ public interface ShiftTypeDao {
     @Query("SELECT * FROM shift_types ORDER BY updateTime DESC")
     LiveData<List<ShiftTypeEntity>> getAllShiftTypes();
 
+    @Query("SELECT * FROM shift_types ORDER BY updateTime DESC")
+    List<ShiftTypeEntity> getAllTypesSync();
+
     @Query("SELECT * FROM shift_types WHERE isDefault = 1 ORDER BY updateTime DESC")
     LiveData<List<ShiftTypeEntity>> getDefaultShiftTypes();
 
@@ -31,4 +34,4 @@ public interface ShiftTypeDao {
 
     @Query("SELECT * FROM shift_types WHERE id = :id")
     LiveData<ShiftTypeEntity> getShiftTypeById(long id);
-} 
+}

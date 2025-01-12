@@ -73,6 +73,13 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_profileMainFragment_to_backupFragment"
+            app:destination="@id/backupFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -90,5 +97,18 @@
         android:name="com.schedule.assistant.ui.profile.VersionInfoFragment"
         android:label="@string/version_info"
         tools:layout="@layout/fragment_version_info" />
+
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="com.schedule.assistant.ui.profile.BackupFragment"
+        android:label="@string/backup_restore">
+        <action
+            android:id="@+id/action_backupFragment_to_profileMainFragment"
+            app:destination="@id/profileMainFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
 
 </navigation> 

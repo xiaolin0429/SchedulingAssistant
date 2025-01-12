@@ -166,7 +166,6 @@
     <string name="exact_alarm_permission_message">To ensure timely alarm notifications, permission to set exact alarms is required.</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="use_app_alarm_only">Use In-app Alarm Only</string>
-    <string name="go_to_settings">Go to Settings</string>
 
     <!-- Days of Week -->
     <string name="sunday">Sunday</string>
@@ -282,4 +281,43 @@
     <string name="sync_system_alarm">Sync with System Alarm</string>
     <string name="sync_system_alarm_enabled">System alarm sync enabled</string>
     <string name="sync_system_alarm_disabled">System alarm sync disabled</string>
+
+    <!-- Data Backup -->
+    <string name="backup_success">Backup successful</string>
+    <string name="backup_failed">Backup failed</string>
+    <string name="backup_in_progress">Backing up data…</string>
+    <string name="backup_file_path">Backup file: %s</string>
+    <string name="start_backup">Start Backup</string>
+    <string name="backup_description">Backup all app data including settings and alarms</string>
+    <string name="backup_no_data">No data to backup</string>
+    <string name="backup_history">Backup History</string>
+    <string name="backup_date_format">yyyy-MM-dd HH:mm:ss</string>
+    <string name="backup_file_size">Size: %s</string>
+    <string name="backup_delete">Delete Backup</string>
+    <string name="backup_delete_confirm">Are you sure you want to delete this backup?</string>
+    <string name="backup_delete_success">Backup deleted</string>
+    <string name="backup_delete_failed">Failed to delete backup</string>
+    <string name="backup_restore_in_progress">Restoring data…</string>
+
+    <!-- Permissions -->
+    <string name="storage_permission_required">Storage Permission Required</string>
+    <string name="grant_storage_permission">The backup feature requires storage permission to save and restore data. Please grant the permission to continue.</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_message">The backup feature cannot work without storage permission. You can grant the permission in Settings.</string>
+    <string name="go_to_settings">Go to Settings</string>
+
+    <!-- Request Permission -->
+    <string name="request_permission">Request Permission</string>
+
+    <!-- Backup Restore -->
+    <string name="backup_restore">Restore Backup</string>
+    <string name="backup_restore_confirm">Found a backup file. Would you like to restore your data from this backup?</string>
+    <string name="backup_restore_success">Data restored successfully</string>
+    <string name="backup_restore_failed">Failed to restore data</string>
+
+    <!-- Backup Delete -->
+    <string name="clear_all_backups">Clear All Backups</string>
+    <string name="clear_all_backups_confirm">Are you sure you want to clear all backup files? This action cannot be undone.</string>
+    <string name="clear_all_backups_success">All backup files have been cleared</string>
+    <string name="clear_all_backups_failed">Failed to clear backup files</string>
 </resources>

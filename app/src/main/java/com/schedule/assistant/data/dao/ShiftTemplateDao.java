@@ -25,6 +25,9 @@ public interface ShiftTemplateDao {
     @Query("SELECT * FROM shift_templates ORDER BY updateTime DESC")
     LiveData<List<ShiftTemplate>> getAllTemplates();
 
+    @Query("SELECT * FROM shift_templates ORDER BY updateTime DESC")
+    List<ShiftTemplate> getAllTemplatesSync();
+
     @Query("SELECT * FROM shift_templates WHERE isDefault = 1")
     LiveData<List<ShiftTemplate>> getDefaultTemplates();
 
@@ -33,4 +36,4 @@ public interface ShiftTemplateDao {
 
     @Query("SELECT COUNT(*) FROM shift_templates")
     int getTemplateCount();
-} 
+}

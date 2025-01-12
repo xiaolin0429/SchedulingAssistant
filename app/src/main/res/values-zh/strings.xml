@@ -150,7 +150,6 @@
     <string name="exact_alarm_permission_message">为确保闹钟通知及时，需要设置精确闹钟的权限。</string>
     <string name="grant_permission">授予权限</string>
     <string name="use_app_alarm_only">仅使用应用内闹钟</string>
-    <string name="go_to_settings">前往设置</string>
 
     <string name="sunday">星期日</string>
     <string name="monday">星期一</string>
@@ -258,4 +257,41 @@
     <string name="version_history_v010">• 项目初始化\n• 基础框架搭建\n• 底部导航实现</string>
     <string name="version_history_v020">• 完善个人信息模块\n• 优化字符串资源\n• 改进代码质量</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
+
+    <!-- Data Backup -->
+    <string name="backup_success">备份成功</string>
+    <string name="backup_failed">备份失败</string>
+    <string name="backup_in_progress">正在备份数据…</string>
+    <string name="backup_file_path">备份文件：%s</string>
+    <string name="start_backup">开始备份</string>
+    <string name="backup_description">备份所有应用数据，包括设置和闹钟</string>
+    <string name="backup_no_data">没有需要备份的数据</string>
+    <string name="backup_restore">恢复备份</string>
+    <string name="backup_history">备份历史</string>
+    <string name="backup_date_format">yyyy年MM月dd日 HH:mm:ss</string>
+    <string name="backup_file_size">大小：%s</string>
+    <string name="backup_delete">删除备份</string>
+    <string name="backup_delete_confirm">确定要删除此备份吗？</string>
+    <string name="backup_delete_success">备份已删除</string>
+    <string name="backup_delete_failed">删除备份失败</string>
+    <string name="backup_restore_confirm">发现备份文件，是否要从此备份恢复数据？</string>
+    <string name="backup_restore_success">数据恢复成功</string>
+    <string name="backup_restore_failed">数据恢复失败</string>
+    <string name="backup_restore_in_progress">正在恢复数据…</string>
+
+    <!-- Permissions -->
+    <string name="storage_permission_required">需要存储权限</string>
+    <string name="grant_storage_permission">备份功能需要存储权限来保存和恢复数据，请授予权限以继续操作</string>
+    <string name="permission_denied">权限被拒绝</string>
+    <string name="permission_denied_message">没有存储权限，备份功能无法正常工作。您可以在设置中授予权限</string>
+    <string name="go_to_settings">前往设置</string>
+
+    <string name="request_permission">申请权限</string>
+
+
+    <!-- 备份删除 -->
+    <string name="clear_all_backups">清除所有备份</string>
+    <string name="clear_all_backups_confirm">确定要清除所有备份文件吗？此操作无法撤销。</string>
+    <string name="clear_all_backups_success">已清除所有备份文件</string>
+    <string name="clear_all_backups_failed">清除备份文件失败</string>
 </resources> 
