@@ -2,7 +2,6 @@ package com.schedule.assistant.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.util.Log;
 
 public class EmailUtils {

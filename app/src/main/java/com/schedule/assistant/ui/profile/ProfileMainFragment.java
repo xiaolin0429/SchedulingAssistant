@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.os.Build;
 import androidx.core.content.ContextCompat;
-import androidx.core.app.ActivityCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.ActivityResultLauncher;
@@ -146,9 +145,7 @@ public class ProfileMainFragment extends Fragment {
                     intent.setData(uri);
                     startActivity(intent);
                 })
-                .setNeutralButton(R.string.request_permission, (dialog, which) -> {
-                    requestStoragePermission();
-                })
+                .setNeutralButton(R.string.request_permission, (dialog, which) -> requestStoragePermission())
                 .show();
     }
 

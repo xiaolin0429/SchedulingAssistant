@@ -4,8 +4,8 @@ package com.schedule.assistant.model;
  * FAQ项目数据模型
  */
 public class FaqItem {
-    private String question;
-    private String answer;
+    private final String question;
+    private final String answer;
     private boolean expanded;
 
     public FaqItem(String question, String answer) {
