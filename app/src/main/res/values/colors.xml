@@ -81,4 +81,6 @@
     <color name="card_background">#FFFFFFFF</color>
     <color name="card_stroke">#FFEEEEEE</color>
     <color name="card_ripple">#1F000000</color>
+
+    <color name="default_shift_color">#757575</color>
 </resources>

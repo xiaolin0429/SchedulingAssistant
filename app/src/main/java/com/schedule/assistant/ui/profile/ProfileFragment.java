@@ -26,10 +26,6 @@ import androidx.activity.OnBackPressedCallback;
 import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private static final String PREFS_NAME = "user_profile_prefs";
-    private static final String KEY_PROFILE_NAME = "profile_name";
-    private static final String KEY_PROFILE_IMAGE_URI = "profile_image_uri";
     private ImageView profileImage;
     private TextInputEditText profileName;
     private TextInputEditText profileEmail;

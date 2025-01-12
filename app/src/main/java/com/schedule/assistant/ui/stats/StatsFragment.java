@@ -1,27 +1,41 @@
 package com.schedule.assistant.ui.stats;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.schedule.assistant.R;
+import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.databinding.FragmentStatsBinding;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class StatsFragment extends Fragment {
     private static final String TAG = "StatsFragment";
@@ -44,6 +58,7 @@ public class StatsFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(StatsViewModel.class);
 
         setupChart();
+        setupBarChart();
         setupMonthNavigation();
         observeViewModel();
 
@@ -92,6 +107,8 @@ public class StatsFragment extends Fragment {
                 binding.totalShiftCount.setText(getString(R.string.total_shift_count, shifts.size()));
                 // 更新图表和其他统计信息
                 updateViewVisibility(!shifts.isEmpty());
+                // 更新柱状图
+                updateBarChart(shifts);
             } else {
                 Log.d(TAG, "Month shifts is null");
                 updateViewVisibility(false);
@@ -126,9 +143,10 @@ public class StatsFragment extends Fragment {
 
     private void updateViewVisibility(boolean hasData) {
         binding.pieChart.setVisibility(hasData ? View.VISIBLE : View.GONE);
-        binding.emptyView.setVisibility(hasData ? View.GONE : View.VISIBLE);
+        binding.pieChartEmptyView.setVisibility(hasData ? View.GONE : View.VISIBLE);
         binding.statsContainer.setVisibility(hasData ? View.VISIBLE : View.GONE);
         binding.workHoursContainer.setVisibility(hasData ? View.VISIBLE : View.GONE);
+        binding.legendContainer.setVisibility(hasData ? View.VISIBLE : View.GONE);
     }
 
     private void setupChart() {
@@ -141,102 +159,56 @@ public class StatsFragment extends Fragment {
         chart.setHighlightPerTapEnabled(true);
         chart.setEntryLabelTextSize(11f);
 
+        // 禁用默认图例
+        chart.getLegend().setEnabled(false);
+
         // 根据主题设置文字颜色
         int textColor = requireContext().getResources().getColor(
                 com.google.android.material.R.color.material_on_surface_emphasis_high_type,
                 requireContext().getTheme());
         chart.setEntryLabelColor(textColor);
-        chart.getLegend().setEnabled(false);
+        chart.setCenterTextColor(textColor);
+
+        // 设置中心孔的颜色为卡片背景色
+        chart.setHoleColor(requireContext().getResources().getColor(
+                com.google.android.material.R.color.design_default_color_surface,
+                requireContext().getTheme()));
 
         // 设置边距
-        chart.setExtraOffsets(25f, 15f, 25f, 15f);
-        chart.setMinOffset(20f);
+        chart.setExtraOffsets(8f, 8f, 8f, 8f);
     }
 
-    private void updateChart(Map<Long, Integer> typeCounts) {
-        if (typeCounts == null || typeCounts.isEmpty()) {
-            binding.pieChart.setVisibility(View.GONE);
-            binding.emptyView.setVisibility(View.VISIBLE);
-            binding.statsContainer.setVisibility(View.GONE);
-            binding.workHoursContainer.setVisibility(View.GONE);
-            return;
-        }
+    private void updateCustomLegend(List<PieEntry> entries, int[] colors) {
+        LinearLayout legendContainer = binding.legendContainer;
+        legendContainer.removeAllViews();
 
-        binding.pieChart.setVisibility(View.VISIBLE);
-        binding.emptyView.setVisibility(View.GONE);
-        binding.statsContainer.setVisibility(View.VISIBLE);
-        binding.workHoursContainer.setVisibility(View.VISIBLE);
+        // 为每个条目创建图例项
+        for (int i = 0; i < entries.size(); i++) {
+            View legendItem = getLayoutInflater().inflate(R.layout.item_chart_legend, legendContainer, false);
 
-        // 创建一个有序的列表来存储班次类型ID
-        List<Long> typeIds = new ArrayList<>(typeCounts.keySet());
-        // 按照ID排序以确保顺序一致性
-        typeIds.sort(Long::compareTo);
+            View colorIndicator = legendItem.findViewById(R.id.legendColorIndicator);
+            TextView legendText = legendItem.findViewById(R.id.legendText);
 
-        // 创建一个计数器来跟踪异步操作
-        final int[] completedOperations = { 0 };
-        final int totalOperations = typeIds.size();
-        final List<PieEntry> entries = new ArrayList<>(totalOperations);
-        // 预先分配空间，使用null作为占位符
-        for (int i = 0; i < totalOperations; i++) {
-            entries.add(null);
-        }
+            colorIndicator.setBackgroundColor(colors[i]);
+            legendText.setText(entries.get(i).getLabel());
 
-        // 为每个班次类型创建对应的颜色数组
-        final int[] colors = new int[totalOperations];
-        for (int i = 0; i < totalOperations; i++) {
-            final int index = i;
-            Long typeId = typeIds.get(i);
+            // 添加间距
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.weight = 1;
+            legendItem.setLayoutParams(params);
 
-            // 获取班次类型名称
-            viewModel.getShiftTypeName(typeId).observe(getViewLifecycleOwner(), shiftTypeName -> {
-                entries.set(index, new PieEntry(typeCounts.get(typeId), shiftTypeName));
-                completedOperations[0]++;
-
-                // 当所有异步操作完成时更新图表
-                if (completedOperations[0] == totalOperations) {
-                    // 移除所有可能的null条目
-                    entries.removeIf(entry -> entry == null);
-                    updatePieChart(entries);
-                    // 更新颜色
-                    updateChartColors(typeIds);
-                }
-            });
+            legendContainer.addView(legendItem);
         }
     }
 
-    private void updateChartColors(List<Long> typeIds) {
-        if (typeIds == null || typeIds.isEmpty()) {
-            return;
-        }
-
-        int[] colors = new int[typeIds.size()];
-        final int[] completedOperations = { 0 };
-        final int totalOperations = typeIds.size();
-
-        for (int i = 0; i < typeIds.size(); i++) {
-            final int index = i;
-            Long typeId = typeIds.get(i);
-            viewModel.getShiftTypeColor(typeId).observe(getViewLifecycleOwner(), color -> {
-                if (color != null && color != 0) {
-                    colors[index] = color;
-                } else {
-                    colors[index] = generateDefaultColor(typeId.intValue());
-                }
-                completedOperations[0]++;
-
-                if (completedOperations[0] == totalOperations) {
-                    updatePieChartColors(colors);
-                }
-            });
-        }
-    }
-
-    private void updatePieChart(List<PieEntry> entries) {
+    private void updatePieChartWithColors(List<PieEntry> entries, int[] colors) {
         if (binding == null)
             return;
 
         PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(getChartColors());
+        dataSet.setColors(colors);
 
         // 设置文字和线条
         dataSet.setValueTextSize(11f);
@@ -246,17 +218,45 @@ public class StatsFragment extends Fragment {
         dataSet.setValueTextColor(textColor);
         dataSet.setValueLineColor(textColor);
 
-        // 调整标签位置和连接线
+        // 配置值的显示格式
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @SuppressLint("DefaultLocale")
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format("%.1f%%", value);
+            }
+        });
+
+        // 设置标签位置和连接线
         dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-        dataSet.setValueLinePart1Length(0.3f);
-        dataSet.setValueLinePart2Length(0.3f);
-        dataSet.setValueLinePart1OffsetPercentage(80f);
+        dataSet.setValueLinePart1Length(0.4f);
+        dataSet.setValueLinePart2Length(0.4f);
         dataSet.setValueLineWidth(1f);
+        dataSet.setValueLineColor(textColor);
+        dataSet.setValueLinePart1OffsetPercentage(80f);
+        dataSet.setSliceSpace(2f);
 
-        PieData data = new PieData(dataSet);
-        binding.pieChart.setData(data);
+        PieData pieData = new PieData(dataSet);
+        binding.pieChart.setData(pieData);
         binding.pieChart.invalidate();
+
+        // 更新自定义图例
+        updateCustomLegend(entries, colors);
+    }
+
+    private int getDefaultColor(String shiftTypeName) {
+        // 根据班次类型名称返回默认颜色
+        if (getString(R.string.day_shift).equals(shiftTypeName)) {
+            return getResources().getColor(R.color.day_shift_color, requireContext().getTheme());
+        } else if (getString(R.string.night_shift).equals(shiftTypeName)) {
+            return getResources().getColor(R.color.night_shift_color, requireContext().getTheme());
+        } else if (getString(R.string.rest_day).equals(shiftTypeName)) {
+            return getResources().getColor(R.color.rest_day_color, requireContext().getTheme());
+        } else {
+            // 为其他类型生成一个固定的颜色
+            return getResources().getColor(R.color.default_shift_color, requireContext().getTheme());
+        }
     }
 
     private void updatePercentages(Map<Long, Double> percentages) {
@@ -305,54 +305,191 @@ public class StatsFragment extends Fragment {
         }
     }
 
-    private void updatePieChartColors(int[] colors) {
-        if (binding == null || binding.pieChart == null)
+    private void setupBarChart() {
+        BarChart chart = binding.workHoursChart;
+        chart.setDrawBarShadow(false);
+        chart.setDrawValueAboveBar(true);
+        chart.getDescription().setEnabled(false);
+        chart.setPinchZoom(false);
+        chart.setScaleEnabled(false);
+        chart.setDrawGridBackground(false);
+
+        // 设置图例
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
+
+        // 设置X轴
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextColor(requireContext().getResources().getColor(
+                com.google.android.material.R.color.material_on_surface_emphasis_medium,
+                requireContext().getTheme()));
+
+        // 设置左Y轴
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setTextColor(requireContext().getResources().getColor(
+                com.google.android.material.R.color.material_on_surface_emphasis_medium,
+                requireContext().getTheme()));
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @SuppressLint("DefaultLocale")
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format("%.1f h", value);
+            }
+        });
+
+        // 禁用右Y轴
+        chart.getAxisRight().setEnabled(false);
+
+        // 设置边距
+        chart.setExtraOffsets(10f, 10f, 10f, 10f);
+    }
+
+    private void updateBarChart(List<Shift> shifts) {
+        if (shifts == null || shifts.isEmpty()) {
+            binding.workHoursChart.setVisibility(View.GONE);
             return;
+        }
 
-        PieData data = binding.pieChart.getData();
-        if (data != null) {
-            PieDataSet dataSet = (PieDataSet) data.getDataSet();
-            dataSet.setColors(colors);
-            binding.pieChart.invalidate();
+        binding.workHoursChart.setVisibility(View.VISIBLE);
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> labels = new ArrayList<>();
+
+        // 按日期排序shifts
+        shifts.sort(Comparator.comparing(Shift::getDate));
+
+        for (int i = 0; i < shifts.size(); i++) {
+            Shift shift = shifts.get(i);
+            float hours = calculateWorkHours(shift.getStartTime(), shift.getEndTime());
+            if (hours > 0) {
+                entries.add(new BarEntry(i, hours));
+                // 只显示日期的天数
+                String day = shift.getDate().substring(8);
+                labels.add(day);
+            }
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries, getString(R.string.work_hours));
+        dataSet.setColor(requireContext().getResources().getColor(R.color.colorPrimary, null));
+        dataSet.setValueTextSize(10f);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @SuppressLint("DefaultLocale")
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format("%.1f", value);
+            }
+        });
+
+        BarData barData = new BarData(dataSet);
+        barData.setBarWidth(0.8f);
+
+        // 设置X轴标签
+        XAxis xAxis = binding.workHoursChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int index = (int) value;
+                if (index >= 0 && index < labels.size()) {
+                    return labels.get(index);
+                }
+                return "";
+            }
+        });
+
+        binding.workHoursChart.setData(barData);
+        binding.workHoursChart.invalidate();
+    }
+
+    private float calculateWorkHours(String startTime, String endTime) {
+        if (startTime == null || endTime == null ||
+                startTime.equals("-") || endTime.equals("-")) {
+            return 0f;
+        }
+
+        try {
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            Date start = timeFormat.parse(startTime);
+            Date end = timeFormat.parse(endTime);
+
+            if (start == null || end == null) {
+                return 0f;
+            }
+
+            long diffMillis = end.getTime() - start.getTime();
+            if (diffMillis < 0) {
+                // 跨天处理
+                diffMillis += 24 * 60 * 60 * 1000;
+            }
+
+            return diffMillis / (1000f * 60 * 60);
+        } catch (Exception e) {
+            Log.e(TAG, "Error calculating work hours: " + e.getMessage());
+            return 0f;
         }
     }
 
-    private int[] getChartColors() {
-        Map<Long, Integer> typeCounts = viewModel.getShiftTypeCounts().getValue();
+    private void updateChart(Map<Long, Integer> typeCounts) {
         if (typeCounts == null || typeCounts.isEmpty()) {
-            return new int[0];
+            binding.pieChart.setVisibility(View.GONE);
+            binding.pieChartEmptyView.setVisibility(View.VISIBLE);
+            binding.statsContainer.setVisibility(View.GONE);
+            binding.workHoursContainer.setVisibility(View.GONE);
+            binding.legendContainer.setVisibility(View.GONE);
+            return;
         }
 
+        binding.pieChart.setVisibility(View.VISIBLE);
+        binding.pieChartEmptyView.setVisibility(View.GONE);
+        binding.statsContainer.setVisibility(View.VISIBLE);
+        binding.workHoursContainer.setVisibility(View.VISIBLE);
+        binding.legendContainer.setVisibility(View.VISIBLE);
+
+        // 创建一个有序的列表来存储班次类型ID
         List<Long> typeIds = new ArrayList<>(typeCounts.keySet());
-        typeIds.sort(Long::compareTo); // 确保顺序一致性
-        int[] colors = new int[typeIds.size()];
+        // 按照ID排序以确保顺序一致性
+        typeIds.sort(Long::compareTo);
 
-        for (int i = 0; i < colors.length; i++) {
-            colors[i] = generateDefaultColor(typeIds.get(i).intValue());
+        // 创建一个计数器来跟踪异步操作
+        final int[] completedOperations = { 0 };
+        final int totalOperations = typeIds.size();
+        final List<PieEntry> entries = new ArrayList<>(totalOperations);
+        // 预先分配空间，使用null作为占位符
+        for (int i = 0; i < totalOperations; i++) {
+            entries.add(null);
         }
 
-        return colors;
-    }
+        // 为每个班次类型创建对应的颜色数组
+        final int[] colors = new int[totalOperations];
 
-    private int generateDefaultColor(int typeId) {
-        // 使用默认的颜色数组
-        int[] defaultColors = {
-                getResources().getColor(R.color.day_shift_color, requireContext().getTheme()),
-                getResources().getColor(R.color.night_shift_color, requireContext().getTheme()),
-                getResources().getColor(R.color.rest_day_color, requireContext().getTheme()),
-                getResources().getColor(R.color.early_shift_color, requireContext().getTheme()),
-                getResources().getColor(R.color.late_shift_color, requireContext().getTheme())
-        };
+        for (int i = 0; i < totalOperations; i++) {
+            final int index = i;
+            Long typeId = typeIds.get(i);
 
-        // 如果typeId超出默认颜色数组范围，则使用HSV生成新颜色
-        if (typeId >= defaultColors.length) {
-            float hue = (typeId * 137.5f) % 360f; // 使用黄金角度137.5度来生成分散的颜色
-            float saturation = 0.75f;
-            float value = 0.95f;
-            return android.graphics.Color.HSVToColor(new float[] { hue, saturation, value });
+            // 获取班次类型名称和颜色
+            viewModel.getShiftType(typeId).observe(getViewLifecycleOwner(), shiftType -> {
+                if (shiftType != null) {
+                    Integer count = typeCounts.get(typeId);
+                    entries.set(index, new PieEntry(count != null ? count : 0, shiftType.getName()));
+
+                    // 使用班次类型的实际颜色
+                    colors[index] = shiftType.getColor() != 0 ? shiftType.getColor()
+                            : getDefaultColor(shiftType.getName());
+
+                    completedOperations[0]++;
+
+                    // 当所有异步操作完成时更新图表
+                    if (completedOperations[0] == totalOperations) {
+                        // 移除所有可能的null条目
+                        entries.removeIf(Objects::isNull);
+                        updatePieChartWithColors(entries, colors);
+                    }
+                }
+            });
         }
-
-        return defaultColors[typeId % defaultColors.length];
     }
 
     @Override

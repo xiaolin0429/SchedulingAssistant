@@ -4,12 +4,8 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.Transformations;
-import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
-import com.schedule.assistant.data.entity.ShiftTemplate;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.data.repository.ShiftRepository;
 import com.schedule.assistant.data.repository.ShiftTemplateRepository;
@@ -17,12 +13,10 @@ import com.schedule.assistant.data.repository.ShiftTypeRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 public class HomeViewModel extends AndroidViewModel {
     private final ShiftRepository shiftRepository;
-    private final ShiftTemplateRepository templateRepository;
     private final ShiftTypeRepository shiftTypeRepository;
     private final MutableLiveData<Shift> selectedShift = new MutableLiveData<>();
     private final MutableLiveData<List<Shift>> monthShifts = new MutableLiveData<>();
@@ -33,7 +27,7 @@ public class HomeViewModel extends AndroidViewModel {
     public HomeViewModel(Application application) {
         super(application);
         shiftRepository = new ShiftRepository(application);
-        templateRepository = new ShiftTemplateRepository(application);
+        ShiftTemplateRepository templateRepository = new ShiftTemplateRepository(application);
         shiftTypeRepository = new ShiftTypeRepository(application);
         // 初始化默认班次类型和模板
         shiftTypeRepository.initializeDefaultShiftTypes();
@@ -58,12 +52,12 @@ public class HomeViewModel extends AndroidViewModel {
 
         try {
             // 验证必要字段
-            if (shift.getDate() == null || shift.getDate().trim().isEmpty()) {
+            if (shift.getDate().trim().isEmpty()) {
                 errorMessage.setValue("error_date_required");
                 return;
             }
 
-            if (shift.getType() == null || shift.getType() == ShiftType.NO_SHIFT) {
+            if (shift.getType() == ShiftType.NO_SHIFT) {
                 errorMessage.setValue("error_type_required");
                 return;
             }
@@ -87,32 +81,12 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
-    public void updateShift(Shift shift) {
-        try {
-            shiftRepository.update(shift);
-        } catch (Exception e) {
-            errorMessage.setValue("Failed to update shift: " + e.getMessage());
-        }
-    }
-
-    public void deleteShift(Shift shift) {
-        try {
-            shiftRepository.delete(shift);
-        } catch (Exception e) {
-            errorMessage.setValue("Failed to delete shift: " + e.getMessage());
-        }
-    }
-
     public LiveData<Shift> getSelectedShift() {
         return selectedShift;
     }
 
     public LiveData<List<Shift>> getMonthShifts() {
         return monthShifts;
-    }
-
-    public LiveData<String> getErrorMessage() {
-        return errorMessage;
     }
 
     public void loadMonthShifts(YearMonth month) {
@@ -124,16 +98,8 @@ public class HomeViewModel extends AndroidViewModel {
         currentMonthShiftsLiveData.observeForever(monthShifts::setValue);
     }
 
-    public LiveData<List<ShiftTemplate>> getAllTemplates() {
-        return templateRepository.getAllTemplates();
-    }
-
     public LiveData<List<ShiftTypeEntity>> getAllShiftTypes() {
         return shiftTypeRepository.getAllShiftTypes();
-    }
-
-    public LiveData<List<ShiftTypeEntity>> getDefaultShiftTypes() {
-        return shiftTypeRepository.getDefaultShiftTypes();
     }
 
     public LiveData<ShiftTypeEntity> getShiftTypeById(long id) {

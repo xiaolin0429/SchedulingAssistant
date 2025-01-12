@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.HashMap;
 import android.util.Log;
 import java.util.ArrayList;
+import com.schedule.assistant.data.entity.ShiftTypeEntity;
 
 public class StatsViewModel extends AndroidViewModel {
     private static final String TAG = "StatsViewModel";
@@ -244,17 +245,8 @@ public class StatsViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<Integer> getShiftTypeColor(long shiftTypeId) {
-        return Transformations.map(shiftTypeRepository.getShiftTypeById(shiftTypeId), shiftType -> {
-            if (shiftType != null) {
-                try {
-                    return shiftType.getColor();
-                } catch (Exception e) {
-                    Log.e(TAG, "Error getting color for shift type: " + shiftTypeId, e);
-                    return null;
-                }
-            }
-            return null;
-        });
+    // 获取班次类型信息
+    public LiveData<ShiftTypeEntity> getShiftType(Long typeId) {
+        return shiftTypeRepository.getShiftTypeById(typeId);
     }
 }

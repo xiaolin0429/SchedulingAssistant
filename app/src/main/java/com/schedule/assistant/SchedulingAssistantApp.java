@@ -17,8 +17,6 @@ import com.schedule.assistant.data.entity.UserSettings;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.SharedPreferences;
@@ -178,47 +176,33 @@ public class SchedulingAssistantApp extends Application {
     }
 
     private void setLocale(int languageMode) {
-        switch (languageMode) {
-            case 1:
-                currentLocale = new Locale("zh");
-                break;
-            case 2:
-                currentLocale = new Locale("en");
-                break;
-            default:
-                currentLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
-                break;
+        try {
+            String languageCode = switch (languageMode) {
+                case 1 -> "zh";
+                case 2 -> "en";
+                default ->
+                    // 使用系统默认语言
+                    Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
+            };
+
+            currentLocale = new Locale(languageCode);
+            if (currentActivity != null) {
+                Resources resources = currentActivity.getResources();
+                Configuration configuration = resources.getConfiguration();
+                configuration.setLocales(new LocaleList(currentLocale));
+                currentActivity.createConfigurationContext(configuration);
+                // 使用新的context更新资源
+                currentActivity.getBaseContext().getResources().getConfiguration()
+                        .setLocales(new LocaleList(currentLocale));
+            }
+            Log.d(TAG, "Locale set to: " + languageCode);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting locale", e);
         }
-        Log.d(TAG, "Setting locale to: " + currentLocale.getLanguage());
-        LocaleList.setDefault(new LocaleList(currentLocale));
     }
 
     private void applyThemeSettings(int themeMode) {
-        Log.d(TAG, "Applying theme mode: " + themeMode);
-        switch (themeMode) {
-            case 1:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case 2:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
-    }
-
-    private Context updateBaseContextLocale(@NonNull Context context) {
-        if (currentLocale == null) {
-            currentLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
-        }
-        Log.d(TAG, "Updating base context with locale: " + currentLocale.getLanguage());
-
-        Resources resources = context.getResources();
-        Configuration configuration = new Configuration(resources.getConfiguration());
-        configuration.setLocales(new LocaleList(currentLocale));
-
-        return context.createConfigurationContext(configuration);
+        AppCompatDelegate.setDefaultNightMode(themeMode);
     }
 
     @Override
@@ -227,9 +211,7 @@ public class SchedulingAssistantApp extends Application {
         if (currentLocale != null && cachedSettings != null) {
             // 确保在配置改变时保持用户设置
             setLocale(cachedSettings.getLanguageMode());
-            Context context = updateBaseContextLocale(this);
-            Configuration configuration = context.getResources().getConfiguration();
-            getApplicationContext().createConfigurationContext(configuration);
+            Configuration configuration = updateBaseContextLocale(this).getResources().getConfiguration();
             // 通知所有Activity更新配置
             if (getCurrentActivity() != null) {
                 getCurrentActivity().applyOverrideConfiguration(configuration);
@@ -252,6 +234,13 @@ public class SchedulingAssistantApp extends Application {
         return cachedSettings;
     }
 
+    /**
+     * 更新用户设置
+     * 此方法用于更新主题和语言等设置
+     * 会同时更新数据库和内存中的缓存
+     *
+     * @param settings 新的用户设置
+     */
     public void updateSettings(UserSettings settings) {
         executor.execute(() -> {
             try {
@@ -273,9 +262,8 @@ public class SchedulingAssistantApp extends Application {
                             Configuration newConfig = new Configuration(
                                     currentActivity.getResources().getConfiguration());
                             newConfig.setLocales(new LocaleList(currentLocale));
-                            Context newContext = currentActivity.createConfigurationContext(newConfig);
-                            currentActivity.getResources().updateConfiguration(newConfig,
-                                    currentActivity.getResources().getDisplayMetrics());
+                            currentActivity.createConfigurationContext(newConfig);
+                            // 重新创建Activity以应用新的配置
                             currentActivity.recreate();
                         }
                     } catch (Exception e) {
@@ -289,8 +277,11 @@ public class SchedulingAssistantApp extends Application {
     }
 
     private void runOnUiThread(Runnable runnable) {
-        android.os.Handler handler = new android.os.Handler(getMainLooper());
-        handler.post(runnable);
+        if (currentActivity != null) {
+            currentActivity.runOnUiThread(runnable);
+        } else {
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(runnable);
+        }
     }
 
     private void checkForBackupFiles() {
@@ -363,11 +354,12 @@ public class SchedulingAssistantApp extends Application {
         }).start();
     }
 
-    private Configuration createConfigurationWithLocale(Activity activity) {
-        Configuration config = new Configuration(activity.getResources().getConfiguration());
+    private Context updateBaseContextLocale(Context context) {
+        Configuration configuration = context.getResources().getConfiguration();
         if (currentLocale != null) {
-            config.setLocales(new LocaleList(currentLocale));
+            configuration.setLocales(new LocaleList(currentLocale));
+            return context.createConfigurationContext(configuration);
         }
-        return config;
+        return context;
     }
 }
