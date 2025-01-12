@@ -122,6 +122,13 @@ public class HelpFeedbackFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 清理7天前的日志文件
+        LogCollector.cleanOldLogs(requireContext(), 7);
+    }
+
     private List<FaqItem> createFaqList() {
         List<FaqItem> faqItems = new ArrayList<>();
         faqItems.add(new FaqItem(

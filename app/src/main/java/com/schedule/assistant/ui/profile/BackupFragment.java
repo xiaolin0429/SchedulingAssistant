@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -100,6 +101,8 @@ public class BackupFragment extends Fragment implements BackupHistoryAdapter.OnB
     private void setupBackupButton() {
         binding.startBackupButton.setOnClickListener(v -> checkStoragePermissionAndBackup());
         binding.clearAllBackupsButton.setOnClickListener(v -> showClearAllBackupsDialog());
+        binding.clearCacheButton.setOnClickListener(
+                v -> Navigation.findNavController(v).navigate(R.id.action_backupFragment_to_clearCacheFragment));
     }
 
     private boolean checkStoragePermission() {

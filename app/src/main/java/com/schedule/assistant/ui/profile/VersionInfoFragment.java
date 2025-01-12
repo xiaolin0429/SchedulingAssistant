@@ -48,6 +48,7 @@ public class VersionInfoFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setupVersionInfo();
         setupUpdateHistory();
+        setupClickListeners();
     }
 
     private void setupVersionInfo() {
@@ -77,6 +78,14 @@ public class VersionInfoFragment extends Fragment {
                         getString(R.string.version_history_v010));
 
         binding.updateHistoryContent.setText(history);
+    }
+
+    private void setupClickListeners() {
+        binding.openSourceLicensesButton.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_versionInfoFragment_to_openSourceLicenseFragment));
+
+        binding.developerInfoButton.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_versionInfoFragment_to_developerInfoFragment));
     }
 
     @Override

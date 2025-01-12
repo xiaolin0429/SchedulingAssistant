@@ -253,8 +253,8 @@
     <string name="profile_email_not_set">未设置邮箱</string>
 
     <!-- Version History -->
-    <string name="version_history_v010">• 项目初始化\n• 基础框架搭建\n• 底部导航实现</string>
-    <string name="version_history_v020">• 完善个人信息模块\n• 优化字符串资源\n• 改进代码质量</string>
+    <string name="version_history_v010">• 项目初始化\n• 基础框架搭建\n• 底部导航实现\n• 基本功能实现</string>
+    <string name="version_history_v020">• 完善个人信息模块\n• 优化字符串资源\n• 改进代码质量\n• 实现缓存管理功能\n• 优化帮助与反馈功能\n• 新增开发者信息页面</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Data Backup -->
@@ -332,4 +332,18 @@
     <string name="export_logs_title">导出日志文件</string>
     <string name="logs_export_success">日志导出成功</string>
     <string name="logs_export_failed">日志导出失败</string>
+
+    <!-- Clear Cache -->
+    <string name="clear_cache">清除缓存</string>
+    <string name="cache_description">清除应用缓存以释放存储空间。这不会影响您的个人数据和设置。</string>
+    <string name="cache_size">当前缓存大小：%s</string>
+    <string name="clear_cache_confirm">确定要清除缓存吗？</string>
+    <string name="clear_cache_success">缓存清除成功</string>
+    <string name="clear_cache_failed">缓存清除失败</string>
+
+    <string name="developer_info">开发者信息</string>
+    <string name="developer_info_description">感谢您使用本应用。如果您有任何问题或建议，欢迎随时与我联系。</string>
+    <string name="contact_email">联系邮箱</string>
+    <string name="github_homepage">GitHub主页</string>
+    <string name="github_url">https://github.com/xiaolin0429</string>
 </resources> 
