@@ -222,9 +222,11 @@
     <string name="faq_title">FAQ</string>
     <string name="feedback_title">Feedback</string>
     <string name="feedback_hint">Please describe your issue or suggestion</string>
+    <string name="feedback_helper_text">Your feedback helps us improve. Please provide specific details.</string>
     <string name="submit_feedback">Submit Feedback</string>
     <string name="expand_collapse">Expand/Collapse</string>
     <string name="feedback_empty">Feedback content cannot be empty</string>
+    <string name="feedback_too_short">Please provide more details (at least 10 characters)</string>
     <string name="feedback_success">Thank you for your feedback</string>
     <string name="feedback_failed">Failed to submit feedback, please try again later</string>
     
@@ -249,8 +251,8 @@
     <string name="version_code_format">Build %d</string>
 
     <!-- Version History -->
-    <string name="version_history_v010">• Project initialization\n• Basic framework setup\n• Bottom navigation implementation</string>
-    <string name="version_history_v020">• Personal information module improvements\n• String resource optimization\n• Code quality enhancements</string>
+    <string name="version_history_v010">• Initial project setup\n• Basic framework implementation\n• Bottom navigation implementation\n• Project initialization</string>
+    <string name="version_history_v020">• Personal information module improvements\n• String resource optimization\n• Code quality enhancements\n• Cache management implementation\n• Help and feedback optimization\n• Developer information page added</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Alarm Settings -->
@@ -342,4 +344,35 @@
     <!-- Basic Strings -->
     <string name="faq">FAQ</string>
     <string name="feedback">Feedback</string>
+
+    <!-- Logs -->
+    <string name="include_logs">Include logs for better troubleshooting</string>
+    <string name="logs_helper_text">Logs help us identify and fix issues more effectively. They may contain sensitive information.</string>
+    <string name="logs_permission_required">Permission required to collect logs</string>
+    <string name="logs_collection_failed">Failed to collect logs</string>
+    <string name="logs_collection_success">Logs collected successfully</string>
+
+    <string name="send_feedback">Send Feedback</string>
+    <string name="no_email_app">No email app found</string>
+
+    <string name="export_logs">Export Logs</string>
+    <string name="export_logs_title">Export Log File</string>
+    <string name="logs_export_success">Logs exported successfully</string>
+    <string name="logs_export_failed">Failed to export logs</string>
+
+    <!-- Clear Cache -->
+    <string name="clear_cache">Clear Cache</string>
+    <string name="cache_description">Clear the application cache to free up storage space. This will not affect your personal data or settings.</string>
+    <string name="cache_size">Current cache size: %s</string>
+    <string name="clear_cache_confirm">Are you sure you want to clear the cache?</string>
+    <string name="clear_cache_success">Cache cleared successfully</string>
+    <string name="clear_cache_failed">Failed to clear cache</string>
+
+    <string name="developer_info">Developer Info</string>
+    <string name="developer_info_description">Thank you for using this app. If you have any questions or suggestions, please feel free to contact me.</string>
+    <string name="contact_email">Contact Email</string>
+    <string name="github_homepage">GitHub Homepage</string>
+    <string name="github_url">https://github.com/xiaolin0429</string>
+
+    <string name="no_browser_app">No browser app found</string>
 </resources>

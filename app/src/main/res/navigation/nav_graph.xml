@@ -87,6 +87,13 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_profileMainFragment_to_clearCacheFragment"
+            app:destination="@id/clearCacheFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
@@ -103,7 +110,22 @@
         android:id="@+id/versionInfoFragment"
         android:name="com.schedule.assistant.ui.profile.VersionInfoFragment"
         android:label="@string/version_info"
-        tools:layout="@layout/fragment_version_info" />
+        tools:layout="@layout/fragment_version_info">
+        <action
+            android:id="@+id/action_versionInfoFragment_to_openSourceLicenseFragment"
+            app:destination="@id/openSourceLicenseFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_versionInfoFragment_to_developerInfoFragment"
+            app:destination="@id/developerInfoFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
 
     <fragment
         android:id="@+id/backupFragment"
@@ -116,11 +138,36 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_backupFragment_to_clearCacheFragment"
+            app:destination="@id/clearCacheFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 
     <fragment
         android:id="@+id/helpFeedbackFragment"
         android:name="com.schedule.assistant.ui.profile.HelpFeedbackFragment"
         android:label="@string/help_feedback" />
+
+    <fragment
+        android:id="@+id/clearCacheFragment"
+        android:name="com.schedule.assistant.ui.profile.ClearCacheFragment"
+        android:label="@string/clear_cache"
+        tools:layout="@layout/fragment_clear_cache" />
+
+    <fragment
+        android:id="@+id/openSourceLicenseFragment"
+        android:name="com.schedule.assistant.ui.profile.OpenSourceLicenseFragment"
+        android:label="@string/open_source_licenses"
+        tools:layout="@layout/fragment_open_source_license" />
+
+    <fragment
+        android:id="@+id/developerInfoFragment"
+        android:name="com.schedule.assistant.ui.profile.DeveloperInfoFragment"
+        android:label="@string/developer_info"
+        tools:layout="@layout/fragment_developer_info" />
 
 </navigation> 

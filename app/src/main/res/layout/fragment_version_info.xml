@@ -51,6 +51,28 @@
                 android:text="@string/version_info"
                 android:textAppearance="?attr/textAppearanceBody2" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/open_source_licenses_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/open_source_licenses"
+                android:textSize="14sp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:icon="@drawable/ic_license"
+                app:iconGravity="textStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/developer_info_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/developer_info"
+                android:textSize="14sp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:icon="@drawable/ic_person"
+                app:iconGravity="textStart" />
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
