@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class StatsFragment extends Fragment {
     private static final String TAG = "StatsFragment";
@@ -182,20 +183,20 @@ public class StatsFragment extends Fragment {
         }
 
         // 为每个班次类型创建对应的颜色数组
-        final int[] colors = new int[totalOperations];
         for (int i = 0; i < totalOperations; i++) {
             final int index = i;
             Long typeId = typeIds.get(i);
 
             // 获取班次类型名称
             viewModel.getShiftTypeName(typeId).observe(getViewLifecycleOwner(), shiftTypeName -> {
-                entries.set(index, new PieEntry(typeCounts.get(typeId), shiftTypeName));
+                Integer count = typeCounts.get(typeId);
+                entries.set(index, new PieEntry(count != null ? count : 0, shiftTypeName));
                 completedOperations[0]++;
 
                 // 当所有异步操作完成时更新图表
                 if (completedOperations[0] == totalOperations) {
                     // 移除所有可能的null条目
-                    entries.removeIf(entry -> entry == null);
+                    entries.removeIf(Objects::isNull);
                     updatePieChart(entries);
                     // 更新颜色
                     updateChartColors(typeIds);
@@ -306,7 +307,7 @@ public class StatsFragment extends Fragment {
     }
 
     private void updatePieChartColors(int[] colors) {
-        if (binding == null || binding.pieChart == null)
+        if (binding == null)
             return;
 
         PieData data = binding.pieChart.getData();
