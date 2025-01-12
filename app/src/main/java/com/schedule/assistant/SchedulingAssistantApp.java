@@ -9,6 +9,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.jakewharton.threetenabp.AndroidThreeTen;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import java.io.File;
 import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.entity.UserSettings;
 import java.util.Locale;
@@ -16,7 +19,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.lang.reflect.Field;
+import android.app.Activity;
+import android.os.Bundle;
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.content.Intent;
+import android.os.Build;
+import com.schedule.assistant.service.DataBackupService;
 
 public class SchedulingAssistantApp extends Application {
     private static final String TAG = "SchedulingAssistantApp";
@@ -24,6 +33,10 @@ public class SchedulingAssistantApp extends Application {
     private static UserSettings cachedSettings;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private boolean isInitialized = false;
+    private android.app.Activity currentActivity;
+    private static final String PREF_NAME = "app_preferences";
+    private static final String KEY_LAST_BACKUP_CHECK = "last_backup_check";
+    private static final long BACKUP_CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24小时
 
     @Override
     protected void attachBaseContext(@NonNull Context base) {
@@ -78,6 +91,7 @@ public class SchedulingAssistantApp extends Application {
     public void onCreate() {
         super.onCreate();
         AndroidThreeTen.init(this);
+        checkForBackupFiles();
 
         // 只在没有缓存的设置时初始化
         if (cachedSettings == null) {
@@ -94,6 +108,43 @@ public class SchedulingAssistantApp extends Application {
         } else {
             isInitialized = true;
         }
+
+        // 注册 Activity 生命周期回调
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityResumed(@NonNull Activity activity) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityPaused(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+            }
+
+            @Override
+            public void onActivityDestroyed(@NonNull Activity activity) {
+                if (currentActivity == activity) {
+                    currentActivity = null;
+                }
+            }
+        });
     }
 
     private void initializeSettings() {
@@ -130,26 +181,7 @@ public class SchedulingAssistantApp extends Application {
     }
 
     private android.app.Activity getCurrentActivity() {
-        try {
-            Class activityThreadClass = Class.forName("android.app.ActivityThread");
-            Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
-            Field activitiesField = activityThreadClass.getDeclaredField("mActivities");
-            activitiesField.setAccessible(true);
-            Object activities = activitiesField.get(activityThread);
-            if (activities instanceof java.util.Map) {
-                for (Object activityRecord : ((java.util.Map) activities).values()) {
-                    Field activityField = activityRecord.getClass().getDeclaredField("activity");
-                    activityField.setAccessible(true);
-                    android.app.Activity activity = (android.app.Activity) activityField.get(activityRecord);
-                    if (activity != null) {
-                        return activity;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting current activity", e);
-        }
-        return null;
+        return currentActivity;
     }
 
     private void setLocale(int languageMode) {
@@ -216,6 +248,13 @@ public class SchedulingAssistantApp extends Application {
         return currentLocale;
     }
 
+    /**
+     * 获取当前缓存的用户设置
+     * 此方法用于其他组件获取用户设置信息
+     * 
+     * @return 当前缓存的用户设置
+     */
+    @SuppressWarnings("unused")
     public static UserSettings getCachedSettings() {
         return cachedSettings;
     }
@@ -229,13 +268,25 @@ public class SchedulingAssistantApp extends Application {
                 AppDatabase.getDatabase(this).userSettingsDao().update(settings);
                 // 更新缓存
                 cachedSettings = settings;
-                // 设置语言
+                // 先设置语言
                 setLocale(settings.getLanguageMode());
-                // 应用主题和重新创建Activity
+                // 在主线程中应用主题和重新创建Activity
                 runOnUiThread(() -> {
-                    applyThemeSettings(settings.getThemeMode());
-                    if (getCurrentActivity() != null) {
-                        getCurrentActivity().recreate();
+                    try {
+                        applyThemeSettings(settings.getThemeMode());
+                        Activity currentActivity = getCurrentActivity();
+                        if (currentActivity != null) {
+                            // 使用新的Configuration重新创建Activity
+                            Configuration newConfig = new Configuration(
+                                    currentActivity.getResources().getConfiguration());
+                            newConfig.setLocales(new LocaleList(currentLocale));
+                            Context newContext = currentActivity.createConfigurationContext(newConfig);
+                            currentActivity.getResources().updateConfiguration(newConfig,
+                                    currentActivity.getResources().getDisplayMetrics());
+                            currentActivity.recreate();
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error applying settings in UI thread", e);
                     }
                 });
             } catch (Exception e) {
@@ -247,5 +298,75 @@ public class SchedulingAssistantApp extends Application {
     private void runOnUiThread(Runnable runnable) {
         android.os.Handler handler = new android.os.Handler(getMainLooper());
         handler.post(runnable);
+    }
+
+    private void checkForBackupFiles() {
+        // 检查是否需要检查备份文件
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        long lastCheck = prefs.getLong(KEY_LAST_BACKUP_CHECK, 0);
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - lastCheck < BACKUP_CHECK_INTERVAL) {
+            return;
+        }
+
+        // 更新最后检查时间
+        prefs.edit().putLong(KEY_LAST_BACKUP_CHECK, currentTime).apply();
+
+        // 在后台线程中检查备份文件
+        new Thread(() -> {
+            try {
+                // 检查是否有存储权限
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (!Environment.isExternalStorageManager()) {
+                        return;
+                    }
+                } else if (checkSelfPermission(
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+
+                File latestBackup = null;
+                long latestTime = 0;
+
+                // 检查公共目录
+                File publicBackupDir = new File(Environment.getExternalStorageDirectory(),
+                        DataBackupService.BACKUP_FOLDER);
+                if (publicBackupDir.exists()) {
+                    File[] publicFiles = publicBackupDir.listFiles((dir, name) -> name.endsWith(".json"));
+                    if (publicFiles != null) {
+                        for (File file : publicFiles) {
+                            if (file.lastModified() > latestTime) {
+                                latestTime = file.lastModified();
+                                latestBackup = file;
+                            }
+                        }
+                    }
+                }
+
+                // 检查私有目录
+                File privateBackupDir = new File(getExternalFilesDir(null), DataBackupService.BACKUP_FOLDER);
+                if (privateBackupDir.exists()) {
+                    File[] privateFiles = privateBackupDir.listFiles((dir, name) -> name.endsWith(".json"));
+                    if (privateFiles != null) {
+                        for (File file : privateFiles) {
+                            if (file.lastModified() > latestTime) {
+                                latestTime = file.lastModified();
+                                latestBackup = file;
+                            }
+                        }
+                    }
+                }
+
+                if (latestBackup != null) {
+                    // 发送广播通知MainActivity显示恢复对话框
+                    Intent intent = new Intent("com.schedule.assistant.ACTION_SHOW_RESTORE_DIALOG");
+                    intent.putExtra("backup_file", latestBackup.getAbsolutePath());
+                    sendBroadcast(intent);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error checking backup files", e);
+            }
+        }).start();
     }
 }

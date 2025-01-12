@@ -117,7 +117,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/data_backup"
+                    android:id="@+id/data_management"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
@@ -127,32 +127,10 @@
                     android:gravity="center_vertical"
                     android:minHeight="?attr/listPreferredItemHeight"
                     android:padding="16dp"
-                    android:text="@string/data_backup"
+                    android:text="@string/data_management"
                     android:textAppearance="?attr/textAppearanceBody1"
                     app:drawableEndCompat="@drawable/ic_arrow_right"
                     app:drawableStartCompat="@drawable/ic_backup" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?android:attr/listDivider" />
-
-                <TextView
-                    android:id="@+id/data_clear"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="?attr/listPreferredItemHeight"
-                    android:padding="16dp"
-                    android:text="@string/data_clear"
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    app:drawableEndCompat="@drawable/ic_arrow_right"
-                    app:drawableStartCompat="@drawable/ic_clear" />
 
             </LinearLayout>
 

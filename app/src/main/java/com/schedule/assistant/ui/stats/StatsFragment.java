@@ -27,11 +27,12 @@ import java.util.Map;
 public class StatsFragment extends Fragment {
     private FragmentStatsBinding binding;
     private StatsViewModel viewModel;
-    private final SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy年MM月", Locale.getDefault());
+    private SimpleDateFormat monthFormat;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentStatsBinding.inflate(inflater, container, false);
+        monthFormat = new SimpleDateFormat(getString(R.string.month_year_format), Locale.getDefault());
         return binding.getRoot();
     }
 
@@ -39,11 +40,11 @@ public class StatsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(StatsViewModel.class);
-        
+
         setupChart();
         setupMonthNavigation();
         observeViewModel();
-        
+
         // 初始化为当前月份
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -125,10 +126,10 @@ public class StatsFragment extends Fragment {
     }
 
     private int[] getChartColors() {
-        return new int[]{
-            getResources().getColor(R.color.day_shift_color, null),
-            getResources().getColor(R.color.night_shift_color, null),
-            getResources().getColor(R.color.rest_day_color, null)
+        return new int[] {
+                getResources().getColor(R.color.day_shift_color, null),
+                getResources().getColor(R.color.night_shift_color, null),
+                getResources().getColor(R.color.rest_day_color, null)
         };
     }
 
@@ -137,4 +138,4 @@ public class StatsFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-} 
+}

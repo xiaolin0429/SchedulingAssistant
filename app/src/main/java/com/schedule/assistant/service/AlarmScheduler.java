@@ -13,7 +13,9 @@ import androidx.core.app.AlarmManagerCompat;
 import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.schedule.assistant.R;
+import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.entity.AlarmEntity;
+import com.schedule.assistant.data.entity.UserSettings;
 import com.schedule.assistant.receiver.AlarmReceiver;
 import java.util.Calendar;
 import java.util.ArrayList;
@@ -78,26 +80,57 @@ public class AlarmScheduler {
         // 1. 更新应用内闹钟状态
         scheduleAppAlarm(alarm);
 
-        // 2. 根据启用状态处理系统闹钟
+        // 2. 根据启用状态和系统闹钟同步设置处理系统闹钟
         if (enabled) {
-            // 只有在启用状态时才创建系统闹钟
-            boolean hasExactPermission = hasExactAlarmPermission();
-            boolean hasSetPermission = hasSetAlarmPermission();
+            // 在后台线程中获取用户设置
+            new Thread(() -> {
+                try {
+                    UserSettings settings = AppDatabase.getDatabase(context).userSettingsDao().getUserSettings();
+                    if (settings != null && settings.isSyncSystemAlarm()) {
+                        // 只有在启用系统闹钟同步时才创建系统闹钟
+                        boolean hasExactPermission = hasExactAlarmPermission();
+                        boolean hasSetPermission = hasSetAlarmPermission();
 
-            android.util.Log.d(TAG, "系统闹钟权限状态: hasExactPermission=" + hasExactPermission
-                    + ", hasSetPermission=" + hasSetPermission);
+                        android.util.Log.d(TAG, "系统闹钟权限状态: hasExactPermission=" + hasExactPermission
+                                + ", hasSetPermission=" + hasSetPermission);
 
-            if (hasExactPermission && hasSetPermission) {
-                android.util.Log.d(TAG, "开始设置系统闹钟");
-                scheduleSystemAlarm(alarm);
-            } else {
-                android.util.Log.w(TAG, "缺少必要权限，无法设置系统闹钟");
-                showDegradedModeToast();
-            }
+                        if (hasExactPermission && hasSetPermission) {
+                            android.util.Log.d(TAG, "开始设置系统闹钟");
+                            scheduleSystemAlarm(alarm);
+                        } else {
+                            android.util.Log.w(TAG, "缺少必要权限，无法设置系统闹钟");
+                            showDegradedModeToastOnMainThread();
+                        }
+                    } else {
+                        android.util.Log.d(TAG, "系统闹钟同步未启用，跳过系统闹钟设置");
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e(TAG, "获取用户设置失败", e);
+                }
+            }).start();
         } else {
-            android.util.Log.d(TAG, "取消系统闹钟");
-            cancelSystemAlarm(alarm);
+            // 在后台线程中获取用户设置
+            new Thread(() -> {
+                try {
+                    UserSettings settings = AppDatabase.getDatabase(context).userSettingsDao().getUserSettings();
+                    if (settings != null && settings.isSyncSystemAlarm()) {
+                        android.util.Log.d(TAG, "取消系统闹钟");
+                        cancelSystemAlarm(alarm);
+                    } else {
+                        android.util.Log.d(TAG, "系统闹钟同步未启用，跳过取消系统闹钟");
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e(TAG, "获取用户设置失败", e);
+                }
+            }).start();
         }
+    }
+
+    /**
+     * 在主线程上显示降级模式提示
+     */
+    private void showDegradedModeToastOnMainThread() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(this::showDegradedModeToast);
     }
 
     /**
@@ -236,10 +269,18 @@ public class AlarmScheduler {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         alarmManager.cancel(pendingIntent);
 
-        // 如果闹钟当前是启用状态，则同时取消系统闹钟
-        if (alarm.isEnabled() && hasSetAlarmPermission()) {
-            cancelSystemAlarm(alarm);
-        }
+        // 在后台线程中获取用户设置
+        new Thread(() -> {
+            try {
+                UserSettings settings = AppDatabase.getDatabase(context).userSettingsDao().getUserSettings();
+                // 只有在启用了系统闹钟同步时才取消系统闹钟
+                if (settings != null && settings.isSyncSystemAlarm() && alarm.isEnabled() && hasSetAlarmPermission()) {
+                    cancelSystemAlarm(alarm);
+                }
+            } catch (Exception e) {
+                android.util.Log.e(TAG, "获取用户设置失败", e);
+            }
+        }).start();
     }
 
     /**

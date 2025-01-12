@@ -10,13 +10,13 @@ public class ShiftTemplate {
     private long id;
 
     @NonNull
-    private String name;        // 班次名称
-    private String startTime;   // 开始时间
-    private String endTime;     // 结束时间
-    private int color;         // 班次颜色
-    private boolean isDefault;  // 是否为默认班次
-    private long updateTime;    // 更新时间
-    private ShiftType type;    // 班次类型
+    private String name; // 班次名称
+    private String startTime; // 开始时间
+    private String endTime; // 结束时间
+    private int color; // 班次颜色
+    private boolean isDefault; // 是否为默认班次
+    private long updateTime; // 更新时间
+    private ShiftType type; // 班次类型
 
     public ShiftTemplate(@NonNull String name, String startTime, String endTime, int color) {
         this.name = name;
@@ -26,11 +26,12 @@ public class ShiftTemplate {
         this.isDefault = false;
         this.updateTime = System.currentTimeMillis();
         // 根据名称设置默认的班次类型
-        switch (name) {
-            case "早班" -> this.type = ShiftType.DAY_SHIFT;
-            case "晚班" -> this.type = ShiftType.NIGHT_SHIFT;
-            case "休息" -> this.type = ShiftType.REST_DAY;
-        }
+        this.type = switch (name) {
+            case "早班" -> ShiftType.DAY_SHIFT;
+            case "晚班" -> ShiftType.NIGHT_SHIFT;
+            case "休息" -> ShiftType.REST_DAY;
+            default -> ShiftType.CUSTOM;
+        };
     }
 
     // Getters and Setters
@@ -98,4 +99,4 @@ public class ShiftTemplate {
     public void setType(ShiftType type) {
         this.type = type;
     }
-} 
+}

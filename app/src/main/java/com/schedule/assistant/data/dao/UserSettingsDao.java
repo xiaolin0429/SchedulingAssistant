@@ -1,5 +1,6 @@
 package com.schedule.assistant.data.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -32,4 +33,10 @@ public interface UserSettingsDao {
 
     @Query("UPDATE user_settings SET notificationAdvanceTime = :minutes WHERE id = :id")
     void updateNotificationAdvanceTime(int id, int minutes);
+
+    @Query("UPDATE user_settings SET syncSystemAlarm = :enabled WHERE id = :id")
+    void updateSyncSystemAlarm(int id, boolean enabled);
+
+    @Query("SELECT * FROM user_settings LIMIT 1")
+    LiveData<UserSettings> getUserSettingsLiveData();
 }

@@ -24,12 +24,16 @@ public class UserSettings {
     // 通知提醒时间（分钟）
     private int notificationAdvanceTime;
 
+    // 是否同步系统闹钟
+    private boolean syncSystemAlarm;
+
     public UserSettings() {
         // 默认设置
         this.themeMode = 0;
         this.languageMode = 0;
         this.notificationEnabled = true;
         this.notificationAdvanceTime = 30;
+        this.syncSystemAlarm = false; // 默认开启不系统闹钟同步
     }
 
     // Getters and Setters
@@ -71,5 +75,13 @@ public class UserSettings {
 
     public void setNotificationAdvanceTime(int notificationAdvanceTime) {
         this.notificationAdvanceTime = notificationAdvanceTime;
+    }
+
+    public boolean isSyncSystemAlarm() {
+        return syncSystemAlarm;
+    }
+
+    public void setSyncSystemAlarm(boolean syncSystemAlarm) {
+        this.syncSystemAlarm = syncSystemAlarm;
     }
 }

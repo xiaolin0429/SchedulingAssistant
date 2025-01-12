@@ -17,6 +17,9 @@ public interface ShiftDao {
     @Query("SELECT * FROM shifts ORDER BY date DESC")
     LiveData<List<Shift>> getAllShifts();
 
+    @Query("SELECT * FROM shifts ORDER BY date DESC")
+    List<Shift> getAllShiftsSync();
+
     @Query("SELECT * FROM shifts WHERE date >= :startDate AND date <= :endDate ORDER BY date ASC")
     LiveData<List<Shift>> getShiftsBetween(String startDate, String endDate);
 

@@ -12,17 +12,19 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
  * 用于分离开发模式和生产模式的数据库构建策略
  */
 public class DatabaseBuilderFactory {
-    private static final String DATABASE_NAME = "schedule_database";
+    private static final String DATABASE_NAME = "schedule_assistant.db";
 
     /**
      * 获取开发模式的数据库构建器
      * 使用fallbackToDestructiveMigration，不执行迁移策略
      */
     public static RoomDatabase.Builder<AppDatabase> getDevelopmentDatabaseBuilder(Context context) {
-        return Room.databaseBuilder(
-                context.getApplicationContext(),
-                AppDatabase.class,
-                DATABASE_NAME)
+        if (context == null) {
+            throw new IllegalArgumentException("Context cannot be null");
+        }
+        // 使用应用程序上下文以避免内存泄漏
+        Context applicationContext = context.getApplicationContext();
+        return Room.databaseBuilder(applicationContext, AppDatabase.class, DATABASE_NAME)
                 .fallbackToDestructiveMigration();
     }
 
@@ -31,10 +33,12 @@ public class DatabaseBuilderFactory {
      * 使用迁移策略，保证数据安全
      */
     public static RoomDatabase.Builder<AppDatabase> getProductionDatabaseBuilder(Context context) {
-        return Room.databaseBuilder(
-                context.getApplicationContext(),
-                AppDatabase.class,
-                DATABASE_NAME)
+        if (context == null) {
+            throw new IllegalArgumentException("Context cannot be null");
+        }
+        // 使用应用程序上下文以避免内存泄漏
+        Context applicationContext = context.getApplicationContext();
+        return Room.databaseBuilder(applicationContext, AppDatabase.class, DATABASE_NAME)
                 .addMigrations(
                         MIGRATION_1_2,
                         MIGRATION_2_3,
@@ -175,4 +179,5 @@ public class DatabaseBuilderFactory {
                             "notificationAdvanceTime INTEGER NOT NULL DEFAULT 30)");
         }
     };
+
 }
