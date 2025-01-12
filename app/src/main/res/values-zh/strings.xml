@@ -346,4 +346,6 @@
     <string name="contact_email">联系邮箱</string>
     <string name="github_homepage">GitHub主页</string>
     <string name="github_url">https://github.com/xiaolin0429</string>
+
+    <string name="no_browser_app">未找到浏览器应用</string>
 </resources> 

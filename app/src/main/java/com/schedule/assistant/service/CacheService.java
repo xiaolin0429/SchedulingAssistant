@@ -21,11 +21,6 @@ public class CacheService {
     };
 
     // 需要清理的缓存目录
-    private static final String[] CACHE_PATHS = {
-            "cache",
-            "code_cache",
-            "app_webview/Cache"
-    };
 
     public static long getCacheSize(Context context) {
         long size = 0;
@@ -114,19 +109,31 @@ public class CacheService {
             }
         }
 
+        boolean success = true;
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    deleteDir(file, false);
+                    success &= deleteDir(file, false);
                 } else {
-                    file.delete();
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        Log.w(TAG, "Failed to delete file: " + file.getAbsolutePath());
+                    }
+                    success &= deleted;
                 }
             }
         }
 
         // 如果不是根缓存目录，则删除目录本身
-        return isRoot || dir.delete();
+        if (!isRoot) {
+            boolean deleted = dir.delete();
+            if (!deleted) {
+                Log.w(TAG, "Failed to delete directory: " + dir.getAbsolutePath());
+            }
+            success &= deleted;
+        }
+        return success;
     }
 
     public static String formatFileSize(long size) {

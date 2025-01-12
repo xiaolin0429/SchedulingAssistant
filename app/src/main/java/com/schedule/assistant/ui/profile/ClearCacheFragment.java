@@ -23,7 +23,6 @@ import com.schedule.assistant.service.CacheService;
  * 实现缓存清理功能
  */
 public class ClearCacheFragment extends Fragment {
-    private static final String TAG = "ClearCacheFragment";
     private FragmentClearCacheBinding binding;
     private ProgressBar progressBar;
     private TextView cacheSizeText;

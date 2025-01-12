@@ -373,4 +373,6 @@
     <string name="contact_email">Contact Email</string>
     <string name="github_homepage">GitHub Homepage</string>
     <string name="github_url">https://github.com/xiaolin0429</string>
+
+    <string name="no_browser_app">No browser app found</string>
 </resources>

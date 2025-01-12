@@ -49,34 +49,34 @@ public class OpenSourceLicenseFragment extends Fragment {
 
     private void setupLicenseList() {
         // 添加开源库许可信息
-        StringBuilder licenses = new StringBuilder();
 
         // Android Jetpack Libraries
-        licenses.append("Android Jetpack Libraries\n")
-                .append("Copyright 2018 The Android Open Source Project\n")
-                .append("Apache License 2.0\n\n");
 
-        // Material Components for Android
-        licenses.append("Material Components for Android\n")
-                .append("Copyright 2018 The Android Open Source Project\n")
-                .append("Apache License 2.0\n\n");
+        String licenses = "Android Jetpack Libraries\n" +
+                "Copyright 2018 The Android Open Source Project\n" +
+                "Apache License 2.0\n\n" +
 
-        // Room Database
-        licenses.append("Room Database\n")
-                .append("Copyright 2017 The Android Open Source Project\n")
-                .append("Apache License 2.0\n\n");
+                // Material Components for Android
+                "Material Components for Android\n" +
+                "Copyright 2018 The Android Open Source Project\n" +
+                "Apache License 2.0\n\n" +
 
-        // Navigation Component
-        licenses.append("Navigation Component\n")
-                .append("Copyright 2017 The Android Open Source Project\n")
-                .append("Apache License 2.0\n\n");
+                // Room Database
+                "Room Database\n" +
+                "Copyright 2017 The Android Open Source Project\n" +
+                "Apache License 2.0\n\n" +
 
-        // ViewModel and LiveData
-        licenses.append("ViewModel and LiveData\n")
-                .append("Copyright 2017 The Android Open Source Project\n")
-                .append("Apache License 2.0\n\n");
+                // Navigation Component
+                "Navigation Component\n" +
+                "Copyright 2017 The Android Open Source Project\n" +
+                "Apache License 2.0\n\n" +
 
-        binding.licenseContent.setText(licenses.toString());
+                // ViewModel and LiveData
+                "ViewModel and LiveData\n" +
+                "Copyright 2017 The Android Open Source Project\n" +
+                "Apache License 2.0\n\n";
+
+        binding.licenseContent.setText(licenses);
     }
 
     @Override

@@ -16,7 +16,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -32,8 +31,6 @@ import com.schedule.assistant.service.DataBackupService;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import android.os.Environment;
 
@@ -85,7 +82,7 @@ public class BackupFragment extends Fragment implements BackupHistoryAdapter.OnB
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             activity.getSupportActionBar().setTitle(R.string.backup_restore);
         }
-        binding.toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+        binding.toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).navigateUp());
     }
 
     private void setupBackupService() {
@@ -228,7 +225,7 @@ public class BackupFragment extends Fragment implements BackupHistoryAdapter.OnB
                 if (success) {
                     Toast.makeText(requireContext(), R.string.backup_restore_success, Toast.LENGTH_SHORT).show();
                     // 恢复成功后返回上一页
-                    requireActivity().onBackPressed();
+                    Navigation.findNavController(requireView()).navigateUp();
                 } else {
                     Toast.makeText(requireContext(), R.string.backup_restore_failed, Toast.LENGTH_SHORT).show();
                 }
