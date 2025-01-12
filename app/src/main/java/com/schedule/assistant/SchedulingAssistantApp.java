@@ -42,47 +42,38 @@ public class SchedulingAssistantApp extends Application {
     protected void attachBaseContext(@NonNull Context base) {
         Context wrappedContext = base;
         try {
-            // 在后台线程中加载设置，但使用CountDownLatch等待结果
-            CountDownLatch latch = new CountDownLatch(1);
-            final UserSettings[] settings = new UserSettings[1];
-
-            executor.execute(() -> {
-                try {
-                    settings[0] = AppDatabase.getDatabase(base).userSettingsDao().getUserSettings();
-                } catch (Exception e) {
-                    Log.e(TAG, "Error loading settings in background", e);
-                } finally {
-                    latch.countDown();
-                }
-            });
-
-            // 等待最多1秒钟
-            if (latch.await(1, TimeUnit.SECONDS)) {
-                if (settings[0] != null) {
-                    Log.d(TAG, "Initial settings loaded - Theme: " + settings[0].getThemeMode() + ", Language: "
-                            + settings[0].getLanguageMode());
-                    cachedSettings = settings[0];
-                    setLocale(settings[0].getLanguageMode());
-                    // 确保主题设置也在这里应用
-                    final int themeMode = settings[0].getThemeMode();
-                    AppCompatDelegate.setDefaultNightMode(themeMode == 1 ? AppCompatDelegate.MODE_NIGHT_NO
-                            : themeMode == 2 ? AppCompatDelegate.MODE_NIGHT_YES
-                                    : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                } else {
-                    currentLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
-                }
-            } else {
-                Log.w(TAG, "Timeout waiting for settings, using system locale");
-                currentLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
-            }
+            // 使用系统默认语言作为初始设置
+            currentLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
 
             // 更新Context的Locale
-            if (currentLocale != null) {
-                wrappedContext = updateBaseContextLocale(base);
-            }
+            wrappedContext = updateBaseContextLocale(base);
+
+            // 异步加载设置
+            executor.execute(() -> {
+                try {
+                    UserSettings settings = AppDatabase.getDatabase(base).userSettingsDao().getUserSettings();
+                    if (settings != null) {
+                        Log.d(TAG, "Settings loaded - Theme: " + settings.getThemeMode() + ", Language: "
+                                + settings.getLanguageMode());
+                        cachedSettings = settings;
+                        // 在主线程中应用设置
+                        runOnUiThread(() -> {
+                            try {
+                                setLocale(settings.getLanguageMode());
+                                applyThemeSettings(settings.getThemeMode());
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error applying settings on UI thread", e);
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "No settings found, will create default settings in onCreate");
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error loading settings", e);
+                }
+            });
         } catch (Exception e) {
             Log.e(TAG, "Error in attachBaseContext", e);
-            currentLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
         }
         super.attachBaseContext(wrappedContext);
     }
@@ -91,9 +82,8 @@ public class SchedulingAssistantApp extends Application {
     public void onCreate() {
         super.onCreate();
         AndroidThreeTen.init(this);
-        checkForBackupFiles();
 
-        // 只在没有缓存的设置时初始化
+        // 在后台线程中初始化设置
         if (cachedSettings == null) {
             executor.execute(() -> {
                 try {
@@ -109,7 +99,10 @@ public class SchedulingAssistantApp extends Application {
             isInitialized = true;
         }
 
-        // 注册 Activity 生命周期回调
+        // 在后台线程中检查备份文件
+        executor.execute(this::checkForBackupFiles);
+
+        // 注册Activity生命周期回调
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
@@ -368,5 +361,13 @@ public class SchedulingAssistantApp extends Application {
                 Log.e(TAG, "Error checking backup files", e);
             }
         }).start();
+    }
+
+    private Configuration createConfigurationWithLocale(Activity activity) {
+        Configuration config = new Configuration(activity.getResources().getConfiguration());
+        if (currentLocale != null) {
+            config.setLocales(new LocaleList(currentLocale));
+        }
+        return config;
     }
 }

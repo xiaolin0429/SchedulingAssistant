@@ -127,7 +127,9 @@ public class ShiftRepository {
     public void getShiftByDateDirect(String date, OnShiftLoadedCallback callback) {
         executorService.execute(() -> {
             Shift shift = shiftDao.getShiftByDateDirect(date);
-            callback.onShiftLoaded(shift);
+            if (callback != null) {
+                callback.onShiftLoaded(shift);
+            }
         });
     }
 

@@ -1,6 +1,7 @@
 package com.schedule.assistant.data;
 
 import android.content.Context;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -24,6 +25,11 @@ public class DatabaseBuilderFactory {
         }
         // 使用应用程序上下文以避免内存泄漏
         Context applicationContext = context.getApplicationContext();
+        if (applicationContext == null) {
+            // 如果无法获取应用程序上下文，则使用原始上下文
+            applicationContext = context;
+        }
+        Log.d("DatabaseBuilderFactory", "Creating database builder with context: " + applicationContext);
         return Room.databaseBuilder(applicationContext, AppDatabase.class, DATABASE_NAME)
                 .fallbackToDestructiveMigration();
     }

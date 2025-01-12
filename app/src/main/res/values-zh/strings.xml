@@ -11,27 +11,27 @@
     <string name="edit_time">编辑时间</string>
     <string name="vibrate">振动</string>
 
-    <string name="error">错误</string>
-    <string name="error_name_required">名称不能为空</string>
-    <string name="error_time_required">时间不能为空</string>
-    <string name="error_color_required">颜色不能为空</string>
-    <string name="error_type_required">类型不能为空</string>
-    <string name="error_save_template">保存模板失败</string>
-    <string name="error_delete_template">删除模板失败</string>
-    <string name="error_load_templates">加载模板失败</string>
-    <string name="error_invalid_time_range">结束时间必须晚于开始时间</string>
-    <string name="error_note_too_long">备注不能超过200个字符</string>
-    <string name="error_duplicate_shift">该日期已存在排班</string>
+    <string name="error">提示</string>
+    <string name="error_name_required">请输入名称</string>
+    <string name="error_time_required">请输入时间</string>
+    <string name="error_color_required">请选择颜色</string>
+    <string name="error_type_required">请选择类型</string>
+    <string name="error_save_template">模板保存失败，请重试</string>
+    <string name="error_delete_template">模板删除失败，请重试</string>
+    <string name="error_load_templates">模板加载失败，请重试</string>
+    <string name="error_invalid_time_range">结束时间需要晚于开始时间，请重新选择</string>
+    <string name="error_note_too_long">备注内容超出限制，请保持在200字以内</string>
+    <string name="error_duplicate_shift">当前日期已有排班安排，您可以编辑现有排班或选择其他日期</string>
     <string name="error_empty_name">请输入班次名称</string>
-    <string name="error_database_operation">数据库操作失败，请重试</string>
-    <string name="error_required_fields">必填字段不能为空</string>
+    <string name="error_database_operation">操作失败，请稍后重试</string>
+    <string name="error_required_fields">请填写所有必填项</string>
     <string name="error_date_required">请选择日期</string>
     <string name="error_shift_type_required">请选择班次类型</string>
-    <string name="error_invalid_date_format">日期格式无效</string>
-    <string name="error_save_failed">保存失败，请重试</string>
-    <string name="invalid_date">无效日期</string>
-    <string name="empty_note">备注不能为空</string>
-    <string name="note_too_long">备注过长</string>
+    <string name="error_invalid_date_format">日期格式不正确，请重新选择</string>
+    <string name="error_save_failed">保存失败，请稍后重试</string>
+    <string name="invalid_date">日期无效，请重新选择</string>
+    <string name="empty_note">请输入备注内容</string>
+    <string name="note_too_long">备注内容过长，请精简</string>
 
     <string name="title_home">主页</string>
     <string name="title_shift_template">班次</string>
@@ -215,7 +215,6 @@
 
     <!-- Date Format -->
     <string name="date_format_year_month">%1$d年%2$s</string>
-    <string name="month_year_format">yyyy年M月</string>
     <string name="shift_count_format">%1$s: %2$d</string>
     <string name="shift_count_day">白班</string>
     <string name="shift_count_night">夜班</string>
@@ -348,4 +347,21 @@
     <string name="github_url">https://github.com/xiaolin0429</string>
 
     <string name="no_browser_app">未找到浏览器应用</string>
+
+    <!-- 统计模块 -->
+    <string name="previous_month">上个月</string>
+    <string name="next_month">下个月</string>
+    <string name="month_year_format">yyyy年MM月</string>
+    <string name="total_shift_count">本月总班次：%d</string>
+    <string name="shift_type_distribution">班次类型分布</string>
+    <string name="shift_type_percentage">%s：%.1f%%</string>
+    <string name="no_shifts_data">暂无班次数据</string>
+    
+    <!-- 工作时长统计 -->
+    <string name="work_hours_statistics">工作时长统计</string>
+    <string name="total_work_hours">总工作时长：%.1f小时</string>
+    <string name="average_work_hours">平均工作时长：%.1f小时</string>
+    <string name="max_work_hours">最长工作时长：%.1f小时（%s）</string>
+    <string name="min_work_hours">最短工作时长：%.1f小时（%s）</string>
+    <string name="no_work_hours_data">暂无工作时长数据</string>
 </resources> 
