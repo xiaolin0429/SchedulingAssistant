@@ -116,9 +116,8 @@ public class ProfileMainFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.help_feedback).setOnClickListener(v -> {
-            // TODO: 导航到帮助与反馈页面
-        });
+        view.findViewById(R.id.help_feedback).setOnClickListener(
+                v -> Navigation.findNavController(v).navigate(R.id.action_profileMainFragment_to_helpFeedbackFragment));
 
         view.findViewById(R.id.about).setOnClickListener(
                 v -> Navigation.findNavController(v).navigate(R.id.action_profileMainFragment_to_versionInfoFragment));

@@ -186,7 +186,6 @@
     <string name="data_backup">数据备份</string>
     <string name="data_clear">清除数据</string>
 
-    <string name="help_feedback">帮助与反馈</string>
     <string name="faq">常见问题</string>
     <string name="feedback">反馈</string>
 
@@ -294,4 +293,27 @@
     <string name="clear_all_backups_confirm">确定要清除所有备份文件吗？此操作无法撤销。</string>
     <string name="clear_all_backups_success">已清除所有备份文件</string>
     <string name="clear_all_backups_failed">清除备份文件失败</string>
+
+    <!-- 帮助与反馈 -->
+    <string name="help_feedback">帮助与反馈</string>
+    <string name="faq_title">常见问题</string>
+    <string name="feedback_title">问题反馈</string>
+    <string name="feedback_hint">请描述您遇到的问题或建议</string>
+    <string name="submit_feedback">提交反馈</string>
+    <string name="expand_collapse">展开/收起</string>
+    <string name="feedback_empty">反馈内容不能为空</string>
+    <string name="feedback_success">感谢您的反馈</string>
+    <string name="feedback_failed">反馈提交失败，请稍后重试</string>
+    
+    <!-- 常见问题列表 -->
+    <string name="faq_backup_restore">如何备份和恢复数据？</string>
+    <string name="faq_backup_restore_answer">在"我的"页面中点击"数据管理"，您可以在此进行数据的备份和恢复操作。备份文件会保存在手机存储中，重新安装应用后也可以恢复数据。</string>
+    <string name="faq_theme_setting">如何更改应用主题？</string>
+    <string name="faq_theme_setting_answer">在"我的"页面中点击"应用设置"，您可以选择浅色、深色或跟随系统主题。</string>
+    <string name="faq_language_setting">如何更改应用语言？</string>
+    <string name="faq_language_setting_answer">在"我的"页面中点击"应用设置"，您可以选择中文、英文或跟随系统语言。</string>
+    <string name="faq_notification">如何设置提醒通知？</string>
+    <string name="faq_notification_answer">在"我的"页面中点击"应用设置"，您可以开启/关闭通知，并设置提前提醒的时间。</string>
+    <string name="faq_shift_template">如何使用班次模板？</string>
+    <string name="faq_shift_template_answer">在添加班次时，您可以选择已创建的班次模板快速填写信息。您也可以将当前编辑的班次保存为新的模板。</string>
 </resources> 

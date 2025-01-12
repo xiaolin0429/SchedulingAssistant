@@ -219,8 +219,26 @@
 
     <!-- Help and Feedback -->
     <string name="help_feedback">Help &amp; Feedback</string>
-    <string name="faq">FAQ</string>
-    <string name="feedback">Feedback</string>
+    <string name="faq_title">FAQ</string>
+    <string name="feedback_title">Feedback</string>
+    <string name="feedback_hint">Please describe your issue or suggestion</string>
+    <string name="submit_feedback">Submit Feedback</string>
+    <string name="expand_collapse">Expand/Collapse</string>
+    <string name="feedback_empty">Feedback content cannot be empty</string>
+    <string name="feedback_success">Thank you for your feedback</string>
+    <string name="feedback_failed">Failed to submit feedback, please try again later</string>
+    
+    <!-- FAQ List -->
+    <string name="faq_backup_restore">How to backup and restore data?</string>
+    <string name="faq_backup_restore_answer">Go to \"Data Management\" in the \"Profile\" page to backup and restore your data. Backup files are saved in your phone storage and can be restored after reinstalling the app.</string>
+    <string name="faq_theme_setting">How to change app theme?</string>
+    <string name="faq_theme_setting_answer">Go to \"App Settings\" in the \"Profile\" page to choose between light, dark, or system theme.</string>
+    <string name="faq_language_setting">How to change app language?</string>
+    <string name="faq_language_setting_answer">Go to \"App Settings\" in the \"Profile\" page to choose between Chinese, English, or system language.</string>
+    <string name="faq_notification">How to set up notifications?</string>
+    <string name="faq_notification_answer">Go to \"App Settings\" in the \"Profile\" page to enable/disable notifications and set the advance reminder time.</string>
+    <string name="faq_shift_template">How to use shift templates?</string>
+    <string name="faq_shift_template_answer">When adding a shift, you can select from your saved templates to quickly fill in the information. You can also save the current shift as a new template.</string>
 
     <!-- About App -->
     <string name="about">About</string>
@@ -320,4 +338,8 @@
     <string name="clear_all_backups_confirm">Are you sure you want to clear all backup files? This action cannot be undone.</string>
     <string name="clear_all_backups_success">All backup files have been cleared</string>
     <string name="clear_all_backups_failed">Failed to clear backup files</string>
+
+    <!-- Basic Strings -->
+    <string name="faq">FAQ</string>
+    <string name="feedback">Feedback</string>
 </resources>
