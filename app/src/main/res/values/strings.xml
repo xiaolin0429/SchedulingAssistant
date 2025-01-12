@@ -222,9 +222,11 @@
     <string name="faq_title">FAQ</string>
     <string name="feedback_title">Feedback</string>
     <string name="feedback_hint">Please describe your issue or suggestion</string>
+    <string name="feedback_helper_text">Your feedback helps us improve. Please provide specific details.</string>
     <string name="submit_feedback">Submit Feedback</string>
     <string name="expand_collapse">Expand/Collapse</string>
     <string name="feedback_empty">Feedback content cannot be empty</string>
+    <string name="feedback_too_short">Please provide more details (at least 10 characters)</string>
     <string name="feedback_success">Thank you for your feedback</string>
     <string name="feedback_failed">Failed to submit feedback, please try again later</string>
     
@@ -342,4 +344,19 @@
     <!-- Basic Strings -->
     <string name="faq">FAQ</string>
     <string name="feedback">Feedback</string>
+
+    <!-- Logs -->
+    <string name="include_logs">Include logs for better troubleshooting</string>
+    <string name="logs_helper_text">Logs help us identify and fix issues more effectively. They may contain sensitive information.</string>
+    <string name="logs_permission_required">Permission required to collect logs</string>
+    <string name="logs_collection_failed">Failed to collect logs</string>
+    <string name="logs_collection_success">Logs collected successfully</string>
+
+    <string name="send_feedback">Send Feedback</string>
+    <string name="no_email_app">No email app found</string>
+
+    <string name="export_logs">Export Logs</string>
+    <string name="export_logs_title">Export Log File</string>
+    <string name="logs_export_success">Logs exported successfully</string>
+    <string name="logs_export_failed">Failed to export logs</string>
 </resources>

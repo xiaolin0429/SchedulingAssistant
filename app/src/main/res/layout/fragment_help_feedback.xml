@@ -88,6 +88,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="500"
+                        app:helperText="@string/feedback_helper_text"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -96,19 +99,46 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/feedback_hint"
                             android:inputType="textMultiLine"
+                            android:maxLength="500"
                             android:minLines="3"
+                            android:maxLines="10"
                             android:gravity="top"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/include_logs_checkbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/include_logs"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/logs_helper_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/logs_helper_text"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/export_logs_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/export_logs"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="16dp"
+                        style="@style/Widget.Material3.Button.OutlinedButton"/>
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/submit_feedback_button"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:text="@string/submit_feedback"
-                        android:textStyle="bold"
-                        android:textAllCaps="false"
-                        style="@style/Widget.Material3.Button.ElevatedButton"/>
+                        android:textSize="14sp"
+                        style="@style/Widget.Material3.Button"/>
 
                 </LinearLayout>
 
