@@ -48,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void applyOverrideConfiguration(Configuration overrideConfiguration) {
         if (overrideConfiguration != null) {
+            int uiMode = overrideConfiguration.uiMode;
+            overrideConfiguration = new Configuration();
+            overrideConfiguration.uiMode = uiMode;
+
             Locale locale = SchedulingAssistantApp.getCurrentLocale();
             if (locale != null) {
                 overrideConfiguration.setLocales(new LocaleList(locale));

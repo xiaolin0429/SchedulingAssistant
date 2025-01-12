@@ -13,27 +13,27 @@
     <string name="vibrate">Vibrate</string>
 
     <!-- Error Messages -->
-    <string name="error">Error</string>
-    <string name="error_name_required">Name is required</string>
-    <string name="error_time_required">Time is required</string>
-    <string name="error_color_required">Color is required</string>
-    <string name="error_type_required">Type is required</string>
-    <string name="error_save_template">Failed to save template</string>
-    <string name="error_delete_template">Failed to delete template</string>
-    <string name="error_load_templates">Failed to load templates</string>
-    <string name="error_invalid_time_range">End time must be later than start time</string>
-    <string name="error_note_too_long">Note cannot exceed 200 characters</string>
-    <string name="error_duplicate_shift">Shift already exists for this date</string>
+    <string name="error">Notice</string>
+    <string name="error_name_required">Please enter a name</string>
+    <string name="error_time_required">Please enter a time</string>
+    <string name="error_color_required">Please select a color</string>
+    <string name="error_type_required">Please select a type</string>
+    <string name="error_save_template">Failed to save template, please try again</string>
+    <string name="error_delete_template">Failed to delete template, please try again</string>
+    <string name="error_load_templates">Failed to load templates, please try again</string>
+    <string name="error_invalid_time_range">End time should be later than start time, please select again</string>
+    <string name="error_note_too_long">Note content exceeds limit, please keep it within 200 characters</string>
+    <string name="error_duplicate_shift">A shift already exists for this date. You can edit the existing shift or choose another date</string>
     <string name="error_empty_name">Please enter shift name</string>
-    <string name="error_database_operation">Database operation failed, please try again</string>
-    <string name="error_required_fields">Required fields cannot be empty</string>
+    <string name="error_database_operation">Operation failed, please try again later</string>
+    <string name="error_required_fields">Please fill in all required fields</string>
     <string name="error_date_required">Please select a date</string>
     <string name="error_shift_type_required">Please select shift type</string>
-    <string name="error_invalid_date_format">Invalid date format</string>
-    <string name="error_save_failed">Save failed, please try again</string>
-    <string name="invalid_date">Invalid date</string>
-    <string name="empty_note">Note cannot be empty</string>
-    <string name="note_too_long">Note is too long</string>
+    <string name="error_invalid_date_format">Invalid date format, please select again</string>
+    <string name="error_save_failed">Save failed, please try again later</string>
+    <string name="invalid_date">Invalid date, please select again</string>
+    <string name="empty_note">Please enter note content</string>
+    <string name="note_too_long">Note content is too long, please be more concise</string>
 
     <!-- Navigation -->
     <string name="title_home">Home</string>
@@ -278,7 +278,6 @@
 
     <!-- Date Format -->
     <string name="date_format_year_month">%1$s %2$d</string>
-    <string name="month_year_format">MMMM yyyy</string>
     <string name="shift_count_format">%1$s: %2$d</string>
     <string name="shift_count_day">Day</string>
     <string name="shift_count_night">Night</string>
@@ -375,4 +374,21 @@
     <string name="github_url">https://github.com/xiaolin0429</string>
 
     <string name="no_browser_app">No browser app found</string>
+
+    <!-- 统计模块 -->
+    <string name="previous_month">Previous Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="month_year_format">MMMM yyyy</string>
+    <string name="total_shift_count">Total Shifts This Month: %d</string>
+    <string name="shift_type_distribution">Shift Type Distribution</string>
+    <string name="shift_type_percentage">%s: %.1f%%</string>
+    <string name="no_shifts_data">No shift data available</string>
+    
+    <!-- Work Hours Statistics -->
+    <string name="work_hours_statistics">Work Hours Statistics</string>
+    <string name="total_work_hours">Total Work Hours: %.1f</string>
+    <string name="average_work_hours">Average Work Hours: %.1f</string>
+    <string name="max_work_hours">Longest Work Hours: %.1f (%s)</string>
+    <string name="min_work_hours">Shortest Work Hours: %.1f (%s)</string>
+    <string name="no_work_hours_data">No work hours data available</string>
 </resources>

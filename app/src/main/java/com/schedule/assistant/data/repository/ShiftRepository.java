@@ -1,17 +1,18 @@
 package com.schedule.assistant.data.repository;
 
 import androidx.lifecycle.LiveData;
-import androidx.annotation.NonNull;
+import android.app.Application;
+import android.util.Log;
 import com.schedule.assistant.data.dao.ShiftDao;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
+import com.schedule.assistant.data.AppDatabase;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import android.app.Application;
-import com.schedule.assistant.data.AppDatabase;
 
 public class ShiftRepository {
+    private static final String TAG = "ShiftRepository";
     private final ShiftDao shiftDao;
     private final ExecutorService executorService;
     private OnOperationCallback callback;
@@ -20,14 +21,14 @@ public class ShiftRepository {
         void onError(String error);
     }
 
-    public void setCallback(OnOperationCallback callback) {
-        this.callback = callback;
-    }
-
     public ShiftRepository(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
         shiftDao = db.shiftDao();
         executorService = Executors.newSingleThreadExecutor();
+    }
+
+    public void setCallback(OnOperationCallback callback) {
+        this.callback = callback;
     }
 
     public LiveData<List<Shift>> getAllShifts() {
@@ -52,24 +53,24 @@ public class ShiftRepository {
 
         executorService.execute(() -> {
             try {
-                // 验证必要字段
-                if (shift.getDate() == null || shift.getDate().trim().isEmpty()) {
-                    throw new IllegalArgumentException("Date cannot be null or empty");
+                // 验证日期字符串
+                String date = shift.getDate();
+                if (date.trim().isEmpty()) {
+                    throw new IllegalArgumentException("error_date_required");
                 }
-                if (shift.getType() == null || shift.getType() == ShiftType.NO_SHIFT) {
-                    throw new IllegalArgumentException("Invalid shift type");
+
+                // 验证班次类型
+                if (shift.getType() == ShiftType.NO_SHIFT) {
+                    throw new IllegalArgumentException("error_shift_type_required");
                 }
 
                 // 确保所有字符串字段不为null
-                if (shift.getStartTime() == null)
-                    shift.setStartTime("");
-                if (shift.getEndTime() == null)
-                    shift.setEndTime("");
-                if (shift.getNote() == null)
-                    shift.setNote("");
+                shift.setStartTime(shift.getStartTime() != null ? shift.getStartTime() : "");
+                shift.setEndTime(shift.getEndTime() != null ? shift.getEndTime() : "");
+                shift.setNote(shift.getNote() != null ? shift.getNote() : "");
 
                 // 检查是否已存在相同日期的班次
-                Shift existingShift = shiftDao.getShiftByDateDirect(shift.getDate());
+                Shift existingShift = shiftDao.getShiftByDateDirect(date);
                 if (existingShift != null) {
                     // 如果已存在，更新而不是插入
                     shift.setId(existingShift.getId());
@@ -77,8 +78,13 @@ public class ShiftRepository {
                 } else {
                     shiftDao.insert(shift);
                 }
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Validation error: " + e.getMessage());
+                if (callback != null) {
+                    callback.onError(e.getMessage());
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Database operation error", e);
                 if (callback != null) {
                     callback.onError(e.getMessage() != null ? e.getMessage() : "error_database_operation");
                 }
@@ -88,15 +94,9 @@ public class ShiftRepository {
 
     public void update(Shift shift) {
         if (shift == null) {
-            if (callback != null)
+            if (callback != null) {
                 callback.onError("error_invalid_shift");
-            return;
-        }
-
-        // 确保必需字段不为空
-        if (shift.getDate() == null || shift.getType() == null) {
-            if (callback != null)
-                callback.onError("error_required_fields");
+            }
             return;
         }
 
@@ -104,7 +104,7 @@ public class ShiftRepository {
             try {
                 shiftDao.update(shift);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error updating shift", e);
                 if (callback != null) {
                     callback.onError("error_database_operation");
                 }
@@ -116,18 +116,12 @@ public class ShiftRepository {
         executorService.execute(() -> shiftDao.delete(shift));
     }
 
-    public LiveData<List<Shift>> getShiftsWithNotes() {
-        return shiftDao.getShiftsWithNotes();
-    }
-
-    public void updateNote(long shiftId, String note) {
-        executorService.execute(() -> shiftDao.updateNote(shiftId, note));
-    }
-
     public void getShiftByDateDirect(String date, OnShiftLoadedCallback callback) {
         executorService.execute(() -> {
             Shift shift = shiftDao.getShiftByDateDirect(date);
-            callback.onShiftLoaded(shift);
+            if (callback != null) {
+                callback.onShiftLoaded(shift);
+            }
         });
     }
 
