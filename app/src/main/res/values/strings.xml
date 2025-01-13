@@ -385,6 +385,7 @@
     <string name="no_shifts_data">No shift data available</string>
     
     <!-- Work Hours Statistics -->
+    <string name="work_hours">Work Hours</string>
     <string name="work_hours_statistics">Work Hours Statistics</string>
     <string name="total_work_hours">Total Work Hours: %.1f</string>
     <string name="average_work_hours">Average Work Hours: %.1f</string>

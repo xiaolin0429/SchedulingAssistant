@@ -358,6 +358,7 @@
     <string name="no_shifts_data">暂无班次数据</string>
     
     <!-- 工作时长统计 -->
+    <string name="work_hours">工作时长</string>
     <string name="work_hours_statistics">工作时长统计</string>
     <string name="total_work_hours">总工作时长：%.1f小时</string>
     <string name="average_work_hours">平均工作时长：%.1f小时</string>

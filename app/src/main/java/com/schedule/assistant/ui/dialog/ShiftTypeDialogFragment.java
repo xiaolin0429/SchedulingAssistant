@@ -18,9 +18,6 @@ import com.github.dhaval2404.colorpicker.ColorPickerDialog;
 import com.github.dhaval2404.colorpicker.model.ColorShape;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
-
-import android.widget.ArrayAdapter;
 
 public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
     private DialogShiftTypeBinding binding;
@@ -35,8 +32,8 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
         if (shiftType != null) {
             args.putLong("id", shiftType.getId());
             args.putString("name", shiftType.getName());
-            args.putString("start_time", shiftType.getStartTime());
-            args.putString("end_time", shiftType.getEndTime());
+            args.putString("start_time", shiftType.getStartTime() != null ? shiftType.getStartTime() : "");
+            args.putString("end_time", shiftType.getEndTime() != null ? shiftType.getEndTime() : "");
             args.putInt("color", shiftType.getColor());
             args.putBoolean("is_default", shiftType.isDefault());
         }
@@ -54,11 +51,10 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
         Bundle args = getArguments();
         if (args != null && args.containsKey("id")) {
             currentShiftType = new ShiftTypeEntity(
-                args.getString("name"),
-                args.getString("start_time"),
-                args.getString("end_time"),
-                args.getInt("color")
-            );
+                    args.getString("name", ""),
+                    args.getString("start_time", ""),
+                    args.getString("end_time", ""),
+                    args.getInt("color"));
             currentShiftType.setId(args.getLong("id"));
             currentShiftType.setDefault(args.getBoolean("is_default"));
             selectedColor = args.getInt("color");
@@ -68,7 +64,7 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                           @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         binding = DialogShiftTypeBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -82,8 +78,7 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
 
     private void setupViews() {
         // 设置标题
-        binding.titleText.setText(currentShiftType == null ? 
-            R.string.add_shift_type : R.string.edit_shift_type);
+        binding.titleText.setText(currentShiftType == null ? R.string.add_shift_type : R.string.edit_shift_type);
 
         // 如果是编辑模式，填充现有数据
         if (currentShiftType != null) {
@@ -111,51 +106,53 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
 
     private void showTimePicker(boolean isStartTime) {
         LocalTime initialTime = LocalTime.now();
-        String currentTime = isStartTime ? 
-            binding.startTimeInput.getText().toString() : 
-            binding.endTimeInput.getText().toString();
+        CharSequence currentTimeSeq = isStartTime ? binding.startTimeInput.getText() : binding.endTimeInput.getText();
+        String currentTime = currentTimeSeq != null ? currentTimeSeq.toString() : "";
 
         if (!currentTime.isEmpty()) {
             try {
                 initialTime = LocalTime.parse(currentTime, timeFormatter);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         TimePickerDialog dialog = new TimePickerDialog(
-            requireContext(),
-            (view, hourOfDay, minute) -> {
-                LocalTime selectedTime = LocalTime.of(hourOfDay, minute);
-                String formattedTime = selectedTime.format(timeFormatter);
-                if (isStartTime) {
-                    binding.startTimeInput.setText(formattedTime);
-                } else {
-                    binding.endTimeInput.setText(formattedTime);
-                }
-            },
-            initialTime.getHour(),
-            initialTime.getMinute(),
-            true
-        );
+                requireContext(),
+                (view, hourOfDay, minute) -> {
+                    LocalTime selectedTime = LocalTime.of(hourOfDay, minute);
+                    String formattedTime = selectedTime.format(timeFormatter);
+                    if (isStartTime) {
+                        binding.startTimeInput.setText(formattedTime);
+                    } else {
+                        binding.endTimeInput.setText(formattedTime);
+                    }
+                },
+                initialTime.getHour(),
+                initialTime.getMinute(),
+                true);
         dialog.show();
     }
 
     private void showColorPicker() {
-        new ColorPickerDialog
-            .Builder(requireContext())
-            .setTitle(R.string.select_color)
-            .setColorShape(ColorShape.CIRCLE)
-            .setDefaultColor(selectedColor)
-            .setColorListener((color, colorHex) -> {
-                selectedColor = color;
-                binding.colorPreview.setBackgroundColor(color);
-            })
-            .show();
+        new ColorPickerDialog.Builder(requireContext())
+                .setTitle(R.string.select_color)
+                .setColorShape(ColorShape.CIRCLE)
+                .setDefaultColor(selectedColor)
+                .setColorListener((color, colorHex) -> {
+                    selectedColor = color;
+                    binding.colorPreview.setBackgroundColor(color);
+                })
+                .show();
     }
 
     private void saveShiftType() {
-        String name = binding.nameInput.getText().toString().trim();
-        String startTime = binding.startTimeInput.getText().toString().trim();
-        String endTime = binding.endTimeInput.getText().toString().trim();
+        CharSequence nameSeq = binding.nameInput.getText();
+        CharSequence startTimeSeq = binding.startTimeInput.getText();
+        CharSequence endTimeSeq = binding.endTimeInput.getText();
+
+        String name = nameSeq != null ? nameSeq.toString().trim() : "";
+        String startTime = startTimeSeq != null ? startTimeSeq.toString().trim() : "";
+        String endTime = endTimeSeq != null ? endTimeSeq.toString().trim() : "";
 
         // 验证输入
         if (name.isEmpty()) {
@@ -164,8 +161,8 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
         }
 
         // 创建或更新班次类型
-        ShiftTypeEntity shiftType;
-        shiftType = Objects.requireNonNullElseGet(currentShiftType, () -> new ShiftTypeEntity(name, startTime, endTime, selectedColor));
+        ShiftTypeEntity shiftType = currentShiftType != null ? currentShiftType
+                : new ShiftTypeEntity(name, startTime, endTime, selectedColor);
 
         shiftType.setName(name);
         shiftType.setStartTime(startTime);
@@ -188,4 +185,4 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
         super.onDestroyView();
         binding = null;
     }
-} 
+}
