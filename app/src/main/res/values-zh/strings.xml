@@ -113,11 +113,12 @@
 
     <string name="refresh_widget">刷新小部件</string>
 
-    <string name="grid_view_button_description">切换到网格视图</string>
-    <string name="list_view_button_description">切换到列表视图</string>
+    <string name="calendar_view_button_description">切换到日历视图</string>
     <string name="cloud_sync_button_description">同步数据</string>
+    <string name="settings_button_description">设置</string>
 
     <string name="add_alarm">添加闹钟</string>
+
     <string name="delete_alarm">删除闹钟</string>
     <string name="no_alarms">暂无闹钟</string>
     <string name="select_alarm_time">选择闹钟时间</string>
@@ -204,9 +205,6 @@
     <string name="sort_by_type">按类型排序</string>
     <string name="sort_by_update_time">按更新时间排序</string>
 
-    <string name="settings_button_description">设置</string>
-    <string name="arrow_right">向右箭头</string>
-
     <string name="app_settings">应用设置</string>
 
     <!-- Shift Type Management -->
@@ -214,7 +212,7 @@
     <string name="add_shift">添加班次</string>
 
     <!-- Date Format -->
-    <string name="date_format_year_month">%1$d年%2$s</string>
+    <string name="date_format_year_month">yyyy年MM月</string>
     <string name="shift_count_format">%1$s: %2$d</string>
     <string name="shift_count_day">白班</string>
     <string name="shift_count_night">夜班</string>
@@ -379,4 +377,13 @@
     <string name="last_three_months">近三月</string>
     <string name="date_range_title">选择日期范围</string>
     <string name="date_range_format">%1$s 至 %2$s</string>
+
+    <!-- Calendar Week Days -->
+    <string name="calendar_monday">一</string>
+    <string name="calendar_tuesday">二</string>
+    <string name="calendar_wednesday">三</string>
+    <string name="calendar_thursday">四</string>
+    <string name="calendar_friday">五</string>
+    <string name="calendar_saturday">六</string>
+    <string name="calendar_sunday">日</string>
 </resources> 

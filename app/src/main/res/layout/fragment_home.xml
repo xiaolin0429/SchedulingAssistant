@@ -48,26 +48,15 @@
                     android:textStyle="bold" />
 
                 <ImageButton
-                    android:id="@+id/gridViewButton"
+                    android:id="@+id/calendarViewButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/grid_view_button_description"
+                    android:contentDescription="@string/calendar_view_button_description"
                     android:padding="6dp"
                     app:tint="?android:attr/textColorPrimary"
-                    android:src="@drawable/ic_grid" />
-
-                <ImageButton
-                    android:id="@+id/listViewButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/list_view_button_description"
-                    android:padding="6dp"
-                    app:tint="?android:attr/textColorPrimary"
-                    android:src="@drawable/ic_list" />
+                    android:src="@drawable/ic_calendar" />
 
                 <ImageButton
                     android:id="@+id/cloudSyncButton"
@@ -138,6 +127,7 @@
 
         <!-- 日历视图 -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/calendarViewContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

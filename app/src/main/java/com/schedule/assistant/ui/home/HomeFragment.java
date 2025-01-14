@@ -9,12 +9,15 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.res.Configuration;
+import java.util.Calendar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.navigation.Navigation;
 
 import com.kizitonwose.calendarview.model.CalendarDay;
 import com.schedule.assistant.R;
@@ -33,18 +36,55 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import com.schedule.assistant.utils.LocaleHelper;
 
 public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayClickListener {
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private LocalDate selectedDate;
+    private SimpleDateFormat yearMonthFormat; // 添加日期格式化器
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private CalendarDayBinder calendarDayBinder;
+
+    /**
+     * 更新日期格式化器
+     * 根据当前语言环境设置正确的日期格式
+     */
+    private void updateDateFormats() {
+        String pattern = getString(R.string.date_format_year_month);
+        // 使用 LocaleHelper 获取正确的 Locale
+        Locale currentLocale = LocaleHelper.getCurrentLocale(requireContext());
+        yearMonthFormat = new SimpleDateFormat(pattern, currentLocale);
+
+        // 如果当前显示的月份不为空，则刷新显示
+        if (selectedDate != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, selectedDate.getYear());
+            calendar.set(Calendar.MONTH, selectedDate.getMonthValue() - 1);
+            binding.yearMonthText.setText(yearMonthFormat.format(calendar.getTime()));
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateDateFormats();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+        updateDateFormats();
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 每次恢复时更新日期格式，以确保正确的语言设置
+        updateDateFormats();
     }
 
     @Override
@@ -55,26 +95,11 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
         setupCalendarView();
         setupButtons();
         observeViewModel();
-        updateMonthDisplay();
-
-        // 初始化时加载当天的排班信息
-        LocalDate today = LocalDate.now();
-        selectedDate = today;
-        viewModel.selectDate(today);
-        calendarDayBinder.setSelectedDate(today);
-        binding.calendarView.notifyDateChanged(today);
     }
 
     private void setupCalendarView() {
-        calendarDayBinder = new CalendarDayBinder(day -> {
-            LocalDate date = day.getDate();
-            selectedDate = date;
-            viewModel.selectDate(date);
-            calendarDayBinder.setSelectedDate(date);
-            binding.calendarView.notifyDateChanged(date);
-        }, viewModel, getViewLifecycleOwner());
-
-        calendarDayBinder.setCalendarView(binding.calendarView);
+        // 使用正确的构造函数参数
+        calendarDayBinder = new CalendarDayBinder(this, viewModel, getViewLifecycleOwner());
         binding.calendarView.setDayBinder(calendarDayBinder);
         binding.calendarView.setMonthHeaderBinder(new CalendarHeaderBinder(requireContext()));
 
@@ -82,21 +107,43 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
         YearMonth currentMonth = YearMonth.now();
         YearMonth firstMonth = currentMonth.minusMonths(6);
         YearMonth lastMonth = currentMonth.plusMonths(6);
-        binding.calendarView.setup(firstMonth, lastMonth, DayOfWeek.MONDAY);
+        binding.calendarView.setup(firstMonth, lastMonth, DayOfWeek.SUNDAY);
         binding.calendarView.scrollToMonth(currentMonth);
+
+        // 添加月份切换监听器
+        binding.calendarView.setMonthScrollListener(calendarMonth -> {
+            if (binding != null) {
+                // 转换 CalendarMonth 到 YearMonth
+                YearMonth month = YearMonth.of(calendarMonth.getYear(), calendarMonth.getMonth());
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, month.getYear());
+                calendar.set(Calendar.MONTH, month.getMonthValue() - 1);
+                binding.yearMonthText.setText(yearMonthFormat.format(calendar.getTime()));
+
+                // 加载新月份的数据
+                viewModel.loadMonthShifts(month);
+            }
+            return null;
+        });
 
         // 初始化时加载当前月份的数据
         viewModel.loadMonthShifts(currentMonth);
+
+        // 初始化年月显示
+        if (binding != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, currentMonth.getYear());
+            calendar.set(Calendar.MONTH, currentMonth.getMonthValue() - 1);
+            binding.yearMonthText.setText(yearMonthFormat.format(calendar.getTime()));
+        }
     }
 
     private void setupButtons() {
         // 设置顶部功能按钮
-        binding.gridViewButton.setOnClickListener(v -> {
-            // TODO: 实现网格视图切换
-        });
-
-        binding.listViewButton.setOnClickListener(v -> {
-            // TODO: 实现列表视图切换
+        binding.calendarViewButton.setOnClickListener(v -> {
+            // 切换到日历视图
+            updateViewButtonsState();
         });
 
         binding.cloudSyncButton.setOnClickListener(v -> {
@@ -104,7 +151,8 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
         });
 
         binding.settingsButton.setOnClickListener(v -> {
-            // TODO: 实现设置功能
+            // 导航到设置页面
+            Navigation.findNavController(v).navigate(R.id.action_navigation_home_to_settingsFragment);
         });
 
         // 设置底部功能按钮
@@ -146,6 +194,14 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                 calendarDayBinder.updateShifts(shiftsMap);
                 binding.calendarView.notifyCalendarChanged();
                 updateShiftCounts(shifts);
+
+                // 更新年月显示
+                if (selectedDate != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.YEAR, selectedDate.getYear());
+                    calendar.set(Calendar.MONTH, selectedDate.getMonthValue() - 1);
+                    binding.yearMonthText.setText(yearMonthFormat.format(calendar.getTime()));
+                }
             }
         });
     }
@@ -218,12 +274,6 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                 }
             }
         });
-    }
-
-    private void updateMonthDisplay() {
-        YearMonth currentMonth = YearMonth.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(getString(R.string.month_year_format));
-        binding.yearMonthText.setText(currentMonth.format(formatter));
     }
 
     @Override
@@ -344,5 +394,11 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
             binding.shiftInfoLayout.setVisibility(View.GONE);
             binding.noShiftText.setVisibility(View.VISIBLE);
         }
+    }
+
+    // 更新视图按钮状态
+    private void updateViewButtonsState() {
+        // 设置日历视图按钮高亮
+        binding.calendarViewButton.setAlpha(1.0f);
     }
 }
