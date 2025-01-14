@@ -380,6 +380,7 @@
     <string name="next_month">Next Month</string>
     <string name="month_year_format">MMMM yyyy</string>
     <string name="total_shift_count">Total Shifts This Month: %d</string>
+    <string name="total_shift_count_range">Total Shifts in Selected Period: %d</string>
     <string name="shift_type_distribution">Shift Type Distribution</string>
     <string name="shift_type_percentage">%s: %.1f%%</string>
     <string name="no_shifts_data">No shift data available</string>

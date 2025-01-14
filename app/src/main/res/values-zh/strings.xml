@@ -353,6 +353,7 @@
     <string name="next_month">下个月</string>
     <string name="month_year_format">yyyy年MM月</string>
     <string name="total_shift_count">本月总班次：%d</string>
+    <string name="total_shift_count_range">时间段内总班次：%d</string>
     <string name="shift_type_distribution">班次类型分布</string>
     <string name="shift_type_percentage">%s：%.1f%%</string>
     <string name="no_shifts_data">暂无班次数据</string>

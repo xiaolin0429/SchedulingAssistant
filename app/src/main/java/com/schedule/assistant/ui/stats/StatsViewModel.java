@@ -317,8 +317,22 @@ public class StatsViewModel extends AndroidViewModel {
                 selectMonth(calendar.getTime());
                 break;
             case LAST_THREE_MONTHS:
+                // 设置结束日期为当前月份的最后一天
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                calendar.set(Calendar.MILLISECOND, 999);
+                endDate = calendar.getTime();
+
+                // 设置开始日期为三个月前的第一天
                 calendar.add(Calendar.MONTH, -2);
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                
                 selectDateRange(calendar.getTime(), endDate);
                 break;
         }
