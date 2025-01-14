@@ -225,11 +225,45 @@ app/src/main/
 #### 2. 关键组件实现
 - **数据绑定机制**
   ```java
-  // ViewModel中的LiveData定义
-  private final MutableLiveData<List<ShiftType>> shiftTypes = new MutableLiveData<>();
-  
-  // Fragment中的观察者模式
-  viewModel.getShiftTypes().observe(getViewLifecycleOwner(), adapter::submitList);
+  // ViewModel：管理UI状态和数据
+  public class HomeViewModel extends AndroidViewModel {
+      private final MutableLiveData<List<ShiftTypeEntity>> shiftTypes = new MutableLiveData<>();
+      private final ShiftTypeRepository shiftTypeRepository;
+
+      public HomeViewModel(Application application) {
+          super(application);
+          shiftTypeRepository = new ShiftTypeRepository(application);
+      }
+
+      public LiveData<List<ShiftTypeEntity>> getShiftTypes() {
+          return shiftTypeRepository.getAllShiftTypes();
+      }
+  }
+
+  // Fragment：观察数据变化并更新UI
+  public class HomeFragment extends Fragment {
+      private HomeViewModel viewModel;
+      private FragmentHomeBinding binding;
+
+      @Override
+      public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+          super.onViewCreated(view, savedInstanceState);
+          viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+          // 观察数据变化
+          viewModel.getShiftTypes().observe(getViewLifecycleOwner(), shiftTypes -> {
+              if (shiftTypes != null) {
+                  updateShiftTypeDisplay(shiftTypes);
+              }
+          });
+      }
+
+      // UI更新方法
+      private void updateShiftTypeDisplay(List<ShiftTypeEntity> shiftTypes) {
+          // 更新UI显示
+          binding.recyclerView.setAdapter(new ShiftTypeAdapter(shiftTypes));
+      }
+  }
   ```
 
 - **异步操作处理**
@@ -548,3 +582,39 @@ git clone https://github.com/xiaolin0429/SchedulingAssistant.git
 ```bash
 ./gradlew build
 ```
+
+## 开发规范
+1. 代码规范
+   - 遵循Java代码规范
+   - 使用统一的代码格式化工具
+   - 保持代码简洁清晰
+   - 遵守最小修改原则，不允许随意修改现有代码
+   - 需要修改现有功能时，优先使用组合/聚合/依赖注入等设计模式
+   - 保留原有方法/类/接口的功能，确保向后兼容
+   - 按照设计模式思想，遵守六大原则：开闭原则、里氏代换原则、依赖倒转原则、接口隔离原则、迪米特法则、合成复用原则
+2. 资源文件修改规范
+   - 修改资源文件前必须全局检查引用关系
+   - 确保修改不影响其他模块的正常调用
+   - 对于共用资源，需要评估修改影响范围
+   - 建议新增资源而不是修改现有资源
+   - 必要的修改需要在代码审查时重点关注
+   - 修改资源文件时，需要检查是否存在类似可重复资源，如果存在，复用现有资源
+   - 注意en和zh双语言的资源文件版本，确保两者一致，默认strings.xml文件为英文
+3. 命名规范
+   - 类名：大驼峰命名法
+   - 变量名：小驼峰命名法
+   - 常量：全大写下划线分隔
+4. 注释规范
+   - 类和方法必须添加文档注释
+   - 关键代码添加必要的注释
+   - 保持注释的及时更新
+5. 版本控制
+   - 使用Git进行版本控制
+   - 遵循分支管理规范
+   - 提交信息要清晰明确
+
+### 作者
+- 开发团队：[xiaolin0429]
+- 联系邮箱：[邮箱地址]
+### 许可证
+本项目采用 MIT 许可证 

@@ -127,9 +127,9 @@
     <string name="refresh_widget">Refresh Widget</string>
 
     <!-- Home Button Descriptions -->
-    <string name="grid_view_button_description">Switch to Grid View</string>
-    <string name="list_view_button_description">Switch to List View</string>
+    <string name="calendar_view_button_description">Switch to calendar view</string>
     <string name="cloud_sync_button_description">Sync Data</string>
+    <string name="settings_button_description">Settings</string>
 
     <!-- Alarm Related -->
     <string name="add_alarm">Add Alarm</string>
@@ -266,8 +266,7 @@
     <string name="sort_by_update_time">Sort by Update Time</string>
 
     <!-- Button Descriptions -->
-    <string name="settings_button_description">Settings</string>
-    <string name="arrow_right">Arrow Right</string>
+    <string name="arrow_right" translatable="false">Arrow Right</string>
 
     <!-- App Settings -->
     <string name="app_settings">App Settings</string>
@@ -277,7 +276,7 @@
     <string name="add_shift">Add Shift</string>
 
     <!-- Date Format -->
-    <string name="date_format_year_month">%1$s %2$d</string>
+    <string name="date_format_year_month">MMMM yyyy</string>
     <string name="shift_count_format">%1$s: %2$d</string>
     <string name="shift_count_day">Day</string>
     <string name="shift_count_night">Night</string>
@@ -406,4 +405,13 @@
     <string name="last_three_months">Last 3 Months</string>
     <string name="date_range_title">Select Date Range</string>
     <string name="date_range_format">%1$s to %2$s</string>
+
+    <!-- Calendar Week Days -->
+    <string name="calendar_monday">M</string>
+    <string name="calendar_tuesday">T</string>
+    <string name="calendar_wednesday">W</string>
+    <string name="calendar_thursday">T</string>
+    <string name="calendar_friday">F</string>
+    <string name="calendar_saturday">S</string>
+    <string name="calendar_sunday">S</string>
 </resources>

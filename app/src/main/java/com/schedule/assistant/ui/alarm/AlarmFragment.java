@@ -47,7 +47,6 @@ import java.util.Locale;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.res.ResourcesCompat;
 
 /**
  * 闹钟列表界面
@@ -148,24 +147,9 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
     /**
      * 显示时间选择器
-     * 
-     * @param alarm 要编辑的闹钟，如果是新建则为null
      */
-    private void showTimePicker(@Nullable AlarmEntity alarm) {
+    private void showTimePicker() {
         // 如果是编辑现有闹钟，直接显示编辑对话框
-        if (alarm != null && alarm.isEnabled()) {
-            Snackbar snackbar = Snackbar.make(binding.getRoot(), R.string.alarm_cannot_edit_enabled,
-                    Snackbar.LENGTH_LONG);
-            View snackbarView = snackbar.getView();
-            snackbarView
-                    .setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.snackbar_background, null));
-            TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.snackbar_text, null));
-            textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warning, 0, 0, 0);
-            textView.setCompoundDrawablePadding(getResources().getDimensionPixelOffset(R.dimen.snackbar_icon_padding));
-            snackbar.show();
-            return;
-        }
 
         // 创建新闹钟
         AlarmEntity newAlarm = new AlarmEntity();
@@ -194,7 +178,7 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         // 添加闹钟按钮点击事件
         binding.fabAddAlarm.setOnClickListener(v -> {
             adapter.closeOpenedItem(); // 关闭已打开的按钮
-            showTimePicker(null);
+            showTimePicker();
         });
 
         // 列表滚动时关闭打开的按钮
