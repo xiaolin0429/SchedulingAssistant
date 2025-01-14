@@ -380,6 +380,7 @@
     <string name="next_month">Next Month</string>
     <string name="month_year_format">MMMM yyyy</string>
     <string name="total_shift_count">Total Shifts This Month: %d</string>
+    <string name="total_shift_count_range">Total Shifts in Selected Period: %d</string>
     <string name="shift_type_distribution">Shift Type Distribution</string>
     <string name="shift_type_percentage">%s: %.1f%%</string>
     <string name="no_shifts_data">No shift data available</string>
@@ -392,4 +393,17 @@
     <string name="max_work_hours">Longest Work Hours: %.1f (%s)</string>
     <string name="min_work_hours">Shortest Work Hours: %.1f (%s)</string>
     <string name="no_work_hours_data">No work hours data available</string>
+
+    <!-- Snooze Settings -->
+    <string name="snooze_interval">Snooze Interval (minutes)</string>
+    <string name="max_snooze_count">Maximum Snooze Count</string>
+
+    <string name="quick_select">Quick Select</string>
+    <string name="select_date_range">Select Date Range</string>
+    <string name="clear_range">Clear Range</string>
+    <string name="current_month">Current Month</string>
+    <string name="last_month">Last Month</string>
+    <string name="last_three_months">Last 3 Months</string>
+    <string name="date_range_title">Select Date Range</string>
+    <string name="date_range_format">%1$s to %2$s</string>
 </resources>

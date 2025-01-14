@@ -183,6 +183,8 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         newAlarm.setRepeatDays(0);
         newAlarm.setVibrate(true);
         newAlarm.setSoundUri("");
+        newAlarm.setSnoozeInterval(5); // 设置默认贪睡间隔为5分钟
+        newAlarm.setMaxSnoozeCount(3); // 设置默认最大贪睡次数为3次
 
         showEditAlarmDialog(newAlarm);
     }
@@ -367,6 +369,17 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
         MaterialButton soundButton = dialogView.findViewById(R.id.button_sound);
         soundButton.setOnClickListener(v -> showSoundPicker(alarm, soundText));
 
+        // 获取贪睡时间间隔和最大次数的输入框
+        EditText snoozeIntervalEdit = dialogView.findViewById(R.id.edit_snooze_interval);
+        EditText maxSnoozeCountEdit = dialogView.findViewById(R.id.edit_max_snooze_count);
+
+        // 设置贪睡时间间隔和最大次数的默认值
+        snoozeIntervalEdit.setText(String.valueOf(alarm.getSnoozeInterval()));
+        maxSnoozeCountEdit.setText(String.valueOf(alarm.getMaxSnoozeCount()));
+
+        // 设置重复选项的默认值
+        repeatCheck.setChecked(alarm.isRepeat());
+
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(alarm.getId() == 0 ? R.string.add_alarm : R.string.edit_alarm)
                 .setView(dialogView)
@@ -393,6 +406,12 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
 
                     alarm.setVibrate(vibrateCheck.isChecked());
 
+                    // 保存贪睡设置
+                    int snoozeInterval = Integer.parseInt(snoozeIntervalEdit.getText().toString().trim());
+                    int maxSnoozeCount = Integer.parseInt(maxSnoozeCountEdit.getText().toString().trim());
+                    alarm.setSnoozeInterval(snoozeInterval);
+                    alarm.setMaxSnoozeCount(maxSnoozeCount);
+
                     // 区分新建和编辑闹钟
                     if (alarm.getId() == 0) {
                         // 新建闹钟，直接保存到数据库，不创建系统闹钟
@@ -404,7 +423,9 @@ public class AlarmFragment extends Fragment implements AlarmAdapter.OnAlarmActio
                                 alarm.getRepeatDays(),
                                 alarm.getSoundUri(),
                                 alarm.isVibrate(),
-                                false); // 新建闹钟时默认为未启用状态
+                                false, // 新建闹钟时默认为未启用状态
+                                alarm.getSnoozeInterval(),
+                                alarm.getMaxSnoozeCount());
                     } else {
                         // 更新现有闹钟
                         viewModel.updateAlarm(requireActivity(), alarm);

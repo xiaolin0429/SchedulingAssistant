@@ -353,6 +353,7 @@
     <string name="next_month">下个月</string>
     <string name="month_year_format">yyyy年MM月</string>
     <string name="total_shift_count">本月总班次：%d</string>
+    <string name="total_shift_count_range">时间段内总班次：%d</string>
     <string name="shift_type_distribution">班次类型分布</string>
     <string name="shift_type_percentage">%s：%.1f%%</string>
     <string name="no_shifts_data">暂无班次数据</string>
@@ -365,4 +366,17 @@
     <string name="max_work_hours">最长工作时长：%.1f小时（%s）</string>
     <string name="min_work_hours">最短工作时长：%.1f小时（%s）</string>
     <string name="no_work_hours_data">暂无工作时长数据</string>
+
+    <!-- 贪睡设置 -->
+    <string name="snooze_interval">贪睡间隔（分钟）</string>
+    <string name="max_snooze_count">最大贪睡次数</string>
+
+    <string name="quick_select">快速选择</string>
+    <string name="select_date_range">选择日期范围</string>
+    <string name="clear_range">清除范围</string>
+    <string name="current_month">本月</string>
+    <string name="last_month">上月</string>
+    <string name="last_three_months">近三月</string>
+    <string name="date_range_title">选择日期范围</string>
+    <string name="date_range_format">%1$s 至 %2$s</string>
 </resources> 
