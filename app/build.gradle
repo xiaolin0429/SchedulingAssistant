@@ -18,10 +18,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('scheduling_assistant.jks')
-            storePassword 'scheduling_assistant'
-            keyAlias 'scheduling_assistant'
-            keyPassword 'scheduling_assistant'
+            storeFile file(System.getenv("SIGNING_STORE_FILE") ?: "scheduling_assistant.jks")
+            storePassword System.getenv("SIGNING_STORE_PASSWORD") ?: "scheduling_assistant"
+            keyAlias System.getenv("SIGNING_KEY_ALIAS") ?: "scheduling_assistant"
+            keyPassword System.getenv("SIGNING_KEY_PASSWORD") ?: "scheduling_assistant"
         }
     }
 

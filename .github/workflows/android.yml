@@ -27,45 +27,27 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Decode Keystore
+      id: decode_keystore
+      uses: timheuer/base64-to-file@v1.2
+      with:
+        fileName: 'scheduling_assistant.jks'
+        fileDir: './app/'
+        encodedString: ${{ secrets.SIGNING_KEY }}
       
     - name: Build Release APK
-      run: ./gradlew assembleRelease
-      
-    - name: List APK files before signing
-      run: |
-        echo "Listing APK files in release directory:"
-        ls -la app/build/outputs/apk/release/
-      
-    - name: Sign Release APK
-      id: sign_app
-      uses: r0adkll/sign-android-release@v1
-      with:
-        releaseDirectory: app/build/outputs/apk/release
-        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-        alias: ${{ secrets.KEY_ALIAS }}
-        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
       env:
-        BUILD_TOOLS_VERSION: "33.0.0"
-        
-    - name: Rename signed APK
-      run: |
-        mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
-        mv ${{steps.sign_app.outputs.signedReleaseFile}} app/build/outputs/apk/release/app-release-signed.apk
-      
-    - name: Debug Signed APK Path
-      run: |
-        echo "Signed Release File: app/build/outputs/apk/release/app-release-signed.apk"
-        echo "Listing files in release directory after signing:"
-        ls -la app/build/outputs/apk/release/
+        SIGNING_STORE_FILE: scheduling_assistant.jks
+        SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      run: ./gradlew assembleRelease
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: app/build/outputs/apk/release/app-release-signed.apk
+        files: app/build/outputs/apk/release/app-release.apk
         name: Release ${{ github.ref_name }}
         draft: false
         prerelease: false
