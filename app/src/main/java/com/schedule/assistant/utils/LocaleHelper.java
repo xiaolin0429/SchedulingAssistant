@@ -14,31 +14,20 @@ public class LocaleHelper {
     private static final String TAG = "LocaleHelper";
 
     public static Context onAttach(Context context) {
-        String lang = getPersistedLocale(context);
+        String lang = getPersistedLocale();
         return setLocale(context, lang);
     }
 
-    public static String getPersistedLocale(Context context) {
+    public static String getPersistedLocale() {
         UserSettings settings = SchedulingAssistantApp.getCachedSettings();
         int languageSetting = settings != null ? settings.getLanguageMode() : 0;
-        String language;
-        switch (languageSetting) {
-            case 1:
-                language = "zh";
-                break;
-            case 2:
-                language = "en";
-                break;
-            default:
-                language = Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
-        }
+        String language = switch (languageSetting) {
+            case 1 -> "zh";
+            case 2 -> "en";
+            default -> Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
+        };
         Log.d(TAG, "getPersistedLocale: setting=" + languageSetting + ", language=" + language);
         return language;
-    }
-
-    public static boolean isFollowingSystemLocale(Context context) {
-        UserSettings settings = SchedulingAssistantApp.getCachedSettings();
-        return settings == null || settings.getLanguageMode() == 0;
     }
 
     public static Context setLocale(Context context, String language) {
@@ -55,7 +44,7 @@ public class LocaleHelper {
     }
 
     public static Locale getCurrentLocale(Context context) {
-        String lang = getPersistedLocale(context);
+        String lang = getPersistedLocale();
         Log.d(TAG, "Getting current locale, persisted language: " + lang);
         
         Locale locale = new Locale(lang);
