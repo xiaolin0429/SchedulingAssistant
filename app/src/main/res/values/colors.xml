@@ -83,4 +83,6 @@
     <color name="card_ripple">#1F000000</color>
 
     <color name="default_shift_color">#757575</color>
+
+    <color name="ic_launcher_background">#F5F5F5</color>
 </resources>
