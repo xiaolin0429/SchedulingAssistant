@@ -30,21 +30,16 @@ public class StatsViewModel extends AndroidViewModel {
     private final MutableLiveData<Double> totalWorkHours = new MutableLiveData<>();
     private final MutableLiveData<Double> averageWorkHours = new MutableLiveData<>();
     private final MutableLiveData<WorkHoursRecord> workHoursRecord = new MutableLiveData<>();
+    private final MutableLiveData<DateRange> selectedDateRange = new MutableLiveData<>();
     private final SimpleDateFormat timeFormat;
     private final SimpleDateFormat dateFormat;
     private LiveData<List<Shift>> currentShiftsLiveData;
     private androidx.lifecycle.Observer<List<Shift>> shiftsObserver;
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        if (currentShiftsLiveData != null && shiftsObserver != null) {
-            currentShiftsLiveData.removeObserver(shiftsObserver);
-        }
-    }
-
     public record WorkHoursRecord(double maxHours, String maxDate, double minHours, String minDate) {
     }
+
+    public record DateRange(Date startDate, Date endDate) {}
 
     public StatsViewModel(Application application) {
         super(application);
@@ -248,5 +243,94 @@ public class StatsViewModel extends AndroidViewModel {
     // 获取班次类型信息
     public LiveData<ShiftTypeEntity> getShiftType(Long typeId) {
         return shiftTypeRepository.getShiftTypeById(typeId);
+    }
+
+    public void selectDateRange(Date startDate, Date endDate) {
+        if (startDate == null || endDate == null || startDate.after(endDate)) {
+            return;
+        }
+
+        // 移除之前的观察者
+        if (currentShiftsLiveData != null && shiftsObserver != null) {
+            currentShiftsLiveData.removeObserver(shiftsObserver);
+        }
+
+        // 设置时间为一天的开始和结束
+        Calendar calendar = Calendar.getInstance();
+        
+        // 设置开始日期为当天的开始
+        calendar.setTime(startDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        startDate = calendar.getTime();
+
+        // 设置结束日期为当天的结束
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        endDate = calendar.getTime();
+
+        String startDateStr = dateFormat.format(startDate);
+        String endDateStr = dateFormat.format(endDate);
+        Log.d(TAG, "Fetching shifts between " + startDateStr + " and " + endDateStr);
+
+        selectedDateRange.setValue(new DateRange(startDate, endDate));
+        selectedMonth.setValue(null); // 清除月份选择
+
+        // 获取并观察数据
+        currentShiftsLiveData = repository.getShiftsBetween(startDateStr, endDateStr);
+        shiftsObserver = shifts -> {
+            if (shifts != null) {
+                Log.d(TAG, "Found " + shifts.size() + " shifts for the selected date range");
+                monthShifts.setValue(shifts);
+                updateShiftTypeCounts(shifts);
+                updateWorkHoursStatistics(shifts);
+            } else {
+                Log.d(TAG, "No shifts found for the selected date range");
+                monthShifts.setValue(new ArrayList<>());
+                shiftTypeCounts.setValue(new HashMap<>());
+                shiftTypePercentages.setValue(new HashMap<>());
+                totalWorkHours.setValue(0.0);
+                averageWorkHours.setValue(0.0);
+                workHoursRecord.setValue(null);
+            }
+        };
+        currentShiftsLiveData.observeForever(shiftsObserver);
+    }
+
+    public void selectQuickRange(QuickRange range) {
+        Calendar calendar = Calendar.getInstance();
+        Date endDate = calendar.getTime();
+
+        switch (range) {
+            case CURRENT_MONTH:
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                selectMonth(calendar.getTime());
+                break;
+            case LAST_MONTH:
+                calendar.add(Calendar.MONTH, -1);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                selectMonth(calendar.getTime());
+                break;
+            case LAST_THREE_MONTHS:
+                calendar.add(Calendar.MONTH, -2);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                selectDateRange(calendar.getTime(), endDate);
+                break;
+        }
+    }
+
+    public enum QuickRange {
+        CURRENT_MONTH,
+        LAST_MONTH,
+        LAST_THREE_MONTHS
+    }
+
+    public LiveData<DateRange> getSelectedDateRange() {
+        return selectedDateRange;
     }
 }

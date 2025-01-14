@@ -365,4 +365,17 @@
     <string name="max_work_hours">最长工作时长：%.1f小时（%s）</string>
     <string name="min_work_hours">最短工作时长：%.1f小时（%s）</string>
     <string name="no_work_hours_data">暂无工作时长数据</string>
+
+    <!-- 贪睡设置 -->
+    <string name="snooze_interval">贪睡间隔（分钟）</string>
+    <string name="max_snooze_count">最大贪睡次数</string>
+
+    <string name="quick_select">快速选择</string>
+    <string name="select_date_range">选择日期范围</string>
+    <string name="clear_range">清除范围</string>
+    <string name="current_month">本月</string>
+    <string name="last_month">上月</string>
+    <string name="last_three_months">近三月</string>
+    <string name="date_range_title">选择日期范围</string>
+    <string name="date_range_format">%1$s 至 %2$s</string>
 </resources> 

@@ -156,6 +156,35 @@
             android:layout_height="wrap_content"
             android:text="@string/vibrate" />
 
+        <!-- 添加贪睡时间间隔和最大贪睡次数的输入框 -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/snooze_interval">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_snooze_interval"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/max_snooze_count">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_max_snooze_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
 
 </ScrollView> 

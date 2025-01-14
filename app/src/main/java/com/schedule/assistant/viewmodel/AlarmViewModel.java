@@ -48,7 +48,10 @@ public class AlarmViewModel extends AndroidViewModel {
             int repeatDays,
             String soundUri,
             boolean vibrate,
-            boolean enabled) {
+            boolean enabled,
+            int snoozeInterval,
+            int maxSnoozeCount
+    ) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -69,6 +72,8 @@ public class AlarmViewModel extends AndroidViewModel {
         alarm.setRepeatDays(repeatDays);
         alarm.setSoundUri(soundUri);
         alarm.setVibrate(vibrate);
+        alarm.setSnoozeInterval(snoozeInterval);
+        alarm.setMaxSnoozeCount(maxSnoozeCount);
 
         // 插入闹钟数据
         long alarmId = repository.insert(alarm);

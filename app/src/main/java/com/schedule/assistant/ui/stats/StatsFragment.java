@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +38,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import androidx.core.util.Pair;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.schedule.assistant.utils.LocaleHelper;
 
 public class StatsFragment extends Fragment {
     private static final String TAG = "StatsFragment";
@@ -44,11 +49,31 @@ public class StatsFragment extends Fragment {
     private SimpleDateFormat monthFormat;
     private SimpleDateFormat dateFormat;
 
+    private void updateDateFormats() {
+        String pattern = getString(R.string.month_year_format);
+        // 使用 LocaleHelper 获取正确的 Locale
+        Locale currentLocale = LocaleHelper.getCurrentLocale(requireContext());
+        Log.d(TAG, "Current locale: " + currentLocale.getLanguage() + ", pattern: " + pattern);
+        
+        monthFormat = new SimpleDateFormat(pattern, currentLocale);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd", currentLocale);
+        
+        // 如果当前显示的月份不为空，则刷新显示
+        if (viewModel != null && viewModel.getSelectedMonth().getValue() != null) {
+            binding.monthText.setText(monthFormat.format(viewModel.getSelectedMonth().getValue()));
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull android.content.res.Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateDateFormats();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentStatsBinding.inflate(inflater, container, false);
-        monthFormat = new SimpleDateFormat(getString(R.string.month_year_format), Locale.getDefault());
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        updateDateFormats();
         return binding.getRoot();
     }
 
@@ -66,6 +91,13 @@ public class StatsFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         viewModel.selectMonth(calendar.getTime());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 每次恢复时更新日期格式，以确保正确的语言设置
+        updateDateFormats();
     }
 
     private void setupMonthNavigation() {
@@ -90,13 +122,81 @@ public class StatsFragment extends Fragment {
                 viewModel.selectMonth(calendar.getTime());
             }
         });
+
+        // 设置快速选择按钮
+        binding.quickSelectButton.setOnClickListener(v -> showQuickSelectMenu());
+
+        // 设置日期范围选择按钮
+        binding.dateRangeButton.setOnClickListener(v -> showDateRangePicker());
+
+        // 设置清除范围按钮
+        binding.clearRangeChip.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            viewModel.selectMonth(calendar.getTime());
+        });
+
+        binding.clearRangeChip.setOnCloseIconClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            viewModel.selectMonth(calendar.getTime());
+        });
+    }
+
+    private void showQuickSelectMenu() {
+        PopupMenu popup = new PopupMenu(requireContext(), binding.quickSelectButton);
+        popup.getMenu().add(Menu.NONE, 1, Menu.NONE, R.string.current_month);
+        popup.getMenu().add(Menu.NONE, 2, Menu.NONE, R.string.last_month);
+        popup.getMenu().add(Menu.NONE, 3, Menu.NONE, R.string.last_three_months);
+
+        popup.setOnMenuItemClickListener(item -> switch (item.getItemId()) {
+            case 1 -> {
+                viewModel.selectQuickRange(StatsViewModel.QuickRange.CURRENT_MONTH);
+                yield true;
+            }
+            case 2 -> {
+                viewModel.selectQuickRange(StatsViewModel.QuickRange.LAST_MONTH);
+                yield true;
+            }
+            case 3 -> {
+                viewModel.selectQuickRange(StatsViewModel.QuickRange.LAST_THREE_MONTHS);
+                yield true;
+            }
+            default -> false;
+        });
+
+        popup.show();
+    }
+
+    private void showDateRangePicker() {
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText(R.string.date_range_title);
+        MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+
+        picker.addOnPositiveButtonClickListener(selection -> {
+            Date startDate = new Date(selection.first);
+            Date endDate = new Date(selection.second);
+            viewModel.selectDateRange(startDate, endDate);
+        });
+
+        picker.show(getChildFragmentManager(), "date_range_picker");
     }
 
     private void observeViewModel() {
         viewModel.getSelectedMonth().observe(getViewLifecycleOwner(), month -> {
             if (month != null) {
                 binding.monthText.setText(monthFormat.format(month));
+                binding.clearRangeChip.setVisibility(View.GONE);
                 Log.d(TAG, "Selected month updated: " + monthFormat.format(month));
+            }
+        });
+
+        viewModel.getSelectedDateRange().observe(getViewLifecycleOwner(), dateRange -> {
+            if (dateRange != null) {
+                String startDateStr = dateFormat.format(dateRange.startDate());
+                String endDateStr = dateFormat.format(dateRange.endDate());
+                binding.monthText.setText(getString(R.string.date_range_format, startDateStr, endDateStr));
+                binding.clearRangeChip.setVisibility(View.VISIBLE);
             }
         });
 

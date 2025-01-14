@@ -22,12 +22,16 @@ public class AlarmEntity {
     private boolean vibrate; // 是否震动
     private long createTime; // 创建时间
     private long updateTime; // 更新时间
+    private int snoozeInterval; // 贪睡间隔（分钟）
+    private int maxSnoozeCount; // 最大贪睡次数
 
     public AlarmEntity() {
         this.createTime = System.currentTimeMillis();
         this.updateTime = System.currentTimeMillis();
         this.enabled = true;
         this.vibrate = true;
+        this.snoozeInterval = 5; // 默认5分钟
+        this.maxSnoozeCount = 3; // 默认3次
     }
 
     // Getters and Setters
@@ -111,6 +115,22 @@ public class AlarmEntity {
         this.updateTime = updateTime;
     }
 
+    public int getSnoozeInterval() {
+        return snoozeInterval;
+    }
+
+    public void setSnoozeInterval(int snoozeInterval) {
+        this.snoozeInterval = snoozeInterval;
+    }
+
+    public int getMaxSnoozeCount() {
+        return maxSnoozeCount;
+    }
+
+    public void setMaxSnoozeCount(int maxSnoozeCount) {
+        this.maxSnoozeCount = maxSnoozeCount;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -122,6 +142,8 @@ public class AlarmEntity {
                 ", repeat=" + repeat +
                 ", repeatDays=" + repeatDays +
                 ", vibrate=" + vibrate +
+                ", snoozeInterval=" + snoozeInterval +
+                ", maxSnoozeCount=" + maxSnoozeCount +
                 '}';
     }
 }
