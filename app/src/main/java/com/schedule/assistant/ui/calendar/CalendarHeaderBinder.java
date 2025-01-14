@@ -9,7 +9,6 @@ import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder;
 import com.kizitonwose.calendarview.ui.ViewContainer;
 import com.schedule.assistant.R;
 import com.schedule.assistant.utils.LocaleHelper;
-import java.time.DayOfWeek;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -49,13 +48,13 @@ public class CalendarHeaderBinder implements MonthHeaderFooterBinder<CalendarHea
         try {
             // 每次绑定时更新格式化器，以确保使用正确的语言
             updateFormatter();
-            if (container.textView != null && month != null) {
+            if (container.textView != null) {
                 String formattedDate = month.getYearMonth().format(formatter);
                 container.textView.setText(formattedDate);
             }
         } catch (Exception e) {
             // 如果发生异常，使用简单的格式显示
-            if (container.textView != null && month != null) {
+            if (container.textView != null) {
                 container.textView.setText(month.getYearMonth().toString());
             }
         }

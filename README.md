@@ -225,11 +225,45 @@ app/src/main/
 #### 2. 关键组件实现
 - **数据绑定机制**
   ```java
-  // ViewModel中的LiveData定义
-  private final MutableLiveData<List<ShiftType>> shiftTypes = new MutableLiveData<>();
-  
-  // Fragment中的观察者模式
-  viewModel.getShiftTypes().observe(getViewLifecycleOwner(), adapter::submitList);
+  // ViewModel：管理UI状态和数据
+  public class HomeViewModel extends AndroidViewModel {
+      private final MutableLiveData<List<ShiftTypeEntity>> shiftTypes = new MutableLiveData<>();
+      private final ShiftTypeRepository shiftTypeRepository;
+
+      public HomeViewModel(Application application) {
+          super(application);
+          shiftTypeRepository = new ShiftTypeRepository(application);
+      }
+
+      public LiveData<List<ShiftTypeEntity>> getShiftTypes() {
+          return shiftTypeRepository.getAllShiftTypes();
+      }
+  }
+
+  // Fragment：观察数据变化并更新UI
+  public class HomeFragment extends Fragment {
+      private HomeViewModel viewModel;
+      private FragmentHomeBinding binding;
+
+      @Override
+      public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+          super.onViewCreated(view, savedInstanceState);
+          viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+          // 观察数据变化
+          viewModel.getShiftTypes().observe(getViewLifecycleOwner(), shiftTypes -> {
+              if (shiftTypes != null) {
+                  updateShiftTypeDisplay(shiftTypes);
+              }
+          });
+      }
+
+      // UI更新方法
+      private void updateShiftTypeDisplay(List<ShiftTypeEntity> shiftTypes) {
+          // 更新UI显示
+          binding.recyclerView.setAdapter(new ShiftTypeAdapter(shiftTypes));
+      }
+  }
   ```
 
 - **异步操作处理**
