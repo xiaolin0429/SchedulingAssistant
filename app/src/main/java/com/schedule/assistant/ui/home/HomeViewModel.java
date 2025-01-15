@@ -4,6 +4,7 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
@@ -14,71 +15,134 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import android.os.Handler;
+import android.os.Looper;
 
 public class HomeViewModel extends AndroidViewModel {
+    private static final String TAG = "HomeViewModel";
     private final ShiftRepository shiftRepository;
     private final ShiftTypeRepository shiftTypeRepository;
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Shift> selectedShift = new MutableLiveData<>();
     private final MutableLiveData<List<Shift>> monthShifts = new MutableLiveData<>();
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private LiveData<Shift> currentShiftLiveData;
     private LiveData<List<Shift>> currentMonthShiftsLiveData;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private boolean isRefreshing = false;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private Observer<Shift> shiftObserver;
+    private Observer<List<Shift>> monthShiftsObserver;
+    private LocalDate currentDate;
+    private YearMonth currentMonth;
 
     public HomeViewModel(Application application) {
         super(application);
         shiftRepository = new ShiftRepository(application);
-        ShiftTemplateRepository templateRepository = new ShiftTemplateRepository(application);
         shiftTypeRepository = new ShiftTypeRepository(application);
-        // 初始化默认班次类型和模板
-        shiftTypeRepository.initializeDefaultShiftTypes();
-        templateRepository.initializeDefaultTemplates();
+        initializeObservers();
+    }
+
+    private void initializeObservers() {
+        shiftObserver = shift -> {
+            if (!isRefreshing) {
+                mainHandler.post(() -> selectedShift.setValue(shift));
+            }
+        };
+
+        monthShiftsObserver = shifts -> {
+            if (!isRefreshing) {
+                mainHandler.post(() -> monthShifts.setValue(shifts));
+            }
+        };
     }
 
     public void selectDate(LocalDate date) {
-        if (date != null) {
-            String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            currentShiftLiveData = shiftRepository.getShiftByDate(formattedDate);
-            currentShiftLiveData.observeForever(selectedShift::setValue);
-        } else {
-            selectedShift.setValue(null);
-        }
-    }
-
-    public void insertShift(Shift shift) {
-        if (shift == null) {
-            errorMessage.setValue("error_invalid_shift");
+        if (date == null || isRefreshing || (currentDate != null && currentDate.equals(date))) {
             return;
         }
 
+        currentDate = date;
+        String dateStr = date.format(dateFormatter);
+        updateSelectedShiftObserver(dateStr);
+
+        // 只有在月份变化时才刷新月度数据
+        YearMonth newMonth = YearMonth.from(date);
+        if (currentMonth == null || !currentMonth.equals(newMonth)) {
+            currentMonth = newMonth;
+            loadMonthShifts(newMonth);
+        }
+    }
+
+    private void updateSelectedShiftObserver(String dateStr) {
+        if (currentShiftLiveData != null) {
+            currentShiftLiveData.removeObserver(shiftObserver);
+        }
+        currentShiftLiveData = shiftRepository.getShiftByDate(dateStr);
+        currentShiftLiveData.observeForever(shiftObserver);
+    }
+
+    public void insertShift(Shift shift) {
         try {
-            // 验证必要字段
-            if (shift.getDate().trim().isEmpty()) {
-                errorMessage.setValue("error_date_required");
-                return;
-            }
-
-            if (shift.getType() == ShiftType.NO_SHIFT) {
-                errorMessage.setValue("error_type_required");
-                return;
-            }
-
-            // 确保所有字符串字段不为null
-            if (shift.getStartTime() == null) shift.setStartTime("");
-            if (shift.getEndTime() == null) shift.setEndTime("");
-            if (shift.getNote() == null) shift.setNote("");
-
-            // 设置更新时间
+            if (shift.getStartTime() == null)
+                shift.setStartTime("");
+            if (shift.getEndTime() == null)
+                shift.setEndTime("");
+            if (shift.getNote() == null)
+                shift.setNote("");
             shift.setUpdateTime(System.currentTimeMillis());
 
-            shiftRepository.insert(shift);
-            
-            // 插入后刷新数据
-            LocalDate shiftDate = LocalDate.parse(shift.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            selectDate(shiftDate);
-            loadMonthShifts(YearMonth.from(shiftDate));
+            shiftRepository.insert(shift, new ShiftRepository.RepositoryCallback() {
+                @Override
+                public void onSuccess() {
+                    mainHandler.post(() -> {
+                        try {
+                            isRefreshing = true;
+                            LocalDate shiftDate = LocalDate.parse(shift.getDate(), dateFormatter);
+                            refreshAllData(shiftDate);
+                        } finally {
+                            isRefreshing = false;
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(String error) {
+                    mainHandler.post(() -> errorMessage.setValue(error));
+                }
+            });
         } catch (Exception e) {
-            errorMessage.setValue("error_save_shift");
+            mainHandler.post(() -> errorMessage.setValue("error_save_shift"));
         }
+    }
+
+    private void refreshAllData(LocalDate date) {
+        if (date == null)
+            return;
+
+        YearMonth month = YearMonth.from(date);
+        updateMonthShiftsObserver(month);
+        updateSelectedShiftObserver(date.format(dateFormatter));
+    }
+
+    private void updateMonthShiftsObserver(YearMonth month) {
+        String startDate = month.atDay(1).format(dateFormatter);
+        String endDate = month.atEndOfMonth().format(dateFormatter);
+
+        if (currentMonthShiftsLiveData != null) {
+            currentMonthShiftsLiveData.removeObserver(monthShiftsObserver);
+        }
+
+        currentMonthShiftsLiveData = shiftRepository.getShiftsBetween(startDate, endDate);
+        currentMonthShiftsLiveData.observeForever(monthShiftsObserver);
+    }
+
+    public void loadMonthShifts(YearMonth month) {
+        if (month == null || isRefreshing || (currentMonth != null && currentMonth.equals(month))) {
+            return;
+        }
+
+        currentMonth = month;
+        updateMonthShiftsObserver(month);
     }
 
     public LiveData<Shift> getSelectedShift() {
@@ -89,15 +153,6 @@ public class HomeViewModel extends AndroidViewModel {
         return monthShifts;
     }
 
-    public void loadMonthShifts(YearMonth month) {
-        LocalDate start = month.atDay(1);
-        LocalDate end = month.atEndOfMonth();
-        String startDate = start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String endDate = end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        currentMonthShiftsLiveData = shiftRepository.getShiftsBetween(startDate, endDate);
-        currentMonthShiftsLiveData.observeForever(monthShifts::setValue);
-    }
-
     public LiveData<List<ShiftTypeEntity>> getAllShiftTypes() {
         return shiftTypeRepository.getAllShiftTypes();
     }
@@ -106,14 +161,19 @@ public class HomeViewModel extends AndroidViewModel {
         return shiftTypeRepository.getShiftTypeById(id);
     }
 
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
+        mainHandler.removeCallbacksAndMessages(null);
         if (currentShiftLiveData != null) {
-            currentShiftLiveData.removeObserver(selectedShift::setValue);
+            currentShiftLiveData.removeObserver(shiftObserver);
         }
         if (currentMonthShiftsLiveData != null) {
-            currentMonthShiftsLiveData.removeObserver(monthShifts::setValue);
+            currentMonthShiftsLiveData.removeObserver(monthShiftsObserver);
         }
     }
-} 
+}

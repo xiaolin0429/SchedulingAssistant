@@ -101,6 +101,8 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
         // 使用正确的构造函数参数
         calendarDayBinder = new CalendarDayBinder(this, viewModel, getViewLifecycleOwner());
         binding.calendarView.setDayBinder(calendarDayBinder);
+        // 设置CalendarView对象
+        calendarDayBinder.setCalendarView(binding.calendarView);
         binding.calendarView.setMonthHeaderBinder(new CalendarHeaderBinder(requireContext()));
 
         // 设置日历范围
@@ -182,7 +184,13 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
 
     private void observeViewModel() {
         // 观察选中日期的排班信息
-        viewModel.getSelectedShift().observe(getViewLifecycleOwner(), this::updateTodayShiftInfo);
+        viewModel.getSelectedShift().observe(getViewLifecycleOwner(), shift -> {
+            updateTodayShiftInfo(shift);
+            // 确保日历视图也更新
+            if (selectedDate != null) {
+                binding.calendarView.notifyDateChanged(selectedDate);
+            }
+        });
 
         // 观察月度排班信息
         viewModel.getMonthShifts().observe(getViewLifecycleOwner(), shifts -> {
@@ -192,7 +200,12 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                     shiftsMap.put(shift.getDate(), shift);
                 }
                 calendarDayBinder.updateShifts(shiftsMap);
+                // 强制刷新整个日历视图
                 binding.calendarView.notifyCalendarChanged();
+                // 如果有选中日期，确保它被正确高亮
+                if (selectedDate != null) {
+                    binding.calendarView.notifyDateChanged(selectedDate);
+                }
                 updateShiftCounts(shifts);
 
                 // 更新年月显示
@@ -202,6 +215,13 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
                     calendar.set(Calendar.MONTH, selectedDate.getMonthValue() - 1);
                     binding.yearMonthText.setText(yearMonthFormat.format(calendar.getTime()));
                 }
+            }
+        });
+
+        // 观察错误消息
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -278,24 +298,23 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
 
     @Override
     public void onDayClick(CalendarDay day) {
-        LocalDate previousDate = selectedDate; // 保存上一次选中的日期
+        LocalDate previousDate = selectedDate;
+        selectedDate = day.getDate();
 
-        if (day.getDate().equals(selectedDate)) {
-            selectedDate = null;
-            updateTodayShiftInfo(null);
-        } else {
-            selectedDate = day.getDate();
-            viewModel.selectDate(selectedDate);
-        }
+        // 更新ViewModel中的选中日期
+        viewModel.selectDate(selectedDate);
 
+        // 更新日历视图的选中状态
         calendarDayBinder.setSelectedDate(selectedDate);
 
-        // 刷新上一次选中的日期显示
+        // 刷新相关日期的显示
         if (previousDate != null) {
             binding.calendarView.notifyDateChanged(previousDate);
         }
-        // 刷新当前点击的日期显示
-        binding.calendarView.notifyDateChanged(day.getDate());
+        binding.calendarView.notifyDateChanged(selectedDate);
+
+        // 强制刷新当前月份数据
+        viewModel.loadMonthShifts(YearMonth.from(selectedDate));
     }
 
     private void showShiftTypeDialog() {
@@ -373,11 +392,18 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
 
     private void updateTodayShiftInfo(Shift shift) {
         if (shift != null) {
+            binding.shiftInfoLayout.setVisibility(View.VISIBLE);
+            binding.noShiftText.setVisibility(View.GONE);
+
             // 如果是自定义班次类型，从数据库获取名称
             if (shift.getType() == ShiftType.CUSTOM) {
                 viewModel.getShiftTypeById(shift.getShiftTypeId()).observe(getViewLifecycleOwner(), shiftType -> {
                     if (shiftType != null) {
                         binding.shiftTypeText.setText(shiftType.getName());
+                        // 确保日历视图也更新
+                        if (selectedDate != null) {
+                            binding.calendarView.notifyDateChanged(selectedDate);
+                        }
                     } else {
                         binding.shiftTypeText.setText(getString(shift.getType().getNameResId()));
                     }
@@ -385,11 +411,10 @@ public class HomeFragment extends Fragment implements CalendarDayBinder.OnDayCli
             } else {
                 binding.shiftTypeText.setText(getString(shift.getType().getNameResId()));
             }
+
             binding.shiftTimeText.setText(String.format("%s - %s",
                     shift.getStartTime(), shift.getEndTime()));
             binding.shiftNoteText.setText(shift.getNote());
-            binding.shiftInfoLayout.setVisibility(View.VISIBLE);
-            binding.noShiftText.setVisibility(View.GONE);
         } else {
             binding.shiftInfoLayout.setVisibility(View.GONE);
             binding.noShiftText.setVisibility(View.VISIBLE);

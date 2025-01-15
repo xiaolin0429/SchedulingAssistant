@@ -2,6 +2,8 @@ package com.schedule.assistant.data.repository;
 
 import androidx.lifecycle.LiveData;
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import com.schedule.assistant.data.dao.ShiftDao;
 import com.schedule.assistant.data.entity.Shift;
@@ -15,9 +17,11 @@ public class ShiftRepository {
     private static final String TAG = "ShiftRepository";
     private final ShiftDao shiftDao;
     private final ExecutorService executorService;
-    private OnOperationCallback callback;
+    private RepositoryCallback callback;
 
-    public interface OnOperationCallback {
+    public interface RepositoryCallback {
+        void onSuccess();
+
         void onError(String error);
     }
 
@@ -27,7 +31,7 @@ public class ShiftRepository {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void setCallback(OnOperationCallback callback) {
+    public void setCallback(RepositoryCallback callback) {
         this.callback = callback;
     }
 
@@ -43,7 +47,7 @@ public class ShiftRepository {
         return shiftDao.getShiftByDate(date);
     }
 
-    public void insert(Shift shift) {
+    public void insert(Shift shift, RepositoryCallback callback) {
         if (shift == null) {
             if (callback != null) {
                 callback.onError("error_invalid_shift");
@@ -78,21 +82,32 @@ public class ShiftRepository {
                 } else {
                     shiftDao.insert(shift);
                 }
+
+                // 在主线程中回调成功
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                });
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Validation error: " + e.getMessage());
-                if (callback != null) {
-                    callback.onError(e.getMessage());
-                }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onError(e.getMessage());
+                    }
+                });
             } catch (Exception e) {
                 Log.e(TAG, "Database operation error", e);
-                if (callback != null) {
-                    callback.onError(e.getMessage() != null ? e.getMessage() : "error_database_operation");
-                }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onError(e.getMessage() != null ? e.getMessage() : "error_database_operation");
+                    }
+                });
             }
         });
     }
 
-    public void update(Shift shift) {
+    public void update(Shift shift, RepositoryCallback callback) {
         if (shift == null) {
             if (callback != null) {
                 callback.onError("error_invalid_shift");
@@ -103,17 +118,49 @@ public class ShiftRepository {
         executorService.execute(() -> {
             try {
                 shiftDao.update(shift);
+                // 在主线程中回调成功
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                });
             } catch (Exception e) {
                 Log.e(TAG, "Error updating shift", e);
-                if (callback != null) {
-                    callback.onError("error_database_operation");
-                }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onError("error_database_operation");
+                    }
+                });
             }
         });
     }
 
-    public void delete(Shift shift) {
-        executorService.execute(() -> shiftDao.delete(shift));
+    public void delete(Shift shift, RepositoryCallback callback) {
+        if (shift == null) {
+            if (callback != null) {
+                callback.onError("error_invalid_shift");
+            }
+            return;
+        }
+
+        executorService.execute(() -> {
+            try {
+                shiftDao.delete(shift);
+                // 在主线程中回调成功
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error deleting shift", e);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onError("error_database_operation");
+                    }
+                });
+            }
+        });
     }
 
     public void getShiftByDateDirect(String date, OnShiftLoadedCallback callback) {

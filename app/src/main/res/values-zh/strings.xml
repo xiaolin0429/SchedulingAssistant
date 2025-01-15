@@ -252,6 +252,7 @@
     <!-- Version History -->
     <string name="version_history_v010">• 项目初始化\n• 基础框架搭建\n• 底部导航实现\n• 基本功能实现</string>
     <string name="version_history_v020">• 完善个人信息模块\n• 优化字符串资源\n• 改进代码质量\n• 实现缓存管理功能\n• 优化帮助与反馈功能\n• 新增开发者信息页面</string>
+    <string name="version_history_v030">• 优化数据库配置\n• 增强闹钟功能\n• 完善国际化支持\n• 优化个人信息模块\n• 同步字符串资源\n• 改进代码质量\n• 完善设置功能\n• 更新"我的"模块</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Data Backup -->

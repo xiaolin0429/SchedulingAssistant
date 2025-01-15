@@ -217,10 +217,18 @@ public class BackupFragment extends Fragment implements BackupHistoryAdapter.OnB
     }
 
     private void startRestore(BackupHistoryItem item) {
+        if (binding == null)
+            return;
+
         showRestoreProgress(true);
         new Thread(() -> {
             boolean success = backupService.restoreData(item.getBackupFile());
-            requireActivity().runOnUiThread(() -> {
+            if (getActivity() == null)
+                return;
+
+            getActivity().runOnUiThread(() -> {
+                if (binding == null)
+                    return;
                 showRestoreProgress(false);
                 if (success) {
                     Toast.makeText(requireContext(), R.string.backup_restore_success, Toast.LENGTH_SHORT).show();
@@ -234,6 +242,9 @@ public class BackupFragment extends Fragment implements BackupHistoryAdapter.OnB
     }
 
     private void showRestoreProgress(boolean show) {
+        if (binding == null)
+            return;
+
         binding.backupProgress.setVisibility(show ? View.VISIBLE : View.GONE);
         binding.backupStatus.setVisibility(show ? View.VISIBLE : View.GONE);
         binding.backupStatus.setText(R.string.backup_restore_in_progress);

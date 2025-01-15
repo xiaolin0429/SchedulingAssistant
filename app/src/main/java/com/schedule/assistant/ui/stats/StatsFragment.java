@@ -41,6 +41,7 @@ import java.util.Objects;
 import androidx.core.util.Pair;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.schedule.assistant.utils.LocaleHelper;
+import java.util.HashMap;
 
 /**
  * 统计模块的Fragment，用于显示班次统计信息
@@ -50,8 +51,8 @@ public class StatsFragment extends Fragment {
     private static final String TAG = "StatsFragment";
     private FragmentStatsBinding binding;
     private StatsViewModel viewModel;
-    private SimpleDateFormat monthFormat;  // 月份显示格式
-    private SimpleDateFormat dateFormat;   // 日期显示格式
+    private SimpleDateFormat monthFormat; // 月份显示格式
+    private SimpleDateFormat dateFormat; // 日期显示格式
 
     /**
      * 更新日期格式化器
@@ -62,10 +63,10 @@ public class StatsFragment extends Fragment {
         // 使用 LocaleHelper 获取正确的 Locale
         Locale currentLocale = LocaleHelper.getCurrentLocale(requireContext());
         Log.d(TAG, "Current locale: " + currentLocale.getLanguage() + ", pattern: " + pattern);
-        
+
         monthFormat = new SimpleDateFormat(pattern, currentLocale);
         dateFormat = new SimpleDateFormat("yyyy-MM-dd", currentLocale);
-        
+
         // 如果当前显示的月份不为空，则刷新显示
         if (viewModel != null && viewModel.getSelectedMonth().getValue() != null) {
             binding.monthText.setText(monthFormat.format(viewModel.getSelectedMonth().getValue()));
@@ -228,12 +229,11 @@ public class StatsFragment extends Fragment {
             if (shifts != null) {
                 Log.d(TAG, "Month shifts updated: " + shifts.size() + " shifts found");
                 // 根据选择的时间范围类型决定显示的文案
-                boolean isDateRange = viewModel.getSelectedDateRange().getValue() != null && 
-                    viewModel.getSelectedMonth().getValue() == null;
+                boolean isDateRange = viewModel.getSelectedDateRange().getValue() != null &&
+                        viewModel.getSelectedMonth().getValue() == null;
                 binding.totalShiftCount.setText(getString(
-                    isDateRange ? R.string.total_shift_count_range : R.string.total_shift_count,
-                    shifts.size()
-                ));
+                        isDateRange ? R.string.total_shift_count_range : R.string.total_shift_count,
+                        shifts.size()));
                 // 更新图表和其他统计信息
                 updateViewVisibility(!shifts.isEmpty());
                 // 更新柱状图
@@ -272,6 +272,7 @@ public class StatsFragment extends Fragment {
 
     /**
      * 根据是否有数据更新视图的可见性
+     * 
      * @param hasData 是否有数据
      */
     private void updateViewVisibility(boolean hasData) {
@@ -317,8 +318,9 @@ public class StatsFragment extends Fragment {
 
     /**
      * 更新自定义图例
+     * 
      * @param entries 饼图数据项
-     * @param colors 对应的颜色数组
+     * @param colors  对应的颜色数组
      */
     private void updateCustomLegend(List<PieEntry> entries, int[] colors) {
         LinearLayout legendContainer = binding.legendContainer;
@@ -347,8 +349,9 @@ public class StatsFragment extends Fragment {
 
     /**
      * 使用指定的数据和颜色更新饼图
+     * 
      * @param entries 饼图数据项
-     * @param colors 对应的颜色数组
+     * @param colors  对应的颜色数组
      */
     private void updatePieChartWithColors(List<PieEntry> entries, int[] colors) {
         if (binding == null)
@@ -370,6 +373,7 @@ public class StatsFragment extends Fragment {
             @SuppressLint("DefaultLocale")
             @Override
             public String getFormattedValue(float value) {
+                // 因为传入的值已经是百分比，所以直接格式化
                 return String.format("%.1f%%", value);
             }
         });
@@ -394,6 +398,7 @@ public class StatsFragment extends Fragment {
 
     /**
      * 获取班次类型的默认颜色
+     * 
      * @param shiftTypeName 班次类型名称
      * @return 对应的默认颜色
      */
@@ -413,6 +418,7 @@ public class StatsFragment extends Fragment {
 
     /**
      * 更新班次类型百分比显示
+     * 
      * @param percentages 班次类型百分比映射
      */
     private void updatePercentages(Map<Long, Double> percentages) {
@@ -420,13 +426,42 @@ public class StatsFragment extends Fragment {
             return;
         }
 
-        StringBuilder statsText = new StringBuilder();
-        for (Map.Entry<Long, Double> entry : percentages.entrySet()) {
-            viewModel.getShiftTypeName(entry.getKey()).observe(getViewLifecycleOwner(), shiftTypeName -> {
-                double percentage = entry.getValue();
-                statsText.append(getString(R.string.shift_type_percentage, shiftTypeName, percentage));
-                statsText.append("\n");
-                binding.shiftTypeStats.setText(statsText.toString());
+        // 创建一个有序的列表来存储班次类型ID
+        List<Long> typeIds = new ArrayList<>(percentages.keySet());
+        // 按照ID排序以确保顺序一致性
+        typeIds.sort(Long::compareTo);
+
+        final int[] completedOperations = { 0 };
+        final int totalOperations = typeIds.size();
+        final StringBuilder statsText = new StringBuilder();
+        final Map<Integer, String> tempStats = new HashMap<>();
+
+        for (int i = 0; i < totalOperations; i++) {
+            final int index = i;
+            Long typeId = typeIds.get(i);
+
+            viewModel.getShiftTypeName(typeId).observe(getViewLifecycleOwner(), shiftTypeName -> {
+                if (shiftTypeName != null) {
+                    Double percentage = percentages.get(typeId);
+                    double value = percentage != null ? percentage : 0.0;
+                    tempStats.put(index, getString(R.string.shift_type_percentage, shiftTypeName, value));
+                    completedOperations[0]++;
+
+                    if (completedOperations[0] == totalOperations) {
+                        // 按索引顺序构建最终文本
+                        for (int j = 0; j < totalOperations; j++) {
+                            String stat = tempStats.get(j);
+                            if (stat != null) {
+                                statsText.append(stat).append("\n");
+                            }
+                        }
+                        // 移除最后一个换行符
+                        if (statsText.length() > 0) {
+                            statsText.setLength(statsText.length() - 1);
+                        }
+                        binding.shiftTypeStats.setText(statsText.toString());
+                    }
+                }
             });
         }
     }
@@ -511,6 +546,7 @@ public class StatsFragment extends Fragment {
 
     /**
      * 使用班次数据更新柱状图
+     * 
      * @param shifts 班次列表
      */
     private void updateBarChart(List<Shift> shifts) {
@@ -570,8 +606,9 @@ public class StatsFragment extends Fragment {
 
     /**
      * 计算工作时长
+     * 
      * @param startTime 开始时间
-     * @param endTime 结束时间
+     * @param endTime   结束时间
      * @return 工作时长（小时）
      */
     private float calculateWorkHours(String startTime, String endTime) {
@@ -604,6 +641,7 @@ public class StatsFragment extends Fragment {
 
     /**
      * 更新班次类型分布饼图
+     * 
      * @param typeCounts 班次类型数量映射
      */
     private void updateChart(Map<Long, Integer> typeCounts) {
@@ -621,6 +659,12 @@ public class StatsFragment extends Fragment {
         binding.statsContainer.setVisibility(View.VISIBLE);
         binding.workHoursContainer.setVisibility(View.VISIBLE);
         binding.legendContainer.setVisibility(View.VISIBLE);
+
+        // 计算总数和百分比
+        final int[] totalCount = { 0 };
+        for (Integer count : typeCounts.values()) {
+            totalCount[0] += count;
+        }
 
         // 创建一个有序的列表来存储班次类型ID
         List<Long> typeIds = new ArrayList<>(typeCounts.keySet());
@@ -647,7 +691,9 @@ public class StatsFragment extends Fragment {
             viewModel.getShiftType(typeId).observe(getViewLifecycleOwner(), shiftType -> {
                 if (shiftType != null) {
                     Integer count = typeCounts.get(typeId);
-                    entries.set(index, new PieEntry(count != null ? count : 0, shiftType.getName()));
+                    // 计算百分比
+                    float percentage = (count != null && totalCount[0] > 0) ? (count * 100f / totalCount[0]) : 0f;
+                    entries.set(index, new PieEntry(percentage, shiftType.getName()));
 
                     // 使用班次类型的实际颜色
                     colors[index] = shiftType.getColor() != 0 ? shiftType.getColor()
@@ -664,24 +710,6 @@ public class StatsFragment extends Fragment {
                 }
             });
         }
-    }
-
-    /**
-     * 判断给定的日期范围是否为完整的一个月
-     * @param range 日期范围
-     * @return 是否为完整月份
-     */
-    private boolean isMonthRange(StatsViewModel.DateRange range) {
-        Calendar start = Calendar.getInstance();
-        start.setTime(range.startDate());
-        Calendar end = Calendar.getInstance();
-        end.setTime(range.endDate());
-        
-        // 检查是否是同一个月
-        return start.get(Calendar.YEAR) == end.get(Calendar.YEAR) &&
-               start.get(Calendar.MONTH) == end.get(Calendar.MONTH) &&
-               start.get(Calendar.DAY_OF_MONTH) == 1 &&
-               end.get(Calendar.DAY_OF_MONTH) == end.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
     @Override
