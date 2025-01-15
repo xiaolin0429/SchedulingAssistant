@@ -4,7 +4,6 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftTemplate;
 import com.schedule.assistant.data.entity.SortOption;
@@ -17,7 +16,6 @@ import android.os.Looper;
 import java.util.ArrayList;
 
 public class ShiftViewModel extends AndroidViewModel {
-    private static final String TAG = "ShiftViewModel";
     private final ShiftRepository shiftRepository;
     private final ShiftTemplateRepository templateRepository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
@@ -25,7 +23,7 @@ public class ShiftViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isAscending = new MutableLiveData<>(true);
     private final MutableLiveData<List<Shift>> shiftsData = new MutableLiveData<>();
     private LiveData<List<Shift>> allShiftsLiveData;
-    private androidx.lifecycle.Observer<List<Shift>> shiftsObserver;
+    private final androidx.lifecycle.Observer<List<Shift>> shiftsObserver;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public ShiftViewModel(Application application) {
@@ -37,9 +35,7 @@ public class ShiftViewModel extends AndroidViewModel {
         shiftsObserver = shifts -> {
             if (shifts != null) {
                 // 确保在主线程更新UI数据
-                mainHandler.post(() -> {
-                    shiftsData.setValue(shifts);
-                });
+                mainHandler.post(() -> shiftsData.setValue(shifts));
             }
         };
 
@@ -52,7 +48,9 @@ public class ShiftViewModel extends AndroidViewModel {
             allShiftsLiveData.removeObserver(shiftsObserver);
         }
         allShiftsLiveData = shiftRepository.getAllShifts();
-        allShiftsLiveData.observeForever(shiftsObserver);
+        if (shiftsObserver != null) {
+            allShiftsLiveData.observeForever(shiftsObserver);
+        }
     }
 
     // 强制刷新数据
@@ -67,28 +65,12 @@ public class ShiftViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<List<ShiftTemplate>> getDefaultTemplates() {
-        return templateRepository.getDefaultTemplates();
-    }
-
     public LiveData<List<ShiftTemplate>> getAllTemplates() {
         return templateRepository.getAllTemplates();
     }
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
-    }
-
-    public LiveData<List<Shift>> getAllShifts() {
-        return shiftsData;
-    }
-
-    public LiveData<SortOption> getCurrentSortOption() {
-        return currentSortOption;
-    }
-
-    public LiveData<Boolean> getIsAscending() {
-        return isAscending;
     }
 
     public void setSortOption(SortOption option) {

@@ -6,10 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import com.schedule.assistant.data.entity.Shift;
-import com.schedule.assistant.data.entity.ShiftType;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.data.repository.ShiftRepository;
-import com.schedule.assistant.data.repository.ShiftTemplateRepository;
 import com.schedule.assistant.data.repository.ShiftTypeRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -19,7 +17,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 public class HomeViewModel extends AndroidViewModel {
-    private static final String TAG = "HomeViewModel";
     private final ShiftRepository shiftRepository;
     private final ShiftTypeRepository shiftTypeRepository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
