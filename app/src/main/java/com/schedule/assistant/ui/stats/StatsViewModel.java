@@ -39,7 +39,8 @@ public class StatsViewModel extends AndroidViewModel {
     public record WorkHoursRecord(double maxHours, String maxDate, double minHours, String minDate) {
     }
 
-    public record DateRange(Date startDate, Date endDate) {}
+    public record DateRange(Date startDate, Date endDate) {
+    }
 
     public StatsViewModel(Application application) {
         super(application);
@@ -143,13 +144,21 @@ public class StatsViewModel extends AndroidViewModel {
                 String startTime = shift.getStartTime();
                 String endTime = shift.getEndTime();
 
+                Log.d(TAG, "Calculating hours for shift: " + shift.getDate() +
+                        " StartTime: " + startTime + " EndTime: " + endTime);
+
                 if (startTime == null || endTime == null ||
                         startTime.equals("-") || endTime.equals("-")) {
+                    Log.d(TAG, "Skip invalid time");
                     continue;
                 }
 
                 double hours = calculateWorkHours(startTime, endTime);
-                if (hours > 0) {
+                Log.d(TAG, "Calculated hours for " + shift.getDate() + ": " + hours +
+                        " (StartTime: " + startTime + ", EndTime: " + endTime + ")");
+
+                // 确保工时大于等于0
+                if (hours >= 0) {
                     total += hours;
 
                     if (hours > maxHours) {
@@ -166,6 +175,7 @@ public class StatsViewModel extends AndroidViewModel {
             }
         }
 
+        Log.d(TAG, "Final total hours: " + total);
         totalWorkHours.setValue(total);
 
         if (!shifts.isEmpty()) {
@@ -183,22 +193,39 @@ public class StatsViewModel extends AndroidViewModel {
 
     private double calculateWorkHours(String startTime, String endTime) {
         try {
+            // 处理所有起始时间等于结束时间的情况，视为24小时工作制
+            if (startTime.equals(endTime)) {
+                Log.d(TAG, "Start time equals end time: " + startTime + ", returning 24 hours");
+                return 24.0;
+            }
+
+            // 如果结束时间是 00:00，转换为 23:59 进行计算
+            if (endTime.equals("00:00")) {
+                Log.d(TAG, "End time is 00:00, converting to 23:59");
+                endTime = "23:59";
+            }
+
             Date startTimeDate = timeFormat.parse(startTime);
             Date endTimeDate = timeFormat.parse(endTime);
 
             if (startTimeDate == null || endTimeDate == null) {
+                Log.e(TAG, "Failed to parse time: startTime=" + startTime + ", endTime=" + endTime);
                 return 0;
             }
 
             long diffMillis = endTimeDate.getTime() - startTimeDate.getTime();
             if (diffMillis < 0) {
                 // 跨天处理
+                Log.d(TAG, "Cross-day shift detected, adding 24 hours");
                 diffMillis += 24 * 60 * 60 * 1000;
             }
 
-            return diffMillis / (1000.0 * 60 * 60);
+            double hours = diffMillis / (1000.0 * 60 * 60);
+            Log.d(TAG, "Calculated hours: " + hours + " for " + startTime + "-" + endTime);
+            return hours;
         } catch (Exception e) {
-            Log.e("StatsViewModel", "Error calculating work hours: " + e.getMessage());
+            Log.e(TAG, "Error calculating work hours: " + e.getMessage() +
+                    " (startTime=" + startTime + ", endTime=" + endTime + ")", e);
             return 0;
         }
     }
@@ -257,7 +284,7 @@ public class StatsViewModel extends AndroidViewModel {
 
         // 设置时间为一天的开始和结束
         Calendar calendar = Calendar.getInstance();
-        
+
         // 设置开始日期为当天的开始
         calendar.setTime(startDate);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -332,7 +359,7 @@ public class StatsViewModel extends AndroidViewModel {
                 calendar.set(Calendar.MINUTE, 0);
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
-                
+
                 selectDateRange(calendar.getTime(), endDate);
                 break;
         }
