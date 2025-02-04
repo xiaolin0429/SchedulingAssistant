@@ -233,14 +233,28 @@ public class AlarmScheduler {
 
     /**
      * 将重复日期位图转换为系统闹钟的星期数组
+     * 应用内位图：
+     * - 位0（最低位）= 周一
+     * - 位1 = 周二
+     * - 位2 = 周三
+     * - 位3 = 周四
+     * - 位4 = 周五
+     * - 位5 = 周六
+     * - 位6 = 周日
+     * 
+     * 系统闹钟：1-7 = 周一到周日
      */
     private ArrayList<Integer> getDaysOfWeek(int repeatDays) {
         ArrayList<Integer> days = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
+        // 处理周一到周六 (位0-5 对应数字1-6)
+        for (int i = 0; i < 6; i++) {
             if ((repeatDays & (1 << i)) != 0) {
-                // 系统闹钟的星期从周一开始为1，到周日为7
-                days.add(i == 0 ? 7 : i); // 将周日(0)转换为7
+                days.add(i + 1); // 位0->1, 位1->2, ..., 位5->6
             }
+        }
+        // 处理周日 (位6 对应数字7)
+        if ((repeatDays & (1 << 6)) != 0) {
+            days.add(7);
         }
         return days;
     }
