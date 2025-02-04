@@ -250,8 +250,24 @@
     <string name="profile_email_not_set">未设置邮箱</string>
 
     <!-- Version History -->
-    <string name="version_history_v110">• 修复已知bug，提升稳定性</string>
-    <string name="version_history_v020">• 个人信息模块改进\n• 字符串资源优化\n• 代码质量提升\n• 缓存管理实现\n• 帮助与反馈优化\n• 添加开发者信息页面</string>
+    <string name="version_history">更新历史</string>
+    <string name="version_history_content">
+        v1.2.0\n
+        • 添加班次时间更新确认对话框\n
+        • 优化班次类型管理\n
+        • 增强数据验证\n
+        • 改进UI响应性\n
+        • 修复数据库兼容性问题\n
+        \n
+        v1.1.0\n
+        • 修复已知bug，提升稳定性\n
+        • 增强闹钟通知系统\n
+        • 优化数据库操作\n
+        • 添加班次模板管理\n
+        • 改进统计数据可视化
+    </string>
+    <string name="version_history_v120">• 添加班次时间更新确认对话框\n• 优化班次类型管理\n• 增强数据验证\n• 改进UI响应性\n• 修复数据库兼容性问题</string>
+    <string name="version_history_v110">• 修复已知bug，提升稳定性\n• 增强闹钟通知系统\n• 优化数据库操作\n• 添加班次模板管理\n• 改进统计数据可视化</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Data Backup -->

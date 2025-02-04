@@ -68,14 +68,14 @@ public class VersionInfoFragment extends Fragment {
     private void setupUpdateHistory() {
         String history = String.format(
                 getString(R.string.version_history_format),
-                "1.1.0",
-                "2025-01-22",
-                getString(R.string.version_history_v110))
+                "1.2.0",
+                "2025-02-04",
+                getString(R.string.version_history_v120))
                 + String.format(
                         getString(R.string.version_history_format),
-                        "1.0.9",
-                        "2025-01-12",
-                        getString(R.string.version_history_v020));
+                        "1.1.0",
+                        "2024-12-22",
+                        getString(R.string.version_history_v110));
 
         binding.updateHistoryContent.setText(history);
     }
