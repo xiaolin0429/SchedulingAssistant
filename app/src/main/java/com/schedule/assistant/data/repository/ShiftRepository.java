@@ -8,6 +8,7 @@ import android.util.Log;
 import com.schedule.assistant.data.dao.ShiftDao;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
+import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.data.AppDatabase;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -168,6 +169,41 @@ public class ShiftRepository {
             Shift shift = shiftDao.getShiftByDateDirect(date);
             if (callback != null) {
                 callback.onShiftLoaded(shift);
+            }
+        });
+    }
+
+    public void updateShiftTimesByType(long templateId, String startTime, String endTime,
+            RepositoryCallback callback) {
+        if (templateId <= 0) {
+            if (callback != null) {
+                callback.onError("error_invalid_shift_type");
+            }
+            return;
+        }
+
+        executorService.execute(() -> {
+            try {
+                List<Shift> shifts = shiftDao.getShiftsByTypeDirect(templateId);
+                for (Shift shift : shifts) {
+                    shift.setStartTime(startTime);
+                    shift.setEndTime(endTime);
+                    shift.setUpdateTime(System.currentTimeMillis());
+                    shiftDao.update(shift);
+                }
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error updating shift times", e);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onError("error_database_operation");
+                    }
+                });
             }
         });
     }

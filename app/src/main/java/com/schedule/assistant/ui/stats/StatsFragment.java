@@ -618,6 +618,16 @@ public class StatsFragment extends Fragment {
         }
 
         try {
+            // 处理所有起始时间等于结束时间的情况，视为24小时工作制
+            if (startTime.equals(endTime)) {
+                return 24.0f;
+            }
+
+            // 如果结束时间是 00:00，转换为 23:59 进行计算
+            if (endTime.equals("00:00")) {
+                endTime = "23:59";
+            }
+
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
             Date start = timeFormat.parse(startTime);
             Date end = timeFormat.parse(endTime);

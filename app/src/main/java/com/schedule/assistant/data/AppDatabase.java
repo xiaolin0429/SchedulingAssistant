@@ -56,13 +56,13 @@ public abstract class AppDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
-                    // 开发模式：使用fallbackToDestructiveMigration
-                    INSTANCE = DatabaseBuilderFactory.getDevelopmentDatabaseBuilder(context).build();
+                    // 生产模式：使用迁移策略
+                    INSTANCE = DatabaseBuilderFactory.getProductionDatabaseBuilder(context).build();
 
                     /*
-                     * 生产模式：使用迁移策略
+                     * 开发模式：使用fallbackToDestructiveMigration
                      * INSTANCE =
-                     * DatabaseBuilderFactory.getProductionDatabaseBuilder(context).build();
+                     * DatabaseBuilderFactory.getDevelopmentDatabaseBuilder(context).build();
                      */
                 }
             }

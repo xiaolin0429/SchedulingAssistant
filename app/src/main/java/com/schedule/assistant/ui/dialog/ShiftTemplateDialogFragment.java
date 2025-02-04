@@ -142,6 +142,11 @@ public class ShiftTemplateDialogFragment extends BottomSheetDialogFragment {
             return;
         }
 
+        // 如果结束时间是00:00，自动转换为23:59
+        if (endTime.equals("00:00")) {
+            endTime = "23:59";
+        }
+
         ShiftTemplate template = new ShiftTemplate(name, startTime, endTime, selectedColor);
         if (currentTemplate != null) {
             template.setId(currentTemplate.getId());

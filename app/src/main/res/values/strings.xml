@@ -427,4 +427,10 @@
     <string name="calendar_friday">F</string>
     <string name="calendar_saturday">S</string>
     <string name="calendar_sunday">S</string>
+
+    <!-- Shift Time Update Dialog -->
+    <string name="shift_time_update_title">Update Shift Time</string>
+    <string name="shift_time_update_message">Do you want to update the time for all existing shifts of this type?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

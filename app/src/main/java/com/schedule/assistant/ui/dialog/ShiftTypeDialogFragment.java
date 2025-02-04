@@ -74,6 +74,7 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         setupViews();
         setupListeners();
+        setupObservers();
     }
 
     private void setupViews() {
@@ -102,6 +103,24 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
 
         // 确认按钮
         binding.confirmButton.setOnClickListener(v -> saveShiftType());
+    }
+
+    private void setupObservers() {
+        viewModel.getShowUpdateConfirmDialog().observe(getViewLifecycleOwner(), shiftType -> {
+            if (shiftType != null) {
+                ShiftTimeUpdateDialogFragment dialog = new ShiftTimeUpdateDialogFragment();
+                dialog.setOnShiftTimeUpdateListener(shouldUpdateExisting -> {
+                    if (shouldUpdateExisting) {
+                        viewModel.updateWithExistingShifts(shiftType);
+                    } else {
+                        viewModel.updateCurrentOnly(shiftType);
+                    }
+                    viewModel.clearUpdateConfirmDialog();
+                    dismiss();
+                });
+                dialog.show(getChildFragmentManager(), "update_time");
+            }
+        });
     }
 
     private void showTimePicker(boolean isStartTime) {
@@ -170,14 +189,13 @@ public class ShiftTypeDialogFragment extends BottomSheetDialogFragment {
         shiftType.setColor(selectedColor);
         shiftType.setUpdateTime(System.currentTimeMillis());
 
-        // 保存到数据库
+        // 新增或更新
         if (currentShiftType != null) {
             viewModel.update(shiftType);
         } else {
             viewModel.insert(shiftType);
+            dismiss();
         }
-
-        dismiss();
     }
 
     @Override
