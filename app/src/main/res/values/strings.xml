@@ -253,6 +253,13 @@
     <!-- Version History -->
     <string name="version_history">Version History</string>
     <string name="version_history_content">
+        v1.2.1\n
+        • Fixed alarm repeat days synchronization with system alarm\n
+        • Enhanced alarm permission handling\n
+        • Improved alarm notification reliability\n
+        • Optimized alarm scheduling logic\n
+        • Added alarm state validation\n
+        \n
         v1.2.0\n
         • Added shift time update confirmation dialog\n
         • Optimized shift type management\n
@@ -267,6 +274,7 @@
         • Added shift template management\n
         • Improved statistics visualization
     </string>
+    <string name="version_history_v121">• Fixed alarm repeat days synchronization with system alarm\n• Enhanced alarm permission handling\n• Improved alarm notification reliability\n• Optimized alarm scheduling logic\n• Added alarm state validation</string>
     <string name="version_history_v120">• Added shift time update confirmation dialog\n• Optimized shift type management\n• Enhanced data validation\n• Improved UI responsiveness\n• Fixed database compatibility issues</string>
     <string name="version_history_v110">• Fixed known bugs and improved stability\n• Enhanced alarm notification system\n• Optimized database operations\n• Added shift template management\n• Improved statistics visualization</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
