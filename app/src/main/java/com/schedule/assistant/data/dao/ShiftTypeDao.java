@@ -34,4 +34,7 @@ public interface ShiftTypeDao {
 
     @Query("SELECT * FROM shift_types WHERE id = :id")
     LiveData<ShiftTypeEntity> getShiftTypeById(long id);
+
+    @Query("SELECT * FROM shift_types WHERE id = :id")
+    ShiftTypeEntity getShiftTypeByIdDirect(long id);
 }

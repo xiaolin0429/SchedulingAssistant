@@ -11,13 +11,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:baselineAligned="false"
-        android:padding="16dp">
+        android:padding="8dp"
+        android:paddingBottom="2dp">
 
         <!-- 顶部标题和统计部分 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="4dp"
             app:cardCornerRadius="8dp"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardElevation="2dp"
@@ -28,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="12dp">
 
             <!-- 年月和功能按钮 -->
             <LinearLayout
@@ -130,7 +131,8 @@
             android:id="@+id/calendarViewContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             app:cardCornerRadius="8dp"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardElevation="2dp"
@@ -140,7 +142,7 @@
             <com.kizitonwose.calendarview.CalendarView
                 android:id="@+id/calendarView"
                 android:layout_width="match_parent"
-                android:layout_height="355dp"
+                android:layout_height="400dp"
                 android:padding="4dp"
                 app:cv_dayViewResource="@layout/calendar_day_layout"
                 app:cv_monthHeaderResource="@layout/calendar_month_header"
@@ -152,10 +154,9 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/todayShiftCard"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="210dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="2dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp"
             app:strokeWidth="1dp"
@@ -166,7 +167,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="8dp">
 
                 <!-- 今日排班标题 -->
                 <TextView
@@ -174,7 +175,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="4dp"
                     android:text="@string/today_shift"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
@@ -184,7 +185,8 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:layout_marginVertical="4dp">
 
                     <!-- 班次信息布局 -->
                     <LinearLayout
@@ -195,7 +197,7 @@
                         android:background="@drawable/shift_info_background"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="16dp"
+                        android:padding="12dp"
                         android:visibility="gone">
 
                         <TextView
@@ -237,7 +239,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
                     <Button

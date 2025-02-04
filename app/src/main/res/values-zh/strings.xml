@@ -386,4 +386,10 @@
     <string name="calendar_friday">五</string>
     <string name="calendar_saturday">六</string>
     <string name="calendar_sunday">日</string>
+
+    <!-- Shift Time Update Dialog -->
+    <string name="shift_time_update_title">更新班次时间</string>
+    <string name="shift_time_update_message">是否要更新所有此类型班次的时间？</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
 </resources> 

@@ -181,6 +181,34 @@ public class ShiftViewModel extends AndroidViewModel {
         }
     }
 
+    public void updateShiftTemplate(ShiftTemplate template, boolean updateExistingShifts) {
+        try {
+            templateRepository.update(template);
+            if (updateExistingShifts) {
+                // 更新所有相关班次的时间
+                shiftRepository.updateShiftTimesByType(
+                        template.getId(),
+                        template.getStartTime(),
+                        template.getEndTime(),
+                        new ShiftRepository.RepositoryCallback() {
+                            @Override
+                            public void onSuccess() {
+                                mainHandler.post(() -> refreshShifts());
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                mainHandler.post(() -> errorMessage.setValue(error));
+                            }
+                        });
+            } else {
+                mainHandler.post(() -> refreshShifts());
+            }
+        } catch (Exception e) {
+            mainHandler.post(() -> errorMessage.setValue("error_update_failed"));
+        }
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();

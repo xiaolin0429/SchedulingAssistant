@@ -32,6 +32,9 @@ public interface ShiftDao {
     @Query("SELECT * FROM shifts WHERE note IS NOT NULL AND note != '' ORDER BY date DESC")
     LiveData<List<Shift>> getShiftsWithNotes();
 
+    @Query("SELECT * FROM shifts WHERE shiftTypeId = :typeId")
+    List<Shift> getShiftsByTypeDirect(long typeId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Shift shift);
 

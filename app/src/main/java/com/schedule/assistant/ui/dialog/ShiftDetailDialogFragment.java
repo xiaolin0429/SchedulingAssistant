@@ -227,19 +227,18 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
         String endTime = binding.endTimeEditText.getText().toString();
         String note = binding.noteEditText.getText().toString();
 
-        // 验证日期格式
-        try {
-            LocalDate.parse(date, dateFormatter);
-        } catch (DateTimeParseException e) {
-            binding.dateLayout.setError(getString(R.string.error_invalid_date_format));
+        if (!validateInputs()) {
             return;
         }
+
+        // 处理结束时间
+        final String finalEndTime = endTime.equals("00:00") ? "23:59" : endTime;
 
         // 从选择的模板名称获取对应的班次类型
         viewModel.getAllTemplates().observe(getViewLifecycleOwner(), templates -> {
             ShiftType selectedType = null;
             String selectedStartTime = startTime;
-            String selectedEndTime = endTime;
+            String selectedEndTime = finalEndTime;
 
             // 首先尝试从模板中获取班次类型
             for (ShiftTemplate template : templates) {
@@ -249,7 +248,7 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
                     if (startTime.isEmpty()) {
                         selectedStartTime = template.getStartTime();
                     }
-                    if (endTime.isEmpty()) {
+                    if (finalEndTime.isEmpty()) {
                         selectedEndTime = template.getEndTime();
                     }
                     break;
@@ -263,7 +262,7 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
                 if (startTime.isEmpty()) {
                     selectedStartTime = getDefaultStartTime(selectedType);
                 }
-                if (endTime.isEmpty()) {
+                if (finalEndTime.isEmpty()) {
                     selectedEndTime = getDefaultEndTime(selectedType);
                 }
             }
@@ -319,7 +318,7 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
 
     private boolean validateInputs() {
         boolean isValid = true;
-        clearErrors(); // 清除之前的错误提示
+        clearErrors();
 
         String date = binding.dateEditText.getText().toString().trim();
         String shiftType = binding.shiftTypeInput.getText().toString().trim();
@@ -361,11 +360,16 @@ public class ShiftDetailDialogFragment extends BottomSheetDialogFragment {
             // 只有当两个时间都填写了才验证时间范围
             if (!startTime.isEmpty() && !endTime.isEmpty()) {
                 try {
-                    LocalTime start = LocalTime.parse(startTime, timeFormatter);
-                    LocalTime end = LocalTime.parse(endTime, timeFormatter);
-                    if (end.isBefore(start)) {
-                        binding.endTimeLayout.setError(getString(R.string.error_invalid_time_range));
-                        isValid = false;
+                    // 特殊处理00:00-00:00的情况，认为它是合法的（表示全天24小时）
+                    if (!startTime.equals("00:00") || !endTime.equals("00:00")) {
+                        LocalTime start = LocalTime.parse(startTime, timeFormatter);
+                        // 如果结束时间是00:00，在验证时就转换为23:59
+                        LocalTime end = endTime.equals("00:00") ? LocalTime.of(23, 59)
+                                : LocalTime.parse(endTime, timeFormatter);
+                        if (end.isBefore(start)) {
+                            binding.endTimeLayout.setError(getString(R.string.error_invalid_time_range));
+                            isValid = false;
+                        }
                     }
                 } catch (DateTimeParseException e) {
                     binding.startTimeLayout.setError(getString(R.string.error_time_required));

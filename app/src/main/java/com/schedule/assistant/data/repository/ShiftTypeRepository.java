@@ -1,6 +1,8 @@
 package com.schedule.assistant.data.repository;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.lifecycle.LiveData;
 import com.schedule.assistant.data.AppDatabase;
 import com.schedule.assistant.data.dao.ShiftTypeDao;
@@ -51,11 +53,12 @@ public class ShiftTypeRepository {
                 ShiftTypeEntity dayShift = new ShiftTypeEntity("早班", "08:00", "18:00", 0xFF4CAF50, ShiftType.DAY_SHIFT);
                 dayShift.setDefault(true);
                 dayShift.setUpdateTime(System.currentTimeMillis());
-                
-                ShiftTypeEntity nightShift = new ShiftTypeEntity("夜班", "20:00", "08:00", 0xFF2196F3, ShiftType.NIGHT_SHIFT);
+
+                ShiftTypeEntity nightShift = new ShiftTypeEntity("夜班", "20:00", "08:00", 0xFF2196F3,
+                        ShiftType.NIGHT_SHIFT);
                 nightShift.setDefault(true);
                 nightShift.setUpdateTime(System.currentTimeMillis());
-                
+
                 ShiftTypeEntity restDay = new ShiftTypeEntity("休息", "-", "-", 0xFFFF9800, ShiftType.REST_DAY);
                 restDay.setDefault(true);
                 restDay.setUpdateTime(System.currentTimeMillis());
@@ -71,4 +74,17 @@ public class ShiftTypeRepository {
             }
         });
     }
-} 
+
+    public void getShiftTypeByIdDirect(long id, OnShiftTypeLoadedCallback callback) {
+        executorService.execute(() -> {
+            ShiftTypeEntity shiftType = shiftTypeDao.getShiftTypeByIdDirect(id);
+            if (callback != null) {
+                new Handler(Looper.getMainLooper()).post(() -> callback.onShiftTypeLoaded(shiftType));
+            }
+        });
+    }
+
+    public interface OnShiftTypeLoadedCallback {
+        void onShiftTypeLoaded(ShiftTypeEntity shiftType);
+    }
+}
