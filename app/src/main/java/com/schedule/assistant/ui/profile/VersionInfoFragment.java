@@ -75,12 +75,7 @@ public class VersionInfoFragment extends Fragment {
                         getString(R.string.version_history_format),
                         "1.2.0",
                         "2025-02-04",
-                        getString(R.string.version_history_v120))
-                + String.format(
-                        getString(R.string.version_history_format),
-                        "1.1.0",
-                        "2024-12-22",
-                        getString(R.string.version_history_v110));
+                        getString(R.string.version_history_v120));
 
         binding.updateHistoryContent.setText(history);
     }
