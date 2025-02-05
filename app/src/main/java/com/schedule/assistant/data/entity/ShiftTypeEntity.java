@@ -4,19 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Ignore;
+import androidx.room.TypeConverters;
+import com.schedule.assistant.data.converter.ShiftTypeConverter;
 
 @Entity(tableName = "shift_types")
+@TypeConverters(ShiftTypeConverter.class)
 public class ShiftTypeEntity {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
     @NonNull
-    private String name;        // 班次名称
-    private String startTime;   // 默认开始时间
-    private String endTime;     // 默认结束时间
-    private int color;         // 班次颜色
-    private boolean isDefault;  // 是否为默认班次
-    private long updateTime;    // 更新时间
+    private String name; // 班次名称
+    private String startTime; // 默认开始时间
+    private String endTime; // 默认结束时间
+    private int color; // 班次颜色
+    private boolean isDefault; // 是否为默认班次
+    private long updateTime; // 更新时间
+    private ShiftType type; // 班次类型
 
     public ShiftTypeEntity(@NonNull String name, String startTime, String endTime, int color) {
         this.name = name;
@@ -25,11 +29,13 @@ public class ShiftTypeEntity {
         this.color = color;
         this.isDefault = false;
         this.updateTime = System.currentTimeMillis();
+        this.type = ShiftType.CUSTOM; // 默认为自定义类型
     }
 
     @Ignore
     public ShiftTypeEntity(@NonNull String name, String startTime, String endTime, int color, ShiftType type) {
         this(name, startTime, endTime, color);
+        this.type = type;
     }
 
     // Getters and Setters
@@ -89,4 +95,12 @@ public class ShiftTypeEntity {
     public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
     }
-} 
+
+    public ShiftType getType() {
+        return type;
+    }
+
+    public void setType(ShiftType type) {
+        this.type = type;
+    }
+}

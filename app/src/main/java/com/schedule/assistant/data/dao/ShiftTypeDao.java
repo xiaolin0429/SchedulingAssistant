@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface ShiftTypeDao {
     @Insert
-    void insert(ShiftTypeEntity shiftType);
+    long insert(ShiftTypeEntity shiftType);
 
     @Update
     void update(ShiftTypeEntity shiftType);

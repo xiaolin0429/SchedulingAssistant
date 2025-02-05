@@ -8,11 +8,12 @@ import android.util.Log;
 import com.schedule.assistant.data.dao.ShiftDao;
 import com.schedule.assistant.data.entity.Shift;
 import com.schedule.assistant.data.entity.ShiftType;
-import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.data.AppDatabase;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ShiftRepository {
     private static final String TAG = "ShiftRepository";
@@ -202,6 +203,31 @@ public class ShiftRepository {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     if (callback != null) {
                         callback.onError("error_database_operation");
+                    }
+                });
+            }
+        });
+    }
+
+    public void deleteShiftsBetween(LocalDate startDate, LocalDate endDate) {
+        String startDateStr = startDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String endDateStr = endDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        executorService.execute(() -> shiftDao.deleteShiftsBetween(startDateStr, endDateStr));
+    }
+
+    public void insertAll(List<Shift> shifts, RepositoryCallback callback) {
+        executorService.execute(() -> {
+            try {
+                shiftDao.insertAll(shifts);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                });
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (callback != null) {
+                        callback.onError(e.getMessage());
                     }
                 });
             }

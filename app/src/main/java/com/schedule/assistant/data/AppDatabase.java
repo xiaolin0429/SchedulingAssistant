@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
  * 使用单例模式管理数据库实例
  */
 @Database(entities = { Shift.class, ShiftTemplate.class, ShiftTypeEntity.class, AlarmEntity.class,
-        UserProfile.class, UserSettings.class }, version = 102, exportSchema = false)
+        UserProfile.class, UserSettings.class }, version = 104, exportSchema = false)
 @TypeConverters({ DateConverter.class, ShiftTypeConverter.class })
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;

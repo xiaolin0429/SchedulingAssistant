@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Material Design 主题颜色 -->
-    <color name="primary">#FF2196F3</color>
-    <color name="primary_dark">#FF1976D2</color>
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
     <color name="accent">#FF4081</color>
-    <color name="error">#FFB00020</color>
+    <color name="error">#B00020</color>
     <color name="colorPrimary">@color/primary</color>
 
     <!-- 基础颜色 -->
@@ -13,8 +13,8 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="gray">#FF757575</color>
     <color name="light_gray">#FFE0E0E0</color>
     <color name="lightGray">@color/light_gray</color>
@@ -49,8 +49,8 @@
 
     <!-- Material Design 主题相关颜色 -->
     <color name="on_primary">#FFFFFFFF</color>
-    <color name="on_surface">#FF000000</color>
-    <color name="on_background">#FF000000</color>
+    <color name="on_surface">#000000</color>
+    <color name="on_background">#000000</color>
     <color name="on_error">#FFFFFFFF</color>
 
     <!-- 输入框颜色 -->
@@ -85,4 +85,10 @@
     <color name="default_shift_color">#757575</color>
 
     <color name="ic_launcher_background">#F5F5F5</color>
+
+    <color name="secondary">#03DAC5</color>
+    <color name="secondary_dark">#018786</color>
+    <color name="background_dark">#121212</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1E1E1E</color>
 </resources>
