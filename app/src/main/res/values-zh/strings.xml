@@ -254,22 +254,22 @@
     <!-- Version History -->
     <string name="version_history">更新历史</string>
     <string name="version_history_content">
-        v1.2.1\n
-        • 修复闹钟重复日期与系统闹钟同步问题\n
-        • 增强闹钟权限处理机制\n
-        • 提升闹钟通知可靠性\n
-        • 优化闹钟调度逻辑\n
-        • 添加闹钟状态验证\n
+        v1.2.2\n
+        • 修复日历显示问题\n
+        • 优化自动排班功能\n
+        • 改进班次类型管理\n
+        • 优化数据库性能\n
+        • 修复本地化问题\n
         \n
-        v1.2.0\n
-        • 添加班次时间更新确认对话框\n
-        • 优化班次类型管理\n
-        • 增强数据验证\n
-        • 改进UI响应性\n
-        • 修复数据库兼容性问题
+        v1.2.1\n
+        • 修复闹钟重复日期与系统同步问题\n
+        • 增强闹钟权限处理\n
+        • 提高闹钟通知可靠性\n
+        • 优化闹钟调度逻辑\n
+        • 添加闹钟状态验证
     </string>
-    <string name="version_history_v121">• 修复闹钟重复日期与系统闹钟同步问题\n• 增强闹钟权限处理机制\n• 提升闹钟通知可靠性\n• 优化闹钟调度逻辑\n• 添加闹钟状态验证</string>
-    <string name="version_history_v120">• 添加班次时间更新确认对话框\n• 优化班次类型管理\n• 增强数据验证\n• 改进UI响应性\n• 修复数据库兼容性问题</string>
+    <string name="version_history_v122">• 修复日历显示问题\n• 优化自动排班功能\n• 改进班次类型管理\n• 优化数据库性能\n• 修复本地化问题</string>
+    <string name="version_history_v121">• 修复闹钟重复日期与系统同步问题\n• 增强闹钟权限处理\n• 提高闹钟通知可靠性\n• 优化闹钟调度逻辑\n• 添加闹钟状态验证</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Data Backup -->

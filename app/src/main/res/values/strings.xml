@@ -255,22 +255,22 @@
     <!-- Version History -->
     <string name="version_history">Version History</string>
     <string name="version_history_content">
+        v1.2.2\n
+        • Fixed calendar display issues\n
+        • Enhanced auto scheduling functionality\n
+        • Improved shift type management\n
+        • Optimized database performance\n
+        • Fixed localization issues\n
+        \n
         v1.2.1\n
-        • Fixed alarm repeat days synchronization with system alarm\n
+        • Fixed alarm repeat days sync with system alarm\n
         • Enhanced alarm permission handling\n
         • Improved alarm notification reliability\n
         • Optimized alarm scheduling logic\n
-        • Added alarm state validation\n
-        \n
-        v1.2.0\n
-        • Added shift time update confirmation dialog\n
-        • Optimized shift type management\n
-        • Enhanced data validation\n
-        • Improved UI responsiveness\n
-        • Fixed database compatibility issues
+        • Added alarm status verification
     </string>
-    <string name="version_history_v121">• Fixed alarm repeat days synchronization with system alarm\n• Enhanced alarm permission handling\n• Improved alarm notification reliability\n• Optimized alarm scheduling logic\n• Added alarm state validation</string>
-    <string name="version_history_v120">• Added shift time update confirmation dialog\n• Optimized shift type management\n• Enhanced data validation\n• Improved UI responsiveness\n• Fixed database compatibility issues</string>
+    <string name="version_history_v122">• Fixed calendar display issues\n• Enhanced auto scheduling functionality\n• Improved shift type management\n• Optimized database performance\n• Fixed localization issues</string>
+    <string name="version_history_v121">• Fixed alarm repeat days sync with system alarm\n• Enhanced alarm permission handling\n• Improved alarm notification reliability\n• Optimized alarm scheduling logic\n• Added alarm status verification</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Alarm Settings -->
