@@ -14,6 +14,7 @@ import com.schedule.assistant.R;
 import com.schedule.assistant.data.entity.ShiftTypeEntity;
 import com.schedule.assistant.databinding.FragmentShiftTypeBinding;
 import com.schedule.assistant.ui.adapter.ShiftTypeAdapter;
+import com.schedule.assistant.ui.dialog.AutoScheduleDialogFragment;
 import com.schedule.assistant.ui.dialog.ShiftTypeDialogFragment;
 import com.schedule.assistant.viewmodel.ShiftTypeViewModel;
 
@@ -34,6 +35,7 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
         viewModel = new ViewModelProvider(this).get(ShiftTypeViewModel.class);
         setupRecyclerView();
         setupAddButton();
+        setupViews();
         observeViewModel();
     }
 
@@ -61,6 +63,11 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
 
     private void setupAddButton() {
         binding.addButton.setOnClickListener(v -> showShiftTypeDialog(null));
+    }
+
+    private void setupViews() {
+        binding.addButton.setOnClickListener(v -> showAddShiftTypeDialog());
+        binding.autoScheduleFab.setOnClickListener(v -> showAutoScheduleDialog());
     }
 
     private void observeViewModel() {
@@ -107,6 +114,15 @@ public class ShiftTypeFragment extends Fragment implements ShiftTypeAdapter.OnSh
     private void showShiftTypeDialog(@Nullable ShiftTypeEntity shiftType) {
         ShiftTypeDialogFragment dialog = ShiftTypeDialogFragment.newInstance(shiftType);
         dialog.show(getChildFragmentManager(), "shift_type_dialog");
+    }
+
+    private void showAddShiftTypeDialog() {
+        showShiftTypeDialog(null);
+    }
+
+    private void showAutoScheduleDialog() {
+        AutoScheduleDialogFragment dialog = new AutoScheduleDialogFragment();
+        dialog.show(getChildFragmentManager(), "auto_schedule");
     }
 
     @Override

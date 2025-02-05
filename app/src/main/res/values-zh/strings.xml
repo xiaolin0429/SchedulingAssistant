@@ -19,6 +19,7 @@
     <string name="error_save_template">模板保存失败，请重试</string>
     <string name="error_delete_template">模板删除失败，请重试</string>
     <string name="error_load_templates">模板加载失败，请重试</string>
+    <string name="error_load_shift_types">班次类型加载失败，请重试</string>
     <string name="error_invalid_time_range">结束时间需要晚于开始时间，请重新选择</string>
     <string name="error_note_too_long">备注内容超出限制，请保持在200字以内</string>
     <string name="error_duplicate_shift">当前日期已有排班安排，您可以编辑现有排班或选择其他日期</string>
@@ -32,6 +33,7 @@
     <string name="invalid_date">日期无效，请重新选择</string>
     <string name="empty_note">请输入备注内容</string>
     <string name="note_too_long">备注内容过长，请精简</string>
+    <string name="error_create_shift">创建班次失败</string>
 
     <string name="title_home">主页</string>
     <string name="title_shift_template">班次</string>
@@ -252,22 +254,22 @@
     <!-- Version History -->
     <string name="version_history">更新历史</string>
     <string name="version_history_content">
-        v1.2.1\n
-        • 修复闹钟重复日期与系统闹钟同步问题\n
-        • 增强闹钟权限处理机制\n
-        • 提升闹钟通知可靠性\n
-        • 优化闹钟调度逻辑\n
-        • 添加闹钟状态验证\n
+        v1.2.2\n
+        • 修复日历显示问题\n
+        • 优化自动排班功能\n
+        • 改进班次类型管理\n
+        • 优化数据库性能\n
+        • 修复本地化问题\n
         \n
-        v1.2.0\n
-        • 添加班次时间更新确认对话框\n
-        • 优化班次类型管理\n
-        • 增强数据验证\n
-        • 改进UI响应性\n
-        • 修复数据库兼容性问题
+        v1.2.1\n
+        • 修复闹钟重复日期与系统同步问题\n
+        • 增强闹钟权限处理\n
+        • 提高闹钟通知可靠性\n
+        • 优化闹钟调度逻辑\n
+        • 添加闹钟状态验证
     </string>
-    <string name="version_history_v121">• 修复闹钟重复日期与系统闹钟同步问题\n• 增强闹钟权限处理机制\n• 提升闹钟通知可靠性\n• 优化闹钟调度逻辑\n• 添加闹钟状态验证</string>
-    <string name="version_history_v120">• 添加班次时间更新确认对话框\n• 优化班次类型管理\n• 增强数据验证\n• 改进UI响应性\n• 修复数据库兼容性问题</string>
+    <string name="version_history_v122">• 修复日历显示问题\n• 优化自动排班功能\n• 改进班次类型管理\n• 优化数据库性能\n• 修复本地化问题</string>
+    <string name="version_history_v121">• 修复闹钟重复日期与系统同步问题\n• 增强闹钟权限处理\n• 提高闹钟通知可靠性\n• 优化闹钟调度逻辑\n• 添加闹钟状态验证</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Data Backup -->
@@ -408,4 +410,19 @@
     <string name="shift_time_update_message">是否要更新所有此类型班次的时间？</string>
     <string name="yes">是</string>
     <string name="no">否</string>
+
+    <!-- Auto Schedule -->
+    <string name="auto_schedule">自动排班</string>
+    <string name="auto_schedule_title">自动排班设置</string>
+    <string name="weekly_schedule_pattern">每周排班模式</string>
+    <string name="date_range">日期范围</string>
+    <string name="start_date">开始日期</string>
+    <string name="end_date">结束日期</string>
+    <string name="preview">预览</string>
+    <string name="auto_schedule_confirm_title">覆盖已有排班</string>
+    <string name="auto_schedule_confirm_message">在%1$s至%2$s期间已存在排班，是否要覆盖？</string>
+    <string name="auto_schedule_success">自动排班生成成功</string>
+    <string name="auto_schedule_failed">自动排班生成失败</string>
+    <string name="invalid_date_range">请选择有效的日期范围</string>
+    <string name="no_shift_type_selected">请至少选择一个班次类型</string>
 </resources> 

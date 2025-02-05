@@ -46,4 +46,10 @@ public interface ShiftDao {
 
     @Query("UPDATE shifts SET note = :note WHERE id = :shiftId")
     void updateNote(long shiftId, String note);
+
+    @Query("DELETE FROM shifts WHERE date BETWEEN :startDate AND :endDate")
+    void deleteShiftsBetween(String startDate, String endDate);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Shift> shifts);
 }

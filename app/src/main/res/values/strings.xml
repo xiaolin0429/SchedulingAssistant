@@ -21,6 +21,7 @@
     <string name="error_save_template">Failed to save template, please try again</string>
     <string name="error_delete_template">Failed to delete template, please try again</string>
     <string name="error_load_templates">Failed to load templates, please try again</string>
+    <string name="error_load_shift_types">Failed to load shift types, please try again</string>
     <string name="error_invalid_time_range">End time should be later than start time, please select again</string>
     <string name="error_note_too_long">Note content exceeds limit, please keep it within 200 characters</string>
     <string name="error_duplicate_shift">A shift already exists for this date. You can edit the existing shift or choose another date</string>
@@ -34,6 +35,7 @@
     <string name="invalid_date">Invalid date, please select again</string>
     <string name="empty_note">Please enter note content</string>
     <string name="note_too_long">Note content is too long, please be more concise</string>
+    <string name="error_create_shift">Failed to create shift</string>
 
     <!-- Navigation -->
     <string name="title_home">Home</string>
@@ -253,22 +255,22 @@
     <!-- Version History -->
     <string name="version_history">Version History</string>
     <string name="version_history_content">
+        v1.2.2\n
+        • Fixed calendar display issues\n
+        • Enhanced auto scheduling functionality\n
+        • Improved shift type management\n
+        • Optimized database performance\n
+        • Fixed localization issues\n
+        \n
         v1.2.1\n
-        • Fixed alarm repeat days synchronization with system alarm\n
+        • Fixed alarm repeat days sync with system alarm\n
         • Enhanced alarm permission handling\n
         • Improved alarm notification reliability\n
         • Optimized alarm scheduling logic\n
-        • Added alarm state validation\n
-        \n
-        v1.2.0\n
-        • Added shift time update confirmation dialog\n
-        • Optimized shift type management\n
-        • Enhanced data validation\n
-        • Improved UI responsiveness\n
-        • Fixed database compatibility issues
+        • Added alarm status verification
     </string>
-    <string name="version_history_v121">• Fixed alarm repeat days synchronization with system alarm\n• Enhanced alarm permission handling\n• Improved alarm notification reliability\n• Optimized alarm scheduling logic\n• Added alarm state validation</string>
-    <string name="version_history_v120">• Added shift time update confirmation dialog\n• Optimized shift type management\n• Enhanced data validation\n• Improved UI responsiveness\n• Fixed database compatibility issues</string>
+    <string name="version_history_v122">• Fixed calendar display issues\n• Enhanced auto scheduling functionality\n• Improved shift type management\n• Optimized database performance\n• Fixed localization issues</string>
+    <string name="version_history_v121">• Fixed alarm repeat days sync with system alarm\n• Enhanced alarm permission handling\n• Improved alarm notification reliability\n• Optimized alarm scheduling logic\n• Added alarm status verification</string>
     <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Alarm Settings -->
@@ -423,17 +425,32 @@
     <string name="date_range_format">%1$s to %2$s</string>
 
     <!-- Calendar Week Days -->
-    <string name="calendar_monday">M</string>
-    <string name="calendar_tuesday">T</string>
-    <string name="calendar_wednesday">W</string>
-    <string name="calendar_thursday">T</string>
-    <string name="calendar_friday">F</string>
-    <string name="calendar_saturday">S</string>
-    <string name="calendar_sunday">S</string>
+    <string name="calendar_monday">Mon</string>
+    <string name="calendar_tuesday">Tue</string>
+    <string name="calendar_wednesday">Wed</string>
+    <string name="calendar_thursday">Thu</string>
+    <string name="calendar_friday">Fri</string>
+    <string name="calendar_saturday">Sat</string>
+    <string name="calendar_sunday">Sun</string>
 
     <!-- Shift Time Update Dialog -->
     <string name="shift_time_update_title">Update Shift Time</string>
     <string name="shift_time_update_message">Do you want to update the time for all existing shifts of this type?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <!-- Auto Schedule -->
+    <string name="auto_schedule">Auto Schedule</string>
+    <string name="auto_schedule_title">Auto Schedule Settings</string>
+    <string name="weekly_schedule_pattern">Weekly Schedule Pattern</string>
+    <string name="date_range">Date Range</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="preview">Preview</string>
+    <string name="auto_schedule_confirm_title">Overwrite Existing Schedule</string>
+    <string name="auto_schedule_confirm_message">Existing schedules found between %1$s and %2$s. Do you want to overwrite them?</string>
+    <string name="auto_schedule_success">Schedule generated successfully</string>
+    <string name="auto_schedule_failed">Failed to generate schedule</string>
+    <string name="invalid_date_range">Please select a valid date range</string>
+    <string name="no_shift_type_selected">Please select at least one shift type</string>
 </resources>

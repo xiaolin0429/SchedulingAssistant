@@ -241,7 +241,6 @@ public class AlarmScheduler {
      * - 位4 = 周五
      * - 位5 = 周六
      * - 位6 = 周日
-     * 
      * 系统闹钟：1-7 = 周一到周日
      */
     private ArrayList<Integer> getDaysOfWeek(int repeatDays) {
@@ -257,16 +256,6 @@ public class AlarmScheduler {
             days.add(7);
         }
         return days;
-    }
-
-    /**
-     * 显示取消提示
-     */
-    private void showCancelToast() {
-        android.widget.Toast.makeText(
-                context,
-                context.getString(R.string.alarm_disabled),
-                android.widget.Toast.LENGTH_SHORT).show();
     }
 
     /**

@@ -1,33 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme -->
-    <style name="Theme.SchedulingAssistant" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.ScheduleAssistant" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent</item>
-        <item name="colorOnSecondary">@color/white</item>
-        
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_dark</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/primary_dark</item>
-        
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Text input style -->
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
         <!-- Background colors -->
         <item name="android:colorBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorError">@color/error</item>
-        
         <!-- Text colors -->
-        <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorOnSurface">@color/on_surface</item>
         <item name="colorOnBackground">@color/on_background</item>
         <item name="colorOnError">@color/on_error</item>
-        
+        <!-- Text appearances -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.MaterialComponents.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.MaterialComponents.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.MaterialComponents.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.MaterialComponents.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
         <!-- Custom attributes -->
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/primary_dark</item>
+        <!-- CalendarView attributes -->
+        <item name="cv_dayViewResource">@layout/calendar_day_layout</item>
+        <item name="cv_monthHeaderResource">@layout/calendar_month_header</item>
+        <item name="cv_orientation">horizontal</item>
+        <item name="cv_scrollMode">paged</item>
+        <!-- Spinner style -->
+        <item name="android:spinnerStyle">@style/Widget.ScheduleAssistant.Spinner</item>
+        <item name="android:spinnerItemStyle">@style/Widget.ScheduleAssistant.TextView.SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.ScheduleAssistant.DropDownItem.Spinner</item>
+        <!-- Button styles -->
+        <item name="materialButtonStyle">@style/Widget.ScheduleAssistant.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.ScheduleAssistant.Button.TextButton</item>
+    </style>
+
+    <!-- Dialog theme -->
+    <style name="Theme.ScheduleAssistant.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Design.BottomSheetDialog</item>
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <!-- Text appearances -->
+        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.MaterialComponents.Subtitle1</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
+        <!-- Input styles -->
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="editTextStyle">@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox</item>
+        <!-- Material Design text appearance attributes -->
+        <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2</item>
+        <!-- Card styles -->
+        <item name="materialCardViewStyle">@style/Widget.ScheduleAssistant.MaterialCardView</item>
+    </style>
+
+    <!-- 自定义TextInputLayout样式 -->
+    <style name="Widget.ScheduleAssistant.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+        <item name="boxBackgroundColor">@color/text_input_box_background</item>
+        <item name="hintTextColor">@color/text_input_box_hint</item>
+        <item name="android:textColorHint">@color/text_input_box_hint</item>
+        <item name="hintTextAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="errorTextAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="helperTextTextAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="counterTextAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="counterOverflowTextAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
+    </style>
+
+    <!-- 自定义Spinner样式 -->
+    <style name="Widget.ScheduleAssistant.Spinner" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:background">@drawable/bg_spinner</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:popupBackground">?attr/colorSurface</item>
+    </style>
+
+    <style name="Widget.ScheduleAssistant.TextView.SpinnerItem" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
+    <style name="Widget.ScheduleAssistant.DropDownItem.Spinner" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <!-- 自定义Card样式 -->
+    <style name="Widget.ScheduleAssistant.MaterialCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="rippleColor">?attr/colorControlHighlight</item>
+    </style>
+
+    <!-- 自定义按钮样式 -->
+    <style name="Widget.ScheduleAssistant.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="Widget.ScheduleAssistant.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
     </style>
 </resources>

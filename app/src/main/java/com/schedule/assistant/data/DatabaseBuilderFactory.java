@@ -1,12 +1,16 @@
 package com.schedule.assistant.data;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 数据库构建器工厂类
@@ -56,7 +60,10 @@ public class DatabaseBuilderFactory {
                         MIGRATION_8_9,
                         MIGRATION_9_10,
                         MIGRATION_9_100,
-                        MIGRATION_100_101);
+                        MIGRATION_100_101,
+                        MIGRATION_101_102,
+                        MIGRATION_102_103,
+                        MIGRATION_103_104);
     }
 
     // 数据库迁移策略定义
@@ -186,4 +193,88 @@ public class DatabaseBuilderFactory {
         }
     };
 
+    private static final Migration MIGRATION_101_102 = new Migration(101, 102) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // 使用事务来确保操作的原子性
+            database.execSQL("BEGIN TRANSACTION");
+            try {
+                // 检查列是否存在，如果不存在则添加
+                Cursor cursor = database.query("SELECT * FROM shift_types LIMIT 0");
+                List<String> columns = Arrays.asList(cursor.getColumnNames());
+                cursor.close();
+
+                if (!columns.contains("type")) {
+                    database.execSQL("ALTER TABLE shift_types ADD COLUMN type TEXT");
+                }
+                database.execSQL("COMMIT");
+            } catch (Exception e) {
+                database.execSQL("ROLLBACK");
+                throw e;
+            }
+        }
+    };
+
+    private static final Migration MIGRATION_102_103 = new Migration(102, 103) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // 使用事务来确保操作的原子性
+            database.execSQL("BEGIN TRANSACTION");
+            try {
+                // 检查列是否存在，如果不存在则添加
+                Cursor cursor = database.query("SELECT * FROM alarms LIMIT 0");
+                List<String> columns = Arrays.asList(cursor.getColumnNames());
+                cursor.close();
+
+                if (!columns.contains("snoozeInterval")) {
+                    database.execSQL("ALTER TABLE alarms ADD COLUMN snoozeInterval INTEGER NOT NULL DEFAULT 5");
+                }
+                if (!columns.contains("maxSnoozeCount")) {
+                    database.execSQL("ALTER TABLE alarms ADD COLUMN maxSnoozeCount INTEGER NOT NULL DEFAULT 3");
+                }
+                database.execSQL("COMMIT");
+            } catch (Exception e) {
+                database.execSQL("ROLLBACK");
+                throw e;
+            }
+        }
+    };
+
+    private static final Migration MIGRATION_103_104 = new Migration(103, 104) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // 使用事务来确保操作的原子性
+            database.execSQL("BEGIN TRANSACTION");
+            try {
+                // 重新创建shift_types表以确保结构正确
+                database.execSQL("CREATE TABLE IF NOT EXISTS shift_types_new (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "name TEXT NOT NULL, " +
+                        "startTime TEXT, " +
+                        "endTime TEXT, " +
+                        "color INTEGER NOT NULL, " +
+                        "isDefault INTEGER NOT NULL, " +
+                        "updateTime INTEGER NOT NULL, " +
+                        "type TEXT)");
+
+                // 复制数据到新表，不包含type列
+                database.execSQL("INSERT INTO shift_types_new " +
+                        "(id, name, startTime, endTime, color, isDefault, updateTime) " +
+                        "SELECT id, name, startTime, endTime, color, isDefault, updateTime " +
+                        "FROM shift_types");
+
+                // 为所有记录设置默认的type值
+                database.execSQL("UPDATE shift_types_new SET type = 'CUSTOM' WHERE type IS NULL");
+
+                // 删除旧表并重命名新表
+                database.execSQL("DROP TABLE shift_types");
+                database.execSQL("ALTER TABLE shift_types_new RENAME TO shift_types");
+
+                database.execSQL("COMMIT");
+            } catch (Exception e) {
+                database.execSQL("ROLLBACK");
+                throw e;
+            }
+        }
+    };
 }
