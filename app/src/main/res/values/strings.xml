@@ -255,23 +255,22 @@
     <!-- Version History -->
     <string name="version_history">Version History</string>
     <string name="version_history_content">
-        v1.2.2\n
-        • Fixed calendar display issues\n
-        • Enhanced auto scheduling functionality\n
-        • Improved shift type management\n
-        • Optimized database performance\n
-        • Fixed localization issues\n
+        v1.2.3\n
+        • Fixed backup and restore issues\n
+        • Improved notification reliability\n
+        • Added support for Android 14\n
+        • UI performance optimizations\n
+        • Bug fixes and improvements\n
         \n
-        v1.2.1\n
-        • Fixed alarm repeat days sync with system alarm\n
-        • Enhanced alarm permission handling\n
-        • Improved alarm notification reliability\n
-        • Optimized alarm scheduling logic\n
-        • Added alarm status verification
+        v1.2.2\n
+        • Added shift statistics feature\n
+        • Improved alarm reliability\n
+        • Fixed various UI issues\n
+        • Performance improvements
     </string>
-    <string name="version_history_v122">• Fixed calendar display issues\n• Enhanced auto scheduling functionality\n• Improved shift type management\n• Optimized database performance\n• Fixed localization issues</string>
-    <string name="version_history_v121">• Fixed alarm repeat days sync with system alarm\n• Enhanced alarm permission handling\n• Improved alarm notification reliability\n• Optimized alarm scheduling logic\n• Added alarm status verification</string>
-    <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
+    <string name="version_history_v123">1. Fixed backup and restore issues\n2. Improved notification reliability\n3. Added support for Android 14\n4. UI performance optimizations\n5. Bug fixes and improvements</string>
+    <string name="version_history_v122">1. Added shift statistics feature\n2. Improved alarm reliability\n3. Fixed various UI issues\n4. Performance improvements</string>
+    <string name="version_history_format">Version %1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Alarm Settings -->
     <string name="repeat_alarm">Repeat Alarm</string>
@@ -399,7 +398,7 @@
     <string name="total_shift_count">Total Shifts This Month: %d</string>
     <string name="total_shift_count_range">Total Shifts in Selected Period: %d</string>
     <string name="shift_type_distribution">Shift Type Distribution</string>
-    <string name="shift_type_percentage">%s: %.1f%%</string>
+    <string name="shift_type_percentage" formatted="false">%s: %.1f%%</string>
     <string name="no_shifts_data">No shift data available</string>
     
     <!-- Work Hours Statistics -->
@@ -407,8 +406,8 @@
     <string name="work_hours_statistics">Work Hours Statistics</string>
     <string name="total_work_hours">Total Work Hours: %.1f</string>
     <string name="average_work_hours">Average Work Hours: %.1f</string>
-    <string name="max_work_hours">Longest Work Hours: %.1f (%s)</string>
-    <string name="min_work_hours">Shortest Work Hours: %.1f (%s)</string>
+    <string name="max_work_hours" formatted="false">Longest Work Hours: %.1f (%s)</string>
+    <string name="min_work_hours" formatted="false">Shortest Work Hours: %.1f (%s)</string>
     <string name="no_work_hours_data">No work hours data available</string>
 
     <!-- Snooze Settings -->
