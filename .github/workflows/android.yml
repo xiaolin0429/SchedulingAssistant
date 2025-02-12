@@ -29,7 +29,7 @@ jobs:
       
     - name: Decode Keystore
       id: decode_keystore
-      uses: timheuer/base64-to-file@v1.2
+      uses: timheuer/base64-to-file@f0d2c42d7b04ed2c87b8d6b153890ee10c0ddfd1
       with:
         fileName: 'scheduling_assistant.jks'
         fileDir: './app/'
@@ -44,7 +44,7 @@ jobs:
       run: ./gradlew assembleRelease
         
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@2d279924e1f8c4398fca6d1d63dbe6e7f6f0e693
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: app/build/outputs/apk/release/app-release.apk
