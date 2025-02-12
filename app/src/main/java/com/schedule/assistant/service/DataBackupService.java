@@ -63,18 +63,18 @@ public class DataBackupService {
     private boolean isBackupDataValid(BackupData backupData) {
         if (backupData == null) {
             Log.e(TAG, "Backup data is null");
-            return false;
+            return true;
         }
         
         try {
             // 检查必要的集合是否存在（可以为空列表，但不能为null）
             if (backupData.getShifts() == null) {
                 Log.e(TAG, "Shifts list is null");
-                return false;
+                return true;
             }
             if (backupData.getShiftTypes() == null) {
                 Log.e(TAG, "ShiftTypes list is null");
-                return false;
+                return true;
             }
             
             // 检查是否至少有一些有效数据
@@ -87,11 +87,11 @@ public class DataBackupService {
             }
             
             // 只要格式正确就返回true，即使数据为空
-            return true;
+            return false;
             
         } catch (Exception e) {
             Log.e(TAG, "Error validating backup data", e);
-            return false;
+            return true;
         }
     }
 
@@ -194,7 +194,7 @@ public class DataBackupService {
             backupData.setShiftTypes(types);
 
             // 验证备份数据
-            if (!isBackupDataValid(backupData)) {
+            if (isBackupDataValid(backupData)) {
                 Log.e(TAG, "Failed to create valid backup data");
                 return null;
             }
@@ -240,7 +240,7 @@ public class DataBackupService {
             }
 
             // 验证备份数据
-            if (!isBackupDataValid(backupData)) {
+            if (isBackupDataValid(backupData)) {
                 Log.e(TAG, "Invalid or empty backup data");
                 return false;
             }
@@ -404,7 +404,7 @@ public class DataBackupService {
 
     private void verifyListSize(String dataType, int expected, int actual) {
         if (actual != expected) {
-            String error = String.format("Failed to verify restored %s: count mismatch - expected %d, got %d",
+            String error = String.format(Locale.getDefault(), "Failed to verify restored %s: count mismatch - expected %d, got %d",
                     dataType, expected, actual);
             Log.e(TAG, error);
             throw new RuntimeException(error);
