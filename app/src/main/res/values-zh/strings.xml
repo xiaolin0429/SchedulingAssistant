@@ -254,23 +254,22 @@
     <!-- Version History -->
     <string name="version_history">更新历史</string>
     <string name="version_history_content">
-        v1.2.2\n
-        • 修复日历显示问题\n
-        • 优化自动排班功能\n
-        • 改进班次类型管理\n
-        • 优化数据库性能\n
-        • 修复本地化问题\n
+        v1.2.3\n
+        • 修复备份和恢复问题\n
+        • 提高通知可靠性\n
+        • 添加 Android 14 支持\n
+        • UI性能优化\n
+        • 错误修复和改进\n
         \n
-        v1.2.1\n
-        • 修复闹钟重复日期与系统同步问题\n
-        • 增强闹钟权限处理\n
-        • 提高闹钟通知可靠性\n
-        • 优化闹钟调度逻辑\n
-        • 添加闹钟状态验证
+        v1.2.2\n
+        • 添加班次统计功能\n
+        • 提高闹钟可靠性\n
+        • 修复各种UI问题\n
+        • 性能改进
     </string>
-    <string name="version_history_v122">• 修复日历显示问题\n• 优化自动排班功能\n• 改进班次类型管理\n• 优化数据库性能\n• 修复本地化问题</string>
-    <string name="version_history_v121">• 修复闹钟重复日期与系统同步问题\n• 增强闹钟权限处理\n• 提高闹钟通知可靠性\n• 优化闹钟调度逻辑\n• 添加闹钟状态验证</string>
-    <string name="version_history_format">v%1$s (%2$s)\n%3$s\n\n</string>
+    <string name="version_history_v123">1. 修复备份和恢复问题\n2. 提高通知可靠性\n3. 添加 Android 14 支持\n4. UI性能优化\n5. 错误修复和改进</string>
+    <string name="version_history_v122">1. 添加班次统计功能\n2. 提高闹钟可靠性\n3. 修复各种UI问题\n4. 性能改进</string>
+    <string name="version_history_format">版本 %1$s (%2$s)\n%3$s\n\n</string>
 
     <!-- Data Backup -->
     <string name="backup_success">备份成功</string>
@@ -371,7 +370,7 @@
     <string name="total_shift_count">本月总班次：%d</string>
     <string name="total_shift_count_range">时间段内总班次：%d</string>
     <string name="shift_type_distribution">班次类型分布</string>
-    <string name="shift_type_percentage">%s：%.1f%%</string>
+    <string name="shift_type_percentage" formatted="false">%s：%.1f%%</string>
     <string name="no_shifts_data">暂无班次数据</string>
     
     <!-- 工作时长统计 -->
@@ -379,8 +378,8 @@
     <string name="work_hours_statistics">工作时长统计</string>
     <string name="total_work_hours">总工作时长：%.1f小时</string>
     <string name="average_work_hours">平均工作时长：%.1f小时</string>
-    <string name="max_work_hours">最长工作时长：%.1f小时（%s）</string>
-    <string name="min_work_hours">最短工作时长：%.1f小时（%s）</string>
+    <string name="max_work_hours" formatted="false">最长工作时长：%.1f小时（%s）</string>
+    <string name="min_work_hours" formatted="false">最短工作时长：%.1f小时（%s）</string>
     <string name="no_work_hours_data">暂无工作时长数据</string>
 
     <!-- 贪睡设置 -->
