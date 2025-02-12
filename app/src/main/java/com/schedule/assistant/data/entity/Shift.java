@@ -4,25 +4,37 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Ignore;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
 @Entity(tableName = "shifts")
 public class Shift {
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("a")
     private long id;
 
     @NonNull
+    @SerializedName("b")
     private String date;
 
     @NonNull
+    @SerializedName("c")
     private ShiftType type;
 
+    @SerializedName("d")
     private long shiftTypeId;
 
+    @SerializedName("e")
     private String startTime;
+
+    @SerializedName("f")
     private String endTime;
+
+    @SerializedName("g")
     private String note;
+
+    @SerializedName("h")
     private long updateTime;
 
     @Ignore

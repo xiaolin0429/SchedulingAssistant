@@ -5,21 +5,30 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Ignore;
 import androidx.room.TypeConverters;
+import com.google.gson.annotations.SerializedName;
 import com.schedule.assistant.data.converter.ShiftTypeConverter;
 
 @Entity(tableName = "shift_types")
 @TypeConverters(ShiftTypeConverter.class)
 public class ShiftTypeEntity {
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("a")
     private long id;
 
     @NonNull
+    @SerializedName("b")
     private String name; // 班次名称
+    @SerializedName("c")
     private String startTime; // 默认开始时间
+    @SerializedName("d")
     private String endTime; // 默认结束时间
+    @SerializedName("e")
     private int color; // 班次颜色
+    @SerializedName("f")
     private boolean isDefault; // 是否为默认班次
+    @SerializedName("g")
     private long updateTime; // 更新时间
+    @SerializedName("h")
     private ShiftType type; // 班次类型
 
     public ShiftTypeEntity(@NonNull String name, String startTime, String endTime, int color) {

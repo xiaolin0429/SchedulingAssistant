@@ -1,6 +1,8 @@
 package com.schedule.assistant.service;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.util.Log;
 
@@ -58,6 +60,103 @@ public class DataBackupService {
         return publicDir;
     }
 
+    private boolean isBackupDataValid(BackupData backupData) {
+        if (backupData == null) {
+            Log.e(TAG, "Backup data is null");
+            return false;
+        }
+        
+        try {
+            // 检查必要的集合是否存在（可以为空列表，但不能为null）
+            if (backupData.getShifts() == null) {
+                Log.e(TAG, "Shifts list is null");
+                return false;
+            }
+            if (backupData.getShiftTypes() == null) {
+                Log.e(TAG, "ShiftTypes list is null");
+                return false;
+            }
+            
+            // 检查是否至少有一些有效数据
+            boolean hasData = !backupData.getShifts().isEmpty() || 
+                            !backupData.getShiftTypes().isEmpty() ||
+                            backupData.getUserSettings() != null;
+            
+            if (!hasData) {
+                Log.w(TAG, "Backup contains no data, but format is valid");
+            }
+            
+            // 只要格式正确就返回true，即使数据为空
+            return true;
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error validating backup data", e);
+            return false;
+        }
+    }
+
+    private BackupData createTempBackup() {
+        BackupData tempBackup = new BackupData();
+        
+        // 备份当前数据
+        tempBackup.setUserProfile(database.userProfileDao().getUserProfile());
+        tempBackup.setUserSettings(database.userSettingsDao().getUserSettings());
+        tempBackup.setAlarms(database.alarmDao().getAllAlarmsSync());
+        tempBackup.setShifts(database.shiftDao().getAllShiftsSync());
+        tempBackup.setShiftTemplates(database.shiftTemplateDao().getAllTemplatesSync());
+        tempBackup.setShiftTypes(database.shiftTypeDao().getAllTypesSync());
+        
+        return tempBackup;
+    }
+
+    private void restoreFromTempBackup(BackupData tempBackup) {
+        try {
+            // 清除当前数据
+            database.clearAllTables();
+            
+            // 恢复之前的数据
+            if (tempBackup.getUserProfile() != null) {
+                database.userProfileDao().insert(tempBackup.getUserProfile());
+            }
+            if (tempBackup.getUserSettings() != null) {
+                database.userSettingsDao().insert(tempBackup.getUserSettings());
+            }
+            if (tempBackup.getAlarms() != null) {
+                for (AlarmEntity alarm : tempBackup.getAlarms()) {
+                    database.alarmDao().insert(alarm);
+                }
+            }
+            if (tempBackup.getShiftTypes() != null) {
+                for (ShiftTypeEntity type : tempBackup.getShiftTypes()) {
+                    database.shiftTypeDao().insert(type);
+                }
+            }
+            if (tempBackup.getShiftTemplates() != null) {
+                for (ShiftTemplate template : tempBackup.getShiftTemplates()) {
+                    database.shiftTemplateDao().insert(template);
+                }
+            }
+            if (tempBackup.getShifts() != null) {
+                for (Shift shift : tempBackup.getShifts()) {
+                    database.shiftDao().insert(shift);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to restore from temp backup", e);
+            throw e;
+        }
+    }
+
+    private String getAppVersion() {
+        try {
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failed to get app version", e);
+            return "0.0.0";
+        }
+    }
+
     /**
      * 执行数据备份
      * 
@@ -67,6 +166,9 @@ public class DataBackupService {
         try {
             // 创建备份数据对象
             BackupData backupData = new BackupData();
+            
+            // 设置版本信息
+            backupData.setAppVersion(getAppVersion());
 
             // 获取用户配置信息
             UserProfile userProfile = database.userProfileDao().getUserProfile();
@@ -91,6 +193,12 @@ public class DataBackupService {
             List<ShiftTypeEntity> types = database.shiftTypeDao().getAllTypesSync();
             backupData.setShiftTypes(types);
 
+            // 验证备份数据
+            if (!isBackupDataValid(backupData)) {
+                Log.e(TAG, "Failed to create valid backup data");
+                return null;
+            }
+
             // 创建备份文件
             String backupFilePath = createBackupFile(backupData);
             Log.i(TAG, "Data backup successful: " + backupFilePath);
@@ -112,6 +220,10 @@ public class DataBackupService {
             // 读取备份文件
             BackupData backupData;
             try (FileReader reader = new FileReader(backupFile)) {
+                // 先打印文件内容以便调试
+                String content = new String(java.nio.file.Files.readAllBytes(backupFile.toPath()));
+                Log.d(TAG, "Backup file content: " + content);
+                
                 backupData = gson.fromJson(reader, BackupData.class);
             }
 
@@ -120,164 +232,93 @@ public class DataBackupService {
                 return false;
             }
 
+            // 检查版本兼容性
+            if (!backupData.isCompatibleVersion(getAppVersion())) {
+                Log.e(TAG, "Incompatible backup version: " + backupData.getAppVersion() +
+                        " (current: " + getAppVersion() + ")");
+                return false;
+            }
+
+            // 验证备份数据
+            if (!isBackupDataValid(backupData)) {
+                Log.e(TAG, "Invalid or empty backup data");
+                return false;
+            }
+
             // 打印备份数据的基本信息
             Log.i(TAG, "Backup file details:");
             Log.i(TAG, "- File path: " + backupFile.getPath());
             Log.i(TAG, "- File size: " + backupFile.length() + " bytes");
+            Log.i(TAG, "- App version: " + backupData.getAppVersion());
+            Log.i(TAG, "- Format version: " + backupData.getFormatVersion());
             Log.i(TAG, "- User profile present: " + (backupData.getUserProfile() != null));
             Log.i(TAG, "- User settings present: " + (backupData.getUserSettings() != null));
             Log.i(TAG, "- Number of alarms: " + (backupData.getAlarms() != null ? backupData.getAlarms().size() : 0));
             Log.i(TAG, "- Number of shifts: " + (backupData.getShifts() != null ? backupData.getShifts().size() : 0));
-            Log.i(TAG, "- Number of shift templates: "
-                    + (backupData.getShiftTemplates() != null ? backupData.getShiftTemplates().size() : 0));
-            Log.i(TAG, "- Number of shift types: "
-                    + (backupData.getShiftTypes() != null ? backupData.getShiftTypes().size() : 0));
+            Log.i(TAG, "- Number of shift templates: " + (backupData.getShiftTemplates() != null ? backupData.getShiftTemplates().size() : 0));
+            Log.i(TAG, "- Number of shift types: " + (backupData.getShiftTypes() != null ? backupData.getShiftTypes().size() : 0));
 
             // 开始数据库事务
             database.runInTransaction(() -> {
                 try {
                     Log.d(TAG, "Starting database transaction for data restore");
 
-                    // 清除现有数据前记录当前数据状态
-                    int currentAlarms = database.alarmDao().getAllAlarmsSync().size();
-                    int currentShifts = database.shiftDao().getAllShiftsSync().size();
-                    int currentTemplates = database.shiftTemplateDao().getAllTemplatesSync().size();
-                    int currentTypes = database.shiftTypeDao().getAllTypesSync().size();
-                    UserProfile currentProfile = database.userProfileDao().getUserProfile();
-                    UserSettings currentSettings = database.userSettingsDao().getUserSettings();
+                    // 在清除现有数据之前先备份
+                    BackupData tempBackup = createTempBackup();
 
-                    Log.d(TAG, "Current database state before clearing:");
-                    Log.d(TAG, "- Number of alarms: " + currentAlarms);
-                    Log.d(TAG, "- Number of shifts: " + currentShifts);
-                    Log.d(TAG, "- Number of shift templates: " + currentTemplates);
-                    Log.d(TAG, "- Number of shift types: " + currentTypes);
-                    Log.d(TAG, "- User profile exists: " + (currentProfile != null));
-                    Log.d(TAG, "- User settings exists: " + (currentSettings != null));
+                    try {
+                        // 清除现有数据
+                        database.clearAllTables();
 
-                    // 清除现有数据
-                    Log.d(TAG, "Clearing existing data...");
-                    database.clearAllTables();
-                    Log.d(TAG, "Existing data cleared successfully");
-
-                    // 恢复用户配置
-                    UserProfile userProfile = backupData.getUserProfile();
-                    if (userProfile != null) {
-                        Log.d(TAG, "Restoring user profile:");
-                        Log.d(TAG, "- Profile ID: " + userProfile.getId());
-                        Log.d(TAG, "- Name: " + userProfile.getName());
-                        try {
-                            database.userProfileDao().insert(userProfile);
-                            Log.d(TAG, "User profile restored successfully");
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to restore user profile: " + e.getMessage(), e);
-                            throw e;
+                        // 恢复用户配置
+                        if (backupData.getUserProfile() != null) {
+                            database.userProfileDao().insert(backupData.getUserProfile());
                         }
-                    } else {
-                        Log.w(TAG, "No user profile data found in backup");
-                    }
 
-                    // 恢复用户设置
-                    UserSettings userSettings = backupData.getUserSettings();
-                    if (userSettings != null) {
-                        Log.d(TAG, "Restoring user settings:");
-                        Log.d(TAG, "- Settings ID: " + userSettings.getId());
-                        Log.d(TAG, "- Theme Mode: " + userSettings.getThemeMode());
-                        Log.d(TAG, "- Language Mode: " + userSettings.getLanguageMode());
-                        try {
-                            database.userSettingsDao().insert(userSettings);
-                            Log.d(TAG, "User settings restored successfully");
+                        // 恢复用户设置
+                        if (backupData.getUserSettings() != null) {
+                            database.userSettingsDao().insert(backupData.getUserSettings());
                             // 应用恢复的设置
-                            ((SchedulingAssistantApp) context.getApplicationContext()).updateSettings(userSettings);
-                            Log.d(TAG, "User settings applied successfully");
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to restore user settings: " + e.getMessage(), e);
-                            throw e;
+                            ((SchedulingAssistantApp) context.getApplicationContext()).updateSettings(backupData.getUserSettings());
                         }
-                    } else {
-                        Log.w(TAG, "No user settings data found in backup");
-                    }
 
-                    // 恢复闹钟数据
-                    List<AlarmEntity> alarms = backupData.getAlarms();
-                    if (alarms != null && !alarms.isEmpty()) {
-                        Log.d(TAG, "Restoring " + alarms.size() + " alarms:");
-                        try {
-                            for (AlarmEntity alarm : alarms) {
-                                Log.d(TAG, "- Restoring alarm: ID=" + alarm.getId() +
-                                        ", Time=" + alarm.getTimeInMillis() +
-                                        ", Enabled=" + alarm.isEnabled());
+                        // 恢复闹钟数据
+                        if (backupData.getAlarms() != null) {
+                            for (AlarmEntity alarm : backupData.getAlarms()) {
                                 database.alarmDao().insert(alarm);
                             }
-                            Log.d(TAG, "Alarms restored successfully");
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to restore alarms: " + e.getMessage(), e);
-                            throw e;
                         }
-                    } else {
-                        Log.w(TAG, "No alarm data found in backup");
-                    }
 
-                    // 恢复班次类型数据
-                    List<ShiftTypeEntity> types = backupData.getShiftTypes();
-                    if (types != null && !types.isEmpty()) {
-                        Log.d(TAG, "Restoring " + types.size() + " shift types:");
-                        try {
-                            for (ShiftTypeEntity type : types) {
-                                Log.d(TAG, "- Restoring shift type: ID=" + type.getId() +
-                                        ", Name=" + type.getName());
+                        // 恢复班次类型数据
+                        if (backupData.getShiftTypes() != null) {
+                            for (ShiftTypeEntity type : backupData.getShiftTypes()) {
                                 database.shiftTypeDao().insert(type);
                             }
-                            Log.d(TAG, "Shift types restored successfully");
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to restore shift types: " + e.getMessage(), e);
-                            throw e;
                         }
-                    } else {
-                        Log.w(TAG, "No shift type data found in backup");
-                    }
 
-                    // 恢复班次模板数据
-                    List<ShiftTemplate> templates = backupData.getShiftTemplates();
-                    if (templates != null && !templates.isEmpty()) {
-                        Log.d(TAG, "Restoring " + templates.size() + " shift templates:");
-                        try {
-                            for (ShiftTemplate template : templates) {
-                                Log.d(TAG, "- Restoring shift template: ID=" + template.getId() +
-                                        ", Name=" + template.getName());
+                        // 恢复班次模板数据
+                        if (backupData.getShiftTemplates() != null) {
+                            for (ShiftTemplate template : backupData.getShiftTemplates()) {
                                 database.shiftTemplateDao().insert(template);
                             }
-                            Log.d(TAG, "Shift templates restored successfully");
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to restore shift templates: " + e.getMessage(), e);
-                            throw e;
                         }
-                    } else {
-                        Log.w(TAG, "No shift template data found in backup");
-                    }
 
-                    // 恢复班次数据
-                    List<Shift> shifts = backupData.getShifts();
-                    if (shifts != null && !shifts.isEmpty()) {
-                        Log.d(TAG, "Restoring " + shifts.size() + " shifts:");
-                        try {
-                            for (Shift shift : shifts) {
-                                Log.d(TAG, "- Restoring shift: ID=" + shift.getId() +
-                                        ", Date=" + shift.getDate() +
-                                        ", Type=" + shift.getType());
+                        // 恢复班次数据
+                        if (backupData.getShifts() != null) {
+                            for (Shift shift : backupData.getShifts()) {
                                 database.shiftDao().insert(shift);
                             }
-                            Log.d(TAG, "Shifts restored successfully");
-                        } catch (Exception e) {
-                            Log.e(TAG, "Failed to restore shifts: " + e.getMessage(), e);
-                            throw e;
                         }
-                    } else {
-                        Log.w(TAG, "No shift data found in backup");
+
+                        // 验证恢复的数据
+                        verifyRestoredData(backupData);
+
+                    } catch (Exception e) {
+                        // 恢复失败，还原之前的数据
+                        Log.e(TAG, "Error during restore, rolling back to previous state", e);
+                        restoreFromTempBackup(tempBackup);
+                        throw e;
                     }
-
-                    // 验证恢复的数据
-                    verifyRestoredData(backupData);
-
                 } catch (Exception e) {
                     Log.e(TAG, "Error during data restore transaction: " + e.getMessage(), e);
                     throw e;
