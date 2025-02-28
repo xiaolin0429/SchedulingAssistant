@@ -130,7 +130,7 @@
                         android:text="@string/export_logs"
                         android:textSize="14sp"
                         android:layout_marginBottom="16dp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"/>
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/submit_feedback_button"
@@ -138,7 +138,7 @@
                         android:layout_height="48dp"
                         android:text="@string/submit_feedback"
                         android:textSize="14sp"
-                        style="@style/Widget.Material3.Button"/>
+                        style="@style/Widget.MaterialComponents.Button"/>
 
                 </LinearLayout>
 
@@ -148,4 +148,4 @@
 
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout> 
+</LinearLayout>

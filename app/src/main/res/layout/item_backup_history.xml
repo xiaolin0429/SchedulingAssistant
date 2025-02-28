@@ -46,7 +46,7 @@
             android:textSize="14sp"
             android:textAllCaps="false"
             android:gravity="center"
-            style="@style/Widget.Material3.Button.ElevatedButton"
+            style="@style/Widget.MaterialComponents.Button"
             android:paddingHorizontal="16dp"
             android:minWidth="88dp" />
 
@@ -59,7 +59,7 @@
             android:textSize="14sp"
             android:textAllCaps="false"
             android:gravity="center"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:paddingHorizontal="16dp"
             android:minWidth="88dp"
             android:textColor="?attr/colorError"
@@ -67,4 +67,4 @@
 
     </LinearLayout>
 
-</LinearLayout> 
+</LinearLayout>
