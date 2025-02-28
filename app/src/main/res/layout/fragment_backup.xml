@@ -87,7 +87,7 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/clear_cache"
                         android:textSize="14sp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         app:icon="@drawable/ic_clear"
                         app:iconGravity="textStart" />
 
@@ -156,4 +156,4 @@
 
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout> 
+</LinearLayout>

@@ -94,7 +94,7 @@
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:cornerRadius="24dp"
-                style="@style/Widget.Material3.Button.Icon" />
+                style="@style/Widget.MaterialComponents.Button.Icon" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/auto_schedule_fab"
@@ -114,10 +114,10 @@
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:cornerRadius="24dp"
-                style="@style/Widget.Material3.Button.Icon" />
+                style="@style/Widget.MaterialComponents.Button.Icon" />
 
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout> 
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
